@@ -37,126 +37,120 @@
       </nav>
 
       <!-- Main Profile Content -->
-      <main class="flex-grow max-w-7xl mx-auto w-full px-4 md:px-8 pt-12 pb-24 border-x border-border/50">
+      <main class="flex-grow max-w-7xl mx-auto w-full px-2 md:px-4 pt-4 pb-12 border-x border-border/50">
         
         <!-- Profile Header & Stats -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16 items-start">
-            
-            <!-- User Info -->
-            <div class="bg-surface p-8 border-l-4 border-primary">
-                <div class="flex items-center gap-6 mb-6">
-                    <div class="w-24 h-24 bg-white/10 rounded-full"></div> <!-- Avatar Placeholder -->
+        <div class="bg-surface border-l-2 border-primary p-4 mb-3">
+            <div class="flex items-center justify-between gap-6 mb-3">
+                <!-- User Info -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/10 rounded-full"></div>
                     <div>
-                        <h1 class="text-3xl font-black text-white uppercase leading-none mb-1">Gunner<br><span class="text-primary">Wins</span></h1>
-                        <div class="text-xs font-bold text-text-muted uppercase tracking-widest">@gunner_wins • Pro Analyst</div>
+                        <h1 class="text-xl font-black text-white uppercase leading-none">Gunner<span class="text-primary">Wins</span></h1>
+                        <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider">@gunner_wins • Pro</div>
                     </div>
                 </div>
-                <p class="text-text-muted text-sm leading-relaxed mb-6 font-medium">
-                    Premier League specialist focused on statistical anomalies and possession metrics. 
-                    Ex-data analyst for Tier 1 betting syndicate.
-                </p>
-                <div class="flex gap-4">
-                    <button class="flex-1 bg-white text-background font-bold py-3 uppercase tracking-widest text-xs hover:bg-primary hover:text-white transition-colors">
+                
+                <!-- Inline Stats -->
+                <div class="flex gap-6 text-xs">
+                    <div class="text-center">
+                        <div class="text-[10px] text-text-muted uppercase">Win</div>
+                        <div class="text-lg font-black text-white">68<span class="text-xs text-primary">%</span></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-[10px] text-text-muted uppercase">Profit</div>
+                        <div class="text-lg font-black text-secondary">+124<span class="text-xs">u</span></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-[10px] text-text-muted uppercase">ROI</div>
+                        <div class="text-lg font-black text-white">12.5<span class="text-xs">%</span></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-[10px] text-text-muted uppercase">Streak</div>
+                        <div class="text-lg font-black text-primary">W5</div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                    <button class="bg-white text-background font-bold py-2 px-4 uppercase tracking-wider text-[10px] hover:bg-primary hover:text-white transition-colors">
                         Follow
                     </button>
-                    <button class="flex-1 border border-white/20 text-white font-bold py-3 uppercase tracking-widest text-xs hover:bg-white hover:text-background transition-colors">
+                    <button class="border border-white/20 text-white font-bold py-2 px-4 uppercase tracking-wider text-[10px] hover:bg-white hover:text-background transition-colors">
                         Message
                     </button>
                 </div>
             </div>
-
-            <!-- Major Stats Dashboard -->
-            <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <!-- Stat 1 -->
-                <div class="bg-surface p-6 flex flex-col justify-between h-full hover:bg-surface-hover transition-colors">
-                    <div class="text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Win Rate</div>
-                    <div class="text-4xl font-black text-white">68<span class="text-lg text-primary">%</span></div>
-                    <div class="text-[10px] text-text-muted font-mono mt-2">Last 100 Picks</div>
-                </div>
-                <!-- Stat 2 -->
-                <div class="bg-surface p-6 flex flex-col justify-between h-full hover:bg-surface-hover transition-colors">
-                    <div class="text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Profit (YTD)</div>
-                    <div class="text-4xl font-black text-secondary">+124<span class="text-lg">u</span></div>
-                    <div class="text-[10px] text-text-muted font-mono mt-2">Verfied by Chain</div>
-                </div>
-                <!-- Stat 3 -->
-                <div class="bg-surface p-6 flex flex-col justify-between h-full hover:bg-surface-hover transition-colors">
-                    <div class="text-xs font-bold text-text-muted uppercase tracking-widest mb-2">ROI</div>
-                    <div class="text-4xl font-black text-white">12.5<span class="text-lg">%</span></div>
-                    <div class="text-[10px] text-text-muted font-mono mt-2">High Efficiency</div>
-                </div>
-                <!-- Stat 4 -->
-                <div class="bg-surface p-6 flex flex-col justify-between h-full hover:bg-surface-hover transition-colors">
-                    <div class="text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Streak</div>
-                    <div class="text-4xl font-black text-primary">W5</div>
-                    <div class="text-[10px] text-text-muted font-mono mt-2">Hot Form 🔥</div>
-                </div>
-            </div>
-
         </div>
 
         <!-- Content Tabs -->
-        <div class="border-b border-white/10 mb-8 flex gap-8">
-            <button class="text-sm font-bold text-white uppercase tracking-widest border-b-2 border-primary pb-4">Active Peeks (3)</button>
-            <button class="text-sm font-bold text-text-muted uppercase tracking-widest border-b-2 border-transparent pb-4 hover:text-white transition-colors">History</button>
-            <button class="text-sm font-bold text-text-muted uppercase tracking-widest border-b-2 border-transparent pb-4 hover:text-white transition-colors">Reviews</button>
+        <div class="border-b border-white/10 mb-2 flex gap-6 text-[10px]">
+            <button class="font-bold text-white uppercase tracking-wider border-b-2 border-primary pb-2">Active (3)</button>
+            <button class="font-bold text-text-muted uppercase tracking-wider border-b-2 border-transparent pb-2 hover:text-white transition-colors">History</button>
+            <button class="font-bold text-text-muted uppercase tracking-wider border-b-2 border-transparent pb-2 hover:text-white transition-colors">Reviews</button>
         </div>
 
-        <!-- Active Peeks Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-             <!-- Card 1 -->
-             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6 relative">
-               <div class="flex justify-between items-start mb-6">
-                 <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
-                 <span class="text-text-muted font-mono text-xs">8m ago</span>
-               </div>
-               <div class="flex items-center gap-2 mb-2">
-                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Soccer • EPL</span>
-               </div>
-               <div class="font-bold text-white text-lg mb-1">Arsenal vs Tottenham</div>
-               <h3 class="text-xl font-black text-primary leading-tight mb-4">Total Goals Over 3.5</h3>
-               
-               <div class="flex justify-between items-center border-t border-white/5 pt-4">
-                 <div class="flex items-center gap-2">
-                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
-                   <span class="text-xs font-bold text-white">GunnerWins</span>
-                 </div>
-                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-2 hover:bg-primary hover:text-white transition-colors">
-                   Unlock (10c)
-                 </button>
-               </div>
-             </div>
-             
-             <!-- Card 2 -->
-             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6 relative">
-               <div class="flex justify-between items-start mb-6">
-                 <span class="bg-white/10 text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Free</span>
-                 <span class="text-text-muted font-mono text-xs">2h ago</span>
-               </div>
-               <div class="flex items-center gap-2 mb-2">
-                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Soccer • Serie A</span>
-               </div>
-               <div class="font-bold text-white text-lg mb-1">Milan vs Inter</div>
-               <h3 class="text-xl font-black text-white leading-tight mb-4">Both Teams To Score</h3>
-               
-               <div class="flex justify-between items-center border-t border-white/5 pt-4">
-                 <div class="flex items-center gap-2">
-                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
-                   <span class="text-xs font-bold text-white">GunnerWins</span>
-                 </div>
-                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-2 hover:bg-white hover:text-background transition-colors">
-                   View Pick
-                 </button>
-               </div>
-             </div>
+        <!-- Active Peeks Table -->
+        <div class="bg-surface border border-border/50">
+          <!-- Table Header -->
+          <div class="grid grid-cols-12 gap-2 px-3 py-2 border-b border-border/50 text-[10px] font-bold text-text-muted uppercase tracking-wider">
+            <div class="col-span-1">Time</div>
+            <div class="col-span-4">Match</div>
+            <div class="col-span-4">Pick</div>
+            <div class="col-span-1 text-right">Odds</div>
+            <div class="col-span-2 text-right">Status</div>
+          </div>
+          
+          <!-- Row 1 -->
+          <div class="grid grid-cols-12 gap-2 px-3 py-2 border-b border-border/50 hover:bg-surface-hover cursor-pointer transition-colors text-xs items-center">
+            <div class="col-span-1 text-text-muted font-mono text-[10px]">8m</div>
+            <div class="col-span-4">
+              <div class="text-[10px] text-text-muted uppercase mb-0.5">EPL</div>
+              <div class="font-bold text-white text-xs">Arsenal vs Tottenham</div>
+            </div>
+            <div class="col-span-4">
+              <div class="font-bold text-primary">Over 3.5 Goals</div>
+              <span class="bg-primary/10 text-primary text-[9px] font-bold px-1.5 py-0.5 uppercase">Premium</span>
+            </div>
+            <div class="col-span-1 text-right font-mono font-bold text-white">2.10</div>
+            <div class="col-span-2 text-right">
+              <span class="text-[10px] text-text-muted uppercase">Pending</span>
+            </div>
+          </div>
 
-             <!-- Locked Card Placeholder -->
-             <div class="bg-surface/50 border border-dashed border-white/10 flex items-center justify-center p-6 text-center">
-                 <div>
-                    <div class="text-3xl mb-2">🔒</div>
-                    <div class="text-text-muted text-sm font-bold uppercase tracking-widest">Join Premium to see<br>all pending plays</div>
-                 </div>
-             </div>
+          <!-- Row 2 -->
+          <div class="grid grid-cols-12 gap-2 px-3 py-2 border-b border-border/50 hover:bg-surface-hover cursor-pointer transition-colors text-xs items-center">
+            <div class="col-span-1 text-text-muted font-mono text-[10px]">2h</div>
+            <div class="col-span-4">
+              <div class="text-[10px] text-text-muted uppercase mb-0.5">Serie A</div>
+              <div class="font-bold text-white text-xs">Milan vs Inter</div>
+            </div>
+            <div class="col-span-4">
+              <div class="font-bold text-white">Both Teams To Score</div>
+              <span class="bg-white/10 text-white text-[9px] font-bold px-1.5 py-0.5 uppercase">Free</span>
+            </div>
+            <div class="col-span-1 text-right font-mono font-bold text-white">1.72</div>
+            <div class="col-span-2 text-right">
+              <span class="text-[10px] text-text-muted uppercase">Pending</span>
+            </div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="grid grid-cols-12 gap-2 px-3 py-2 hover:bg-surface-hover cursor-pointer transition-colors text-xs items-center">
+            <div class="col-span-1 text-text-muted font-mono text-[10px]">4h</div>
+            <div class="col-span-4">
+              <div class="text-[10px] text-text-muted uppercase mb-0.5">La Liga</div>
+              <div class="font-bold text-white text-xs">Barcelona vs Real Madrid</div>
+            </div>
+            <div class="col-span-4">
+              <div class="font-bold text-primary">Barca Win</div>
+              <span class="bg-primary/10 text-primary text-[9px] font-bold px-1.5 py-0.5 uppercase">Premium</span>
+            </div>
+            <div class="col-span-1 text-right font-mono font-bold text-white">2.45</div>
+            <div class="col-span-2 text-right">
+              <span class="text-[10px] text-text-muted uppercase">Pending</span>
+            </div>
+          </div>
         </div>
 
       </main>
