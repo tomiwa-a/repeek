@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marketplace | Repeek</title>
+  </head>
+  <body class="bg-background text-text selection:bg-primary selection:text-white overflow-x-hidden">
+    <!-- Grid Background -->
+    <div class="fixed inset-0 grid-pattern opacity-20 pointer-events-none -z-10"></div>
+    <div id="app" class="min-h-screen flex flex-col relative">
+      
+      <!-- Top Bar -->
+      <div class="bg-primary text-white text-xs font-bold py-1 px-4 uppercase tracking-widest text-center">
+        Live Odds • Premier League • NFL • NBA • La Liga • Live Odds
+      </div>
+
+      <!-- Header -->
+      <nav class="w-full border-b border-border bg-background z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8">
+          <div class="flex items-center justify-between h-20">
+            <a href="/" class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-primary rounded-none"></div> 
+              <span class="font-black text-3xl tracking-tighter uppercase">Repeek</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-12">
+              <a href="/" class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">Home</a>
+              <a href="#" class="text-sm font-bold uppercase tracking-widest text-primary transition-colors">Marketplace</a>
+              <a href="#" class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors">Login</a>
+              <a href="#" class="bg-white text-background px-6 py-3 text-sm font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+                Join Now //
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Marketplace Content -->
+      <main class="flex-grow max-w-7xl mx-auto w-full px-4 md:px-8 pt-12 pb-24 border-x border-border/50">
+        
+        <header class="mb-12">
+           <h1 class="display-text text-5xl md:text-7xl text-white mb-6">Market<span class="text-primary">Place</span></h1>
+           
+           <!-- Filters -->
+           <div class="flex flex-wrap gap-4 border-y border-border py-4">
+              <button class="bg-primary text-white text-xs font-bold px-4 py-2 uppercase tracking-widest">All Sports</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Football (Soccer)</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Basketball</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Combat</button>
+              <div class="ml-auto flex gap-4">
+                  <select class="bg-surface text-white text-xs font-bold uppercase tracking-widest border border-border px-4 py-2">
+                    <option>Sort: Newest</option>
+                    <option>Sort: High ROI</option>
+                  </select>
+              </div>
+           </div>
+        </header>
+
+        <!-- Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Loop of cards would ideally go here -->
+             
+             <!-- Marketplace Card (Placeholder 1) -->
+             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
+                 <span class="text-text-muted font-mono text-xs">10m ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-4">
+                  <div class="w-2 h-2 rounded-full bg-primary"></div>
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Premier League</span>
+               </div>
+               <h3 class="text-xl font-black text-white leading-tight mb-6 group-hover:text-primary transition-colors">Arsenal vs Tottenham: Over 2.5 Goals Lock</h3>
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">GunnerWins</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-1 hover:bg-primary hover:text-white transition-colors">
+                   Unlock
+                 </button>
+               </div>
+             </div>
+
+             <!-- Marketplace Card (Placeholder 2) -->
+             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-white/10 text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Free</span>
+                 <span class="text-text-muted font-mono text-xs">35m ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-4">
+                  <div class="w-2 h-2 rounded-full bg-primary"></div>
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">NBA</span>
+               </div>
+               <h3 class="text-xl font-black text-white leading-tight mb-6 group-hover:text-primary transition-colors">Celtics -5.5 Spread vs Knicks</h3>
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">BostonBets</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-1 hover:bg-white hover:text-background transition-colors">
+                   View
+                 </button>
+               </div>
+             </div>
+
+             <!-- Marketplace Card (Placeholder 3) -->
+             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
+                 <span class="text-text-muted font-mono text-xs">1h ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-4">
+                  <div class="w-2 h-2 rounded-full bg-primary"></div>
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">UFC</span>
+               </div>
+               <h3 class="text-xl font-black text-white leading-tight mb-6 group-hover:text-primary transition-colors">Chimaev Submission Round 2</h3>
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">OctagonKing</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-1 hover:bg-primary hover:text-white transition-colors">
+                   Unlock
+                 </button>
+               </div>
+             </div>
+             
+             <!-- More placeholders to fill grid -->
+             <div class="bg-surface h-64 border border-dashed border-white/10 flex items-center justify-center p-6 text-center">
+                 <span class="text-text-muted text-sm font-mono">+ Load More Peeks</span>
+             </div>
+
+        </div>
+
+      </main>
+
+      <footer class="border-t border-border bg-background py-8">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
+           <div class="text-xs font-bold text-text-muted uppercase tracking-widest">
+             © 2026 Repeek Inc.
+           </div>
+           <div class="flex gap-6 text-xs font-bold text-text-muted uppercase tracking-widest">
+             <a href="#" class="hover:text-white">Legal</a>
+             <a href="#" class="hover:text-white">Terms</a>
+             <a href="#" class="hover:text-white">Privacy</a>
+           </div>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
