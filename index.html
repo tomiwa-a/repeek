@@ -143,7 +143,7 @@
 
            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
              <!-- Card 1 -->
-             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-8">
+             <div onclick="window.location.href='/peek-details.html'" class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-8">
                <div class="flex justify-between items-start mb-8">
                  <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
                  <span class="text-text-muted font-mono text-sm">2h ago</span>
@@ -153,9 +153,9 @@
                  <h3 class="text-2xl font-black text-white leading-none group-hover:text-primary transition-colors">Spread Pick & Player Prop</h3>
                </div>
                <div class="flex items-center gap-3 mb-8">
-                 <div class="w-8 h-8 rounded-full bg-white/10"></div> <!-- Avatar -->
+                 <div onclick="event.stopPropagation(); window.location.href='/profile.html'" class="w-8 h-8 rounded-full bg-white/10 hover:bg-primary cursor-pointer transition-colors"></div> <!-- Avatar -->
                  <div class="text-sm">
-                   <div class="font-bold text-white">Hoops_King</div>
+                   <div onclick="event.stopPropagation(); window.location.href='/profile.html'" class="font-bold text-white hover:text-primary cursor-pointer transition-colors">Hoops_King</div>
                    <div class="text-xs text-primary font-mono">Win Rate: 68%</div>
                  </div>
                </div>
