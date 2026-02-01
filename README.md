@@ -23,31 +23,6 @@ Built with a focus on speed, reactivity, and simplicity.
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) - For rapid and modern UI development.
 - **Odds Engine:** [TheOddsAPI](https://the-odds-api.com/) or [Sportmonks](https://sportmonks.com/) - Reliable JSON feeds for real-time betting odds.
 
-## ✨ Key Features
-
-### 1. Real-time Odds Syncing
-
-- **Cron Jobs**: Convex HTTP Actions fetch data from the specific Odds API every 1–5 minutes.
-- **State Patching**: Updates the `games` table in Convex.
-- **Instant Feedback**: Use `useQuery` on the frontend to reflect odds changes live on user screens.
-
-### 2. Prediction & Monetization ("The Peek")
-
-- **Post Creation**: Analysts select a game and write their analysis.
-- **Paywall Logic**: If `isPremium` is set, the actual prediction is blurred.
-- **Unlocking**: Users pay (e.g., virtual credits/Stripe) to "Peek" at the prediction.
-- **Favorites**: Track specific analysts or games.
-
-### 3. Transparent Statistics
-
-- **Profile Pages**: Automatically calculated Win/Loss ratios for every user.
-- **Leaderboards**: Filter "Hot" tipsters by recent performance.
-
-### 4. Admin Dashboard
-
-- **Overseer View**: Monitor total predictions and reported posts.
-- **Manual Override**: Ability to settle games if API feeds are delayed.
-
 ## 📦 Getting Started
 
 ### Prerequisites
