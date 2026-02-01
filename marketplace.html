@@ -39,17 +39,33 @@
       <!-- Main Marketplace Content -->
       <main class="flex-grow max-w-7xl mx-auto w-full px-4 md:px-8 pt-12 pb-24 border-x border-border/50">
         
-        <header class="mb-12">
+        <header class="mb-8">
            <h1 class="display-text text-5xl md:text-7xl text-white mb-6">Market<span class="text-primary">Place</span></h1>
            
-           <!-- Filters -->
-           <div class="flex flex-wrap gap-4 border-y border-border py-4">
-              <button class="bg-primary text-white text-xs font-bold px-4 py-2 uppercase tracking-widest">All Sports</button>
-              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Football (Soccer)</button>
+           <!-- Primary Filters (Sports) -->
+           <div class="flex flex-wrap gap-2 border-t border-border pt-6 pb-2">
+              <span class="text-xs font-bold text-text-muted uppercase tracking-widest py-2 mr-2 self-center">Sport:</span>
+              <button class="bg-primary text-white text-xs font-bold px-4 py-2 uppercase tracking-widest hover:opacity-90">All</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Soccer</button>
               <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Basketball</button>
-              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Combat</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Tennis</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">MMA / UFC</button>
+              <button class="bg-surface hover:bg-surface-hover text-text-muted hover:text-white text-xs font-bold px-4 py-2 uppercase tracking-widest transition-colors">Formula 1</button>
+           </div>
+
+           <!-- Secondary Filters (Bet Types) -->
+           <div class="flex flex-wrap gap-2 border-b border-border pb-6 pt-2 overflow-x-auto">
+              <span class="text-xs font-bold text-text-muted uppercase tracking-widest py-2 mr-2 self-center">Market:</span>
+              <button class="border border-white/20 hover:border-primary text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap">Main Lines</button>
+              <button class="border border-white/20 hover:border-primary text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap">Over / Under</button>
+              <button class="border border-white/20 hover:border-primary text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap">Player Props</button>
+              <button class="border border-white/20 hover:border-primary text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap">Corners & Cards</button>
+              <button class="border border-white/20 hover:border-primary text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap">Futures</button>
+              <button class="border border-white/20 hover:border-primary text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap">Parlays</button>
+              
               <div class="ml-auto flex gap-4">
                   <select class="bg-surface text-white text-xs font-bold uppercase tracking-widest border border-border px-4 py-2">
+                    <option>Sort: Hot</option>
                     <option>Sort: Newest</option>
                     <option>Sort: High ROI</option>
                   </select>
@@ -58,83 +74,247 @@
         </header>
 
         <!-- Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Loop of cards would ideally go here -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              
-             <!-- Marketplace Card (Placeholder 1) -->
-             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
-               <div class="flex justify-between items-start mb-6">
+             <!-- Card 1: Main Line -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6 relative">
+               <div class="absolute top-0 right-0 p-2">
+                   <span class="text-[10px] font-mono text-primary bg-primary/10 px-2 py-1 uppercase">HOT</span>
+               </div>
+               <div class="flex justify-between items-start mb-6 w-11/12">
                  <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
-                 <span class="text-text-muted font-mono text-xs">10m ago</span>
+                 <span class="text-text-muted font-mono text-xs">8m ago</span>
                </div>
-               <div class="flex items-center gap-2 mb-4">
-                  <div class="w-2 h-2 rounded-full bg-primary"></div>
-                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Premier League</span>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Soccer • EPL</span>
                </div>
-               <h3 class="text-xl font-black text-white leading-tight mb-6 group-hover:text-primary transition-colors">Arsenal vs Tottenham: Over 2.5 Goals Lock</h3>
+               <div class="font-bold text-white text-lg mb-1">Arsenal vs Tottenham</div>
+               <h3 class="text-xl font-black text-primary leading-tight mb-4">Total Goals Over 3.5</h3>
+               
+
                
                <div class="flex justify-between items-center border-t border-white/5 pt-4">
                  <div class="flex items-center gap-2">
                    <div class="w-6 h-6 rounded-full bg-white/10"></div>
                    <span class="text-xs font-bold text-white">GunnerWins</span>
                  </div>
-                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-1 hover:bg-primary hover:text-white transition-colors">
-                   Unlock
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-2 hover:bg-primary hover:text-white transition-colors">
+                   Unlock (10c)
                  </button>
                </div>
              </div>
 
-             <!-- Marketplace Card (Placeholder 2) -->
-             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+             <!-- Card 2: Corners -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
                <div class="flex justify-between items-start mb-6">
                  <span class="bg-white/10 text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Free</span>
-                 <span class="text-text-muted font-mono text-xs">35m ago</span>
+                 <span class="text-text-muted font-mono text-xs">12m ago</span>
                </div>
-               <div class="flex items-center gap-2 mb-4">
-                  <div class="w-2 h-2 rounded-full bg-primary"></div>
-                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">NBA</span>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Soccer • La Liga</span>
                </div>
-               <h3 class="text-xl font-black text-white leading-tight mb-6 group-hover:text-primary transition-colors">Celtics -5.5 Spread vs Knicks</h3>
+               <div class="font-bold text-white text-lg mb-1">Real Madrid vs Betis</div>
+               <h3 class="text-xl font-black text-white leading-tight mb-4">Real Madrid Corners > 7.5</h3>
+               
+
                
                <div class="flex justify-between items-center border-t border-white/5 pt-4">
                  <div class="flex items-center gap-2">
                    <div class="w-6 h-6 rounded-full bg-white/10"></div>
-                   <span class="text-xs font-bold text-white">BostonBets</span>
+                   <span class="text-xs font-bold text-white">CornerKing</span>
                  </div>
-                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-1 hover:bg-white hover:text-background transition-colors">
-                   View
+                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-2 hover:bg-white hover:text-background transition-colors">
+                   View Pick
                  </button>
                </div>
              </div>
 
-             <!-- Marketplace Card (Placeholder 3) -->
-             <div class="bg-surface group hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+             <!-- Card 3: Player Prop -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
+                 <span class="text-text-muted font-mono text-xs">22m ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">NBA • Celtics vs Knicks</span>
+               </div>
+               <div class="font-bold text-white text-lg mb-1">Jayson Tatum</div>
+               <h3 class="text-xl font-black text-primary leading-tight mb-4">Over 28.5 Points</h3>
+               
+
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">HoopsData</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-2 hover:bg-primary hover:text-white transition-colors">
+                   Unlock (15c)
+                 </button>
+               </div>
+             </div>
+
+             <!-- Card 4: Parlay -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6 border-t-4 border-t-accent">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-accent text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Parlay</span>
+                 <span class="text-text-muted font-mono text-xs">45m ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">UFC 309</span>
+               </div>
+               <div class="font-bold text-white text-lg mb-1">Main Card 3-Leg</div>
+               <h3 class="text-xl font-black text-white leading-tight mb-4">Jones + Oliveira + Nickal</h3>
+               
+               <div class="bg-white/5 p-3 mb-6">
+                  <div class="flex justify-between text-xs font-mono text-white mb-1">
+                    <span>Odds:</span>
+                    <span class="text-accent font-bold">+280</span>
+                  </div>
+                  <div class="flex justify-between text-xs font-mono text-text-muted">
+                    <span>Implied Prob:</span>
+                    <span>26.3%</span>
+                  </div>
+               </div>
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">FightScience</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-2 hover:bg-white hover:text-background transition-colors">
+                   View Legs
+                 </button>
+               </div>
+             </div>
+
+             <!-- Card 5: Cards (Bookings) -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
                <div class="flex justify-between items-start mb-6">
                  <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
                  <span class="text-text-muted font-mono text-xs">1h ago</span>
                </div>
-               <div class="flex items-center gap-2 mb-4">
-                  <div class="w-2 h-2 rounded-full bg-primary"></div>
-                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">UFC</span>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Soccer • Serie A</span>
                </div>
-               <h3 class="text-xl font-black text-white leading-tight mb-6 group-hover:text-primary transition-colors">Chimaev Submission Round 2</h3>
+               <div class="font-bold text-white text-lg mb-1">Roma vs Lazio</div>
+               <h3 class="text-xl font-black text-primary leading-tight mb-4">Over 6.5 Cards</h3>
+               
+               <div class="bg-primary/5 p-2 mb-4 border-l-2 border-primary">
+                 <p class="text-[10px] text-primary font-mono uppercase">⚠ DERBY MATCH ALERT: HIGH VOLATILITY</p>
+               </div>
                
                <div class="flex justify-between items-center border-t border-white/5 pt-4">
                  <div class="flex items-center gap-2">
                    <div class="w-6 h-6 rounded-full bg-white/10"></div>
-                   <span class="text-xs font-bold text-white">OctagonKing</span>
+                   <span class="text-xs font-bold text-white">CalcioTips</span>
                  </div>
-                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-1 hover:bg-primary hover:text-white transition-colors">
-                   Unlock
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-2 hover:bg-primary hover:text-white transition-colors">
+                   Unlock (10c)
                  </button>
                </div>
              </div>
-             
-             <!-- More placeholders to fill grid -->
-             <div class="bg-surface h-64 border border-dashed border-white/10 flex items-center justify-center p-6 text-center">
-                 <span class="text-text-muted text-sm font-mono">+ Load More Peeks</span>
+
+             <!-- Card 6: Spread -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-white/10 text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Free</span>
+                 <span class="text-text-muted font-mono text-xs">1h ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">NFL • Chiefs vs Bills</span>
+               </div>
+               <div class="font-bold text-white text-lg mb-1">Game Lines</div>
+               <h3 class="text-xl font-black text-white leading-tight mb-4">Bills -2.5 Spread</h3>
+               
+
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">GridIronPro</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-2 hover:bg-white hover:text-background transition-colors">
+                   View Pick
+                 </button>
+               </div>
              </div>
 
+             <!-- Card 7: Live/In-Play -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6 border-red-500/20 border">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 uppercase tracking-widest animate-pulse">LIVE NOW</span>
+                 <span class="text-red-500 font-mono text-xs font-bold">75'</span>
+               </div>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Tennis • ATP Paris</span>
+               </div>
+               <div class="font-bold text-white text-lg mb-1">Alcaraz vs Zverev</div>
+               <h3 class="text-xl font-black text-primary leading-tight mb-4">Alcaraz to Break Next Game</h3>
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">LiveSniper</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-2 hover:bg-primary hover:text-white transition-colors">
+                   Unlock (20c)
+                 </button>
+               </div>
+             </div>
+
+              <!-- Card 8: Player Prop (Kills) -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-white/10 text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Free</span>
+                 <span class="text-text-muted font-mono text-xs">2h ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Esports • CS2 Major</span>
+               </div>
+               <div class="font-bold text-white text-lg mb-1">G2 vs NaVi</div>
+               <h3 class="text-xl font-black text-white leading-tight mb-4">m0NESY Over 18.5 Kills Map 1</h3>
+               
+
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">EsportGod</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-white border border-white/20 px-3 py-2 hover:bg-white hover:text-background transition-colors">
+                   View Pick
+                 </button>
+               </div>
+             </div>
+
+             <!-- Card 9: Prop (Result) -->
+             <div class="bg-surface hover:bg-surface-hover transition-colors duration-300 cursor-pointer border-l-2 border-transparent hover:border-primary p-6">
+               <div class="flex justify-between items-start mb-6">
+                 <span class="bg-primary text-white text-xs font-bold px-2 py-1 uppercase tracking-widest">Premium</span>
+                 <span class="text-text-muted font-mono text-xs">3h ago</span>
+               </div>
+               <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-bold uppercase tracking-widest text-text-muted">Soccer • Bundesliga</span>
+               </div>
+               <div class="font-bold text-white text-lg mb-1">Bayern vs Dortmund</div>
+               <h3 class="text-xl font-black text-primary leading-tight mb-4">Kane Score & Bayern Win</h3>
+               
+               <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                 <div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded-full bg-white/10"></div>
+                   <span class="text-xs font-bold text-white">GermanTips</span>
+                 </div>
+                 <button class="text-xs font-bold uppercase tracking-widest text-primary border border-primary px-3 py-2 hover:bg-primary hover:text-white transition-colors">
+                   Unlock (15c)
+                 </button>
+               </div>
+             </div>
+
+        </div>
+
+        <div class="bg-surface h-24 mt-12 border border-dashed border-white/10 flex items-center justify-center p-6 text-center hover:bg-surface-hover hover:border-primary transition-colors cursor-pointer">
+             <span class="text-text-muted hover:text-white text-sm font-mono uppercase tracking-widest font-bold">+ Load More Markets (245)</span>
         </div>
 
       </main>
