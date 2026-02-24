@@ -82,7 +82,7 @@
   }
 
   .btn-volt {
-    @apply bg-accent text-obsidian font-black px-6 py-2 border-2 border-obsidian transition-all hover:bg-obsidian hover:text-white uppercase italic text-sm;
+    @apply bg-accent text-obsidian font-black px-6 py-2 border-2 border-obsidian transition-all hover:bg-obsidian hover:border-accent hover:text-accent uppercase italic text-sm;
   }
 
   .nav-link {

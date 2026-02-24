@@ -3,7 +3,7 @@ import { mockPredictors } from '../data/mockPredictors'
 import { mockGames } from '../data/mockGames'
 import { generateMockPredictions } from '../data/mockPredictions'
 import { 
-  TrendingUp, TrendingDown, Target, 
+  Target, 
   Share2, UserPlus, BarChart3, 
   ChevronLeft, ChevronRight, Filter, Search,
   ExternalLink, Trophy, Clock, Activity
@@ -170,7 +170,7 @@ export default function Profile() {
               {/* Success Rate */}
               <div className="bg-white border-2 border-obsidian p-4 shadow-sm group hover:border-accent transition-colors">
                 <div className="flex justify-between items-center mb-2">
-                  <Target className="w-3.5 h-3.5 text-obsidian/20 group-hover:text-accent" />
+                  <Target className="w-3.5 h-3.5 text-obsidian/40 group-hover:text-obsidian transition-colors" />
                   <span className="text-[8px] font-black text-text-muted uppercase italic">STRIKE</span>
                 </div>
                 <div className="text-xl font-black italic text-obsidian">{user.winRate.toFixed(1)}%</div>
@@ -180,7 +180,7 @@ export default function Profile() {
               {/* Trend */}
               <div className="bg-white border-2 border-obsidian p-4 shadow-sm group">
                 <div className="flex justify-between items-center mb-2">
-                  <Activity className="w-3.5 h-3.5 text-obsidian/20 group-hover:text-accent" />
+                  <Activity className="w-3.5 h-3.5 text-obsidian/40 group-hover:text-obsidian transition-colors" />
                   <span className="text-[8px] font-black text-text-muted uppercase italic">TREND</span>
                 </div>
                 <div className={`text-xl font-black italic mb-0 ${user.streakType === 'win' ? 'text-obsidian' : 'text-red-900'}`}>
@@ -194,7 +194,7 @@ export default function Profile() {
               {/* Ranking */}
               <div className="bg-white border-2 border-obsidian p-4 shadow-sm group">
                 <div className="flex justify-between items-center mb-2">
-                  <Trophy className="w-3.5 h-3.5 text-obsidian/20 group-hover:text-accent" />
+                  <Trophy className="w-3.5 h-3.5 text-obsidian/40 group-hover:text-obsidian transition-colors" />
                   <span className="text-[8px] font-black text-text-muted uppercase italic">RANK</span>
                 </div>
                 <div className="text-xl font-black italic text-obsidian">#14B</div>
@@ -204,7 +204,7 @@ export default function Profile() {
               {/* Service */}
               <div className="bg-white border-2 border-obsidian p-4 shadow-sm group">
                 <div className="flex justify-between items-center mb-2">
-                  <Clock className="w-3.5 h-3.5 text-obsidian/20 group-hover:text-accent" />
+                  <Clock className="w-3.5 h-3.5 text-obsidian/40 group-hover:text-obsidian transition-colors" />
                   <span className="text-[8px] font-black text-text-muted uppercase italic">TENURE</span>
                 </div>
                 <div className="text-xl font-black italic text-obsidian">2.1Y</div>
