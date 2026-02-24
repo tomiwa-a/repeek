@@ -1,7 +1,9 @@
 import { ExternalLink, Layers, ChevronRight } from 'lucide-react'
+import { useUI } from '../context/UIContext'
 import type { Slip } from '../data/mockSlips'
 
 export default function SlipListItem({ slip }: { slip: Slip }) {
+  const { openSlipDetail } = useUI()
   const isWon = slip.status === 'won'
   const isLost = slip.status === 'lost'
   
@@ -9,7 +11,11 @@ export default function SlipListItem({ slip }: { slip: Slip }) {
   const primaryLeg = slip.legs[0]
   
   return (
-    <div className="group bg-white border-2 border-obsidian p-4 shadow-sm hover:border-accent transition-all cursor-pointer">
+    <div 
+      onClick={() => openSlipDetail(slip)} 
+      className="group bg-white border-2 border-obsidian p-4 shadow-sm hover:border-obsidian/40 transition-all cursor-pointer relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 -mr-12 -mt-12 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4 flex-1">
           {/* Status Indicator */}

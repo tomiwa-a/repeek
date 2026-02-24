@@ -12,13 +12,14 @@ import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import { UIProvider, useUI } from './context/UIContext'
 import SlipBuilder from './components/SlipBuilder'
+import SlipDetail from './components/SlipDetail'
 import { mockPredictors } from './data/mockPredictors'
 import { mockGames } from './data/mockGames'
 import { generateMockSlips } from './data/mockSlips'
 import Notifications from './pages/Notifications'
 
 function AppContent() {
-  const { isSlipBuilderOpen, closeSlipBuilder } = useUI()
+  const { isSlipBuilderOpen, closeSlipBuilder, isSlipDetailOpen, closeSlipDetail, selectedSlip } = useUI()
   
   // Initialize mock slips once
   const slips = useMemo(() => generateMockSlips(mockPredictors, mockGames), [])
@@ -53,6 +54,7 @@ function AppContent() {
       <Footer />
       
       <SlipBuilder isOpen={isSlipBuilderOpen} onClose={closeSlipBuilder} />
+      <SlipDetail isOpen={isSlipDetailOpen} onClose={closeSlipDetail} slip={selectedSlip} />
     </div>
   )
 }
