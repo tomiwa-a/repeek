@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom'
-import { Home, Radio, User, Users } from 'lucide-react'
+import { Home, Radio, User, Users, Plus } from 'lucide-react'
+import { useUI } from '../context/UIContext'
 
 export default function Sidebar() {
+  const { openSlipBuilder } = useUI()
   const menuItems = [
     { icon: Home, label: 'HOME', to: '/' },
     { icon: Radio, label: 'LIVESCORE', to: '/live' },
@@ -29,6 +31,13 @@ export default function Sidebar() {
             ))}
           </nav>
         </div>
+
+        <button 
+          onClick={openSlipBuilder}
+          className="w-full btn-volt py-3 text-xs tracking-widest flex items-center justify-center gap-2"
+        >
+          <Plus className="w-4 h-4" /> PREDICT
+        </button>
 
         <div className="pt-4 border-t border-obsidian/5">
           <div className="bg-obsidian text-white p-4 relative overflow-hidden group">

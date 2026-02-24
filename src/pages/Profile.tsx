@@ -6,8 +6,9 @@ import {
   Target, 
   Share2, UserPlus, BarChart3, 
   ChevronLeft, ChevronRight, Filter, Search,
-  ExternalLink, Trophy, Clock, Activity
+  ExternalLink, Trophy, Clock, Activity, Plus
 } from 'lucide-react'
+import { useUI } from '../context/UIContext'
 
 // Sub-component for high-density prediction row
 function PredictionListItem({ prediction: p }: { prediction: any }) {
@@ -68,6 +69,7 @@ function PredictionListItem({ prediction: p }: { prediction: any }) {
 
 export default function Profile() {
   const user = mockPredictors[0]
+  const { openSlipBuilder } = useUI()
   const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis'>('ongoing')
   const [page, setPage] = useState(1)
   const itemsPerPage = 10
@@ -160,6 +162,14 @@ export default function Profile() {
                   <Share2 className="w-4 h-4 text-white" />
                 </button>
               </div>
+
+              <button 
+                onClick={openSlipBuilder}
+                className="w-full bg-accent text-obsidian font-black py-4 px-6 border-2 border-obsidian flex items-center justify-center gap-3 hover:bg-obsidian hover:text-accent transition-all group shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0"
+              >
+                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                <span className="text-xs tracking-[0.2em] italic">PROPOSE_NEW_SLIP</span>
+              </button>
             </div>
           </div>
 
