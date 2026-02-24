@@ -13,14 +13,14 @@ export default function SlipListItem({ slip }: { slip: Slip }) {
   return (
     <div 
       onClick={() => openSlipDetail(slip)} 
-      className="group bg-white border-2 border-obsidian p-4 shadow-sm hover:border-obsidian/40 transition-all cursor-pointer relative overflow-hidden"
+      className="group bg-white border border-obsidian p-2.5 shadow-sm hover:border-obsidian/40 transition-all cursor-pointer relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 -mr-12 -mt-12 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="absolute top-0 right-0 w-20 h-20 bg-accent/5 -mr-10 -mt-10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-start gap-4 flex-1">
           {/* Status Indicator */}
-          <div className="mt-1">
-            <div className={`w-8 h-8 flex items-center justify-center font-black text-[10px] italic border-2 ${
+          <div className="mt-0.5">
+            <div className={`w-7 h-7 flex items-center justify-center font-black text-[9px] italic border-2 ${
               isWon ? 'bg-accent border-obsidian text-obsidian' : 
               isLost ? 'bg-red-900 border-obsidian text-white' : 
               'bg-workspace border-obsidian/10 text-obsidian/20'
@@ -30,31 +30,31 @@ export default function SlipListItem({ slip }: { slip: Slip }) {
           </div>
 
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-[11px] font-black uppercase italic text-obsidian tracking-tighter leading-none">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <h3 className="text-[10px] font-black uppercase italic text-obsidian tracking-tighter leading-none">
                 {slip.title}
               </h3>
               {slip.legs.length > 1 && (
-                <span className="flex items-center gap-1 bg-obsidian text-white text-[8px] font-black px-1.5 py-0.5 leading-none italic">
-                  <Layers className="w-2.5 h-2.5" /> {slip.legs.length}_LEGS
+                <span className="flex items-center gap-1 bg-obsidian text-white text-[7px] font-black px-1 py-0.5 leading-none italic">
+                  <Layers className="w-2 h-2" /> {slip.legs.length}_L
                 </span>
               )}
             </div>
-            <div className="text-[9px] font-bold text-zinc-400 font-mono uppercase">
+            <div className="text-[8px] font-bold text-zinc-400 font-mono uppercase">
               {slip.timestamp.toLocaleDateString()} // {slip.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-6 md:gap-12">
+        <div className="flex items-center gap-4 md:gap-8">
           {/* Odds Section */}
           <div className="text-right">
-            <div className="text-[11px] font-black italic text-obsidian leading-none">@{slip.totalOdds}</div>
-            <div className="text-[8px] font-bold text-zinc-400 uppercase mt-1">TOTAL_ODDS</div>
+            <div className="text-[10px] font-black italic text-obsidian leading-none">@{slip.totalOdds}</div>
+            <div className="text-[7px] font-bold text-zinc-400 uppercase mt-0.5">ODDS</div>
           </div>
 
           {/* Result Badge */}
-          <div className={`px-3 py-1 text-[9px] font-black uppercase italic border-2 leading-none ${
+          <div className={`px-2 py-0.5 text-[8px] font-black uppercase italic border-2 leading-none ${
             isWon ? 'border-accent text-accent' : 
             isLost ? 'border-red-900 text-red-900' : 
             'border-obsidian/10 text-obsidian/20'
