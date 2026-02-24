@@ -1,73 +1,17 @@
 import { useState, useMemo } from 'react'
 import { mockPredictors } from '../data/mockPredictors'
-import { mockGames } from '../data/mockGames'
-import { generateMockPredictions } from '../data/mockPredictions'
 import { 
   Target, 
   Share2, UserPlus, BarChart3, 
   ChevronLeft, ChevronRight, Filter, Search,
-  ExternalLink, Trophy, Clock, Activity, Plus
+  Trophy, Clock, Activity, Plus
 } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 
-// Sub-component for high-density prediction row
-function PredictionListItem({ prediction: p }: { prediction: any }) {
-  const { game, pickLabel, odds, status = 'pending', timestamp } = p
-  const isWon = status === 'won'
-  
-  return (
-    <div className="grid grid-cols-[1fr_120px_80px_100px_40px] items-center gap-4 bg-white border border-obsidian/5 p-3 hover:bg-workspace transition-colors group">
-      {/* Match Info */}
-      <div className="flex flex-col min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[9px] font-black text-white bg-obsidian px-1.5 py-0.5 italic leading-none">
-            {game.league.split(' ').map((s: string) => s[0]).join('')}
-          </span>
-          <span className="text-[10px] font-black uppercase italic truncate text-obsidian">
-            {game.homeTeam} VS {game.awayTeam}
-          </span>
-        </div>
-        <span className="text-[9px] font-bold text-text-muted uppercase">
-          {new Date(timestamp).toLocaleDateString()} // {game.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
-      </div>
+import SlipListItem from '../components/SlipListItem'
+import type { Slip } from '../data/mockSlips'
 
-      {/* Pick */}
-      <div className="text-center">
-        <span className="text-[10px] font-black text-obsidian bg-accent/10 px-2 py-0.5 border border-accent/20">
-          {pickLabel.toUpperCase()}
-        </span>
-      </div>
-
-      {/* Odds */}
-      <div className="text-center">
-        <span className="text-[11px] font-black italic text-obsidian">
-          @{odds.toFixed(2)}
-        </span>
-      </div>
-
-      {/* Status */}
-      <div className="flex justify-center">
-        {status === 'pending' ? (
-          <span className="text-[9px] font-black italic text-obsidian/40 border border-obsidian/10 px-2 py-0.5">PENDING</span>
-        ) : (
-          <span className={`text-[9px] font-black italic px-2 py-0.5 ${
-            isWon ? 'bg-accent text-obsidian' : 'bg-red-900 text-white'
-          }`}>
-            {status.toUpperCase()}
-          </span>
-        )}
-      </div>
-
-      {/* Action */}
-      <button className="flex justify-center text-obsidian/20 group-hover:text-obsidian transition-colors">
-        <ExternalLink className="w-3.5 h-3.5" />
-      </button>
-    </div>
-  )
-}
-
-export default function Profile() {
+export default function Profile({ slips = [] }: { slips?: Slip[] }) {
   const user = mockPredictors[0]
   const { openSlipBuilder } = useUI()
   const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis'>('ongoing')
@@ -78,45 +22,48 @@ export default function Profile() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sportFilter, setSportFilter] = useState<'all' | 'soccer' | 'basketball' | 'football'>('all')
 
-  const userPredictions = useMemo(
-    () => generateMockPredictions(mockPredictors, mockGames).filter(p => p.predictor.id === user.id),
-    [user.id]
+  const userSlips = useMemo(
+    () => slips.filter(s => s.predictor.id === user.id),
+    [slips, user.id]
   )
 
-  const ongoingTipsTotal = useMemo(() => userPredictions.filter(p => p.status === 'pending').length, [userPredictions])
-  const previousTipsTotal = useMemo(() => userPredictions.filter(p => p.status !== 'pending').length, [userPredictions])
+  const ongoingTipsTotal = useMemo(() => userSlips.filter(s => s.status === 'pending').length, [userSlips])
+  const previousTipsTotal = useMemo(() => userSlips.filter(s => s.status !== 'pending').length, [userSlips])
 
-  const filteredPredictions = useMemo(() => {
-    let list = userPredictions
+  const filteredSlips = useMemo(() => {
+    let list = userSlips
     
     // Tab Filter
-    if (activeTab === 'ongoing') list = list.filter(p => p.status === 'pending')
-    if (activeTab === 'previous') list = list.filter(p => p.status !== 'pending')
+    if (activeTab === 'ongoing') list = list.filter(s => s.status === 'pending')
+    if (activeTab === 'previous') list = list.filter(s => s.status !== 'pending')
     
     // Search Filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase()
-      list = list.filter(p => 
-        p.game.homeTeam.toLowerCase().includes(term) || 
-        p.game.awayTeam.toLowerCase().includes(term) ||
-        p.game.league.toLowerCase().includes(term)
+      list = list.filter(s => 
+        s.title.toLowerCase().includes(term) ||
+        s.legs.some(leg => 
+          leg.game.homeTeam.toLowerCase().includes(term) || 
+          leg.game.awayTeam.toLowerCase().includes(term) ||
+          leg.game.league.toLowerCase().includes(term)
+        )
       )
     }
     
     // Sport Filter
     if (sportFilter !== 'all') {
-      list = list.filter(p => p.game.sport === sportFilter)
+      list = list.filter(s => s.legs.some(leg => leg.game.sport === sportFilter))
     }
     
     return list
-  }, [userPredictions, activeTab, searchTerm, sportFilter])
+  }, [userSlips, activeTab, searchTerm, sportFilter])
 
-  const paginatedPredictions = useMemo(() => {
+  const paginatedSlips = useMemo(() => {
     const start = (page - 1) * itemsPerPage
-    return filteredPredictions.slice(start, start + itemsPerPage)
-  }, [filteredPredictions, page, itemsPerPage])
+    return filteredSlips.slice(start, start + itemsPerPage)
+  }, [filteredSlips, page, itemsPerPage])
 
-  const totalPages = Math.ceil(filteredPredictions.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredSlips.length / itemsPerPage)
 
   return (
     <div className="max-w-[1920px] mx-auto px-4 md:px-8 py-10">
@@ -346,9 +293,9 @@ export default function Profile() {
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-1">
-                  {paginatedPredictions.length > 0 ? (
-                    paginatedPredictions.map(p => <PredictionListItem key={p.id} prediction={p} />)
+                <div className="flex flex-col gap-2">
+                  {paginatedSlips.length > 0 ? (
+                    paginatedSlips.map(s => <SlipListItem key={s.id} slip={s} />)
                   ) : (
                     <div className="py-24 text-center opacity-30 italic">
                       <Search className="w-16 h-16 mx-auto mb-6 opacity-5" />
@@ -360,10 +307,10 @@ export default function Profile() {
             </div>
 
             {/* Digital Pagination */}
-            {(activeTab === 'ongoing' || activeTab === 'previous') && filteredPredictions.length > 0 && (
+            {(activeTab === 'ongoing' || activeTab === 'previous') && filteredSlips.length > 0 && (
               <div className="bg-obsidian text-white p-5 flex items-center justify-between border-t-4 border-accent">
                 <span className="text-[10px] font-black italic text-accent uppercase tracking-widest">
-                  LIST_TOTAL: {filteredPredictions.length} NODES
+                  LIST_TOTAL: {filteredSlips.length} NODES
                 </span>
                 <div className="flex items-center gap-6">
                   <button 

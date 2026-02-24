@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
@@ -11,9 +12,16 @@ import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import { UIProvider, useUI } from './context/UIContext'
 import SlipBuilder from './components/SlipBuilder'
+import { mockPredictors } from './data/mockPredictors'
+import { mockGames } from './data/mockGames'
+import { generateMockSlips } from './data/mockSlips'
+import Notifications from './pages/Notifications'
 
 function AppContent() {
   const { isSlipBuilderOpen, closeSlipBuilder } = useUI()
+  
+  // Initialize mock slips once
+  const slips = useMemo(() => generateMockSlips(mockPredictors, mockGames), [])
   
   return (
     <div className="min-h-screen flex flex-col bg-workspace text-obsidian selection:bg-accent selection:text-obsidian">
@@ -33,7 +41,8 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/live" element={<Live />} />
             <Route path="/predictors" element={<Predictors />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile slips={slips} />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -1,8 +1,8 @@
 import { MoreHorizontal, Heart, MessageSquare, ChevronRight, Lock, Target } from 'lucide-react'
-import type { Prediction } from '../data/mockPredictions'
+import type { PredictionEquivalent } from '../data/mockSlips'
 
 interface PredictionCardProps {
-  prediction: Prediction
+  prediction: PredictionEquivalent
 }
 
 export default function PredictionCard({ prediction: p }: PredictionCardProps) {

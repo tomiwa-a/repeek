@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Home, Radio, User, Users, Plus } from 'lucide-react'
+import { Home, Radio, User, Users, Plus, Bell } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 
 export default function Sidebar() {
@@ -8,6 +8,7 @@ export default function Sidebar() {
     { icon: Home, label: 'HOME', to: '/' },
     { icon: Radio, label: 'LIVESCORE', to: '/live' },
     { icon: Users, label: 'LEADERBOARD', to: '/predictors' },
+    { icon: Bell, label: 'NOTIFICATIONS', to: '/notifications', badge: 2 },
     { icon: User, label: 'PROFILE', to: '/profile' },
   ]
 
@@ -26,7 +27,12 @@ export default function Sidebar() {
                 }
               >
                 <item.icon className="w-4 h-4" />
-                <span>{item.label}</span>
+                <span className="flex-1">{item.label}</span>
+                {item.badge && (
+                  <span className="bg-accent text-obsidian text-[8px] font-black px-1.5 py-0.5 rounded-none leading-none animate-pulse">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>

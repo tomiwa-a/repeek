@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 import { mockPredictors } from '../data/mockPredictors'
 import { mockGames } from '../data/mockGames'
-import { generateMockPredictions } from '../data/mockPredictions'
+import { generateMockSlips, flattenSlips } from '../data/mockSlips'
 import PredictionCard from './PredictionCard'
 
 export default function PredictionsFeed() {
   const predictions = useMemo(
-    () => generateMockPredictions(mockPredictors, mockGames),
+    () => flattenSlips(generateMockSlips(mockPredictors, mockGames)),
     []
   )
 
