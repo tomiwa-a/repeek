@@ -1,143 +1,128 @@
+import { MoreHorizontal, Heart, MessageSquare, ChevronRight, Lock, Target } from 'lucide-react'
 import type { Prediction } from '../data/mockPredictions'
-import { formatDistanceToNow } from 'date-fns'
-import { Heart, MessageSquare, Lock, TrendingUp, MoreHorizontal } from 'lucide-react'
 
 interface PredictionCardProps {
   prediction: Prediction
 }
 
-export default function PredictionCard({ prediction }: PredictionCardProps) {
-  const { predictor, game, pickLabel, confidence, odds, analysis, timestamp, likes, comments, isPremium, status } = prediction
+export default function PredictionCard({ prediction: p }: PredictionCardProps) {
+  const { 
+    game, predictor, pickLabel, odds, confidence, analysis, 
+    likes, comments, isPremium, status = 'pending'
+  } = p
 
-  const getConfidenceBadge = () => {
-    const badges = {
-      low: 'neutral-badge',
-      medium: 'stat-badge bg-amber-50 text-amber-700 border-amber-100',
-      high: 'win-badge'
-    }
-    return badges[confidence]
-  }
-
-  const getStatusBadge = () => {
-    if (!status || status === 'pending') return null
-    if (status === 'won') return <span className="win-badge">Won</span>
-    return <span className="loss-badge">Lost</span>
-  }
+  const { homeTeam, awayTeam, homeScore = 0, awayScore = 0, league, isLive } = game
+  const { displayName: predictorName, winRate } = predictor
 
   return (
-    <div className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer group">
-      {/* Header - Predictor Info */}
-      <div className="flex items-start justify-between mb-4">
+    <div className="bg-white border-2 border-obsidian p-5 shadow-sm hover:-translate-x-1 hover:-translate-y-1 hover:shadow-md transition-all group relative">
+      {/* Header Info */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-obsidian/5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-workspace border border-border flex items-center justify-center flex-shrink-0">
-            <span className="font-bold text-secondary text-xs">
-              {predictor.displayName.substring(0, 1).toUpperCase()}
-            </span>
+          <div className="w-8 h-8 bg-workspace border border-obsidian/10 flex items-center justify-center font-black text-xs italic">
+            {predictorName.charAt(0).toUpperCase()}
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <p className="text-[13px] font-semibold text-secondary group-hover:text-primary transition-colors">
-                {predictor.username}
-              </p>
-              {predictor.isPremium && <span className="text-[10px]">💎</span>}
-              <span className="text-[11px] text-text-muted font-medium bg-workspace px-1.5 py-0.5 rounded">
-                {predictor.winRate.toFixed(0)}% WR
-              </span>
-            </div>
-            <p className="text-[11px] text-text-muted font-medium">
-              {formatDistanceToNow(timestamp, { addSuffix: true })}
-            </p>
+            <h3 className="text-[11px] font-black text-obsidian uppercase italic leading-none mb-1">
+              {predictorName}
+            </h3>
+            <span className="text-[10px] font-bold text-text-muted border border-obsidian/10 px-1 bg-workspace">
+              {winRate}% WR
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {getStatusBadge()}
-          <button className="text-text-muted hover:text-secondary h-8 w-8 flex items-center justify-center rounded-md hover:bg-workspace">
+          {status === 'won' && <span className="win-badge italic">WIN</span>}
+          {status === 'lost' && <span className="loss-badge italic">LOSS</span>}
+          <button className="p-1 hover:bg-workspace transition-colors text-obsidian">
             <MoreHorizontal className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Game Info */}
-      <div className="bg-workspace/50 border border-border-subtle p-3 rounded-lg mb-4">
-        <div className="flex items-center justify-between mb-3 text-[11px] font-bold text-text-muted uppercase tracking-wider">
-          <span>{game.league}</span>
-          {game.isLive && (
-            <div className="flex items-center gap-1.5 text-red-600">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-              </span>
-              <span>LIVE</span>
+      {/* Game Content */}
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] font-black text-obsidian/40 tracking-widest uppercase italic">
+            {league}
+          </span>
+          {isLive && (
+            <div className="flex items-center gap-1.5 bg-obsidian px-2 py-0.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+              <span className="text-[9px] font-black text-white italic">LIVE_FEED</span>
             </div>
           )}
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-1">
-            <p className="text-[13px] font-semibold text-secondary">{game.homeTeam}</p>
-            <p className="text-[13px] font-semibold text-secondary">{game.awayTeam}</p>
+
+        <div className="bg-workspace border border-obsidian/10 p-3 flex flex-col gap-3 font-black">
+          <div className="flex items-center justify-between">
+            <span className="text-sm italic uppercase tracking-tighter text-obsidian">{homeTeam}</span>
+            <span className="font-mono text-sm bg-obsidian text-white px-2">
+              {isLive ? homeScore : '0'}
+            </span>
           </div>
-          {game.isLive && (
-            <div className="flex flex-col items-end gap-1">
-              <p className="text-lg font-bold text-primary">{game.homeScore}</p>
-              <p className="text-lg font-bold text-primary">{game.awayScore}</p>
-            </div>
-          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm italic uppercase tracking-tighter text-obsidian">{awayTeam}</span>
+            <span className="font-mono text-sm bg-obsidian text-white px-2">
+              {isLive ? awayScore : '0'}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Prediction Details */}
-      <div className="mb-5">
-        <div className="flex items-center gap-2 flex-wrap mb-2.5">
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/5 text-primary rounded-md">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span className="text-[12px] font-bold uppercase tracking-tight">
+      <div className="space-y-3 mb-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="bg-accent border border-obsidian px-2 py-1 flex items-center gap-2">
+            <Target className="w-3.5 h-3.5 text-obsidian" />
+            <span className="text-[11px] font-black uppercase italic tracking-tighter text-obsidian">
               {pickLabel}
             </span>
           </div>
-          <span className="text-[13px] font-bold text-secondary">@ {odds.toFixed(2)}</span>
-          <span className={getConfidenceBadge()}>
-            {confidence} confidence
-          </span>
-          {isPremium && (
-            <span className="stat-badge bg-primary/10 text-primary border-transparent">
-              <Lock className="w-3 h-3 mr-1" /> Premium
-            </span>
-          )}
-        </div>
-        
-        {isPremium ? (
-          <div className="p-4 bg-workspace border border-dashed border-border rounded-lg text-center">
-            <div className="flex flex-col items-center gap-2">
-              <div className="bg-white p-2 rounded-full shadow-sm border border-border">
-                <Lock className="w-4 h-4 text-primary" />
-              </div>
-              <p className="text-xs font-semibold text-secondary">Unlock full analysis</p>
-              <p className="text-[11px] text-text-muted">Available to premium members only</p>
-            </div>
+          <div className="bg-white border border-obsidian px-2 py-1 flex items-center gap-2">
+            <span className="text-[11px] font-black font-mono text-obsidian">@{odds.toFixed(2)}</span>
           </div>
-        ) : (
-          <p className="text-[13px] text-text-muted leading-relaxed font-medium">
-            {analysis}
-          </p>
-        )}
+          <div className={`px-2 py-1 border border-obsidian text-[10px] font-black uppercase italic tracking-tighter ${
+            confidence === 'high' ? 'bg-obsidian text-white' : 'bg-workspace text-obsidian'
+          }`}>
+            {confidence.toUpperCase()}_CONFIDENCE
+          </div>
+        </div>
+        <p className="text-[11px] font-bold text-zinc-500 italic leading-snug">
+          {analysis}
+        </p>
       </div>
 
       {/* Engagement */}
-      <div className="flex items-center justify-between pt-4 border-t border-border-subtle">
-        <div className="flex items-center gap-5">
-          <button className="flex items-center gap-1.5 text-text-muted hover:text-red-500 transition-colors font-semibold text-[12px]">
+      <div className="flex items-center justify-between pt-4 border-t border-obsidian/5">
+        <div className="flex items-center gap-4">
+          <button className="flex items-center gap-1.5 text-obsidian hover:text-accent transition-colors">
             <Heart className="w-4 h-4" />
-            <span>{likes}</span>
+            <span className="text-[11px] font-black font-mono text-obsidian">{likes}</span>
           </button>
-          <button className="flex items-center gap-1.5 text-text-muted hover:text-primary transition-colors font-semibold text-[12px]">
+          <button className="flex items-center gap-1.5 text-obsidian hover:text-accent transition-colors">
             <MessageSquare className="w-4 h-4" />
-            <span>{comments}</span>
+            <span className="text-[11px] font-black font-mono text-obsidian">{comments}</span>
           </button>
         </div>
-        <button className="text-[12px] text-primary font-bold hover:text-primary-hover transition-colors">
-          View Detail
+        <button className="text-[11px] font-black italic uppercase hover:text-accent flex items-center gap-1 text-obsidian">
+          VIEW_DATA <ChevronRight className="w-3 h-3" />
         </button>
       </div>
+
+      {/* Premium Mask */}
+      {isPremium && (
+        <div className="absolute inset-0 bg-obsidian/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center border-2 border-accent">
+          <div className="w-12 h-12 bg-accent border-2 border-obsidian mb-4 flex items-center justify-center -rotate-12">
+            <Lock className="w-6 h-6 text-obsidian" />
+          </div>
+          <h4 className="text-xl font-black text-white italic uppercase tracking-tighter mb-2">PREMIUM ANALYSIS</h4>
+          <p className="text-[11px] text-zinc-400 font-bold mb-6 italic uppercase leading-tight">
+            THIS CONTENT IS RESTRICTED TO PREMIUM USERS
+          </p>
+          <button className="btn-volt w-full">UPGRADE TO ACCESS</button>
+        </div>
+      )}
     </div>
   )
 }

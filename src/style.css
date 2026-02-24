@@ -1,109 +1,95 @@
 @import "tailwindcss";
 
 @theme {
-  /* Linear-inspired Light Palette */
+  /* High-Contrast Elite Palette (No Gradients) */
   --color-background: #ffffff;
-  --color-workspace: #f7f8f9;
+  --color-workspace: #f4f4f5;
   --color-surface: #ffffff;
-  --color-surface-hover: #f1f3f5;
-  --color-primary: #5e6ad2; /* Sophisticated Purple */
-  --color-primary-hover: #4e59c1;
-  --color-secondary: #0f172a; /* Slate 900 for high contrast text */
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-border-subtle: #f1f5f9;
+  --color-surface-hover: #fafafa;
+  
+  --color-obsidian: #000000;
+  --color-obsidian-soft: #18181b;
+  
+  --color-primary: #000000; /* Flat Obsidian */
+  --color-accent: #ceff00;  /* Volt Green */
+  --color-accent-hover: #bde600;
+  
+  --color-text: #000000;
+  --color-text-muted: #71717a;
+  --color-border: #000000; /* Sharp Black Borders */
+  --color-border-subtle: #e4e4e7;
 
   /* Typography */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  /* Hard Radii */
+  --radius-sm: 0px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
 
-  /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* Sharp Shadows */
+  --shadow-sm: 2px 2px 0px 0px rgba(0,0,0,1);
+  --shadow-md: 4px 4px 0px 0px rgba(0,0,0,1);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-
-  /* Animations */
-  --animate-fade-in: fadeIn 0.3s ease-out;
-  --animate-slide-up: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  @keyframes slideUp {
-    0% {
-      transform: translateY(12px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
+  /* Technical Animations */
+  --animate-glitch: glitch 0.2s ease-in-out;
+  
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
   }
 }
 
 @layer base {
   body {
-    @apply bg-background text-text font-sans antialiased text-[14px] leading-relaxed;
+    @apply bg-background text-text font-sans antialiased text-[14px] leading-tight;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-semibold tracking-tight text-secondary;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black tracking-tighter text-obsidian uppercase italic;
   }
 }
 
 @layer utilities {
-  .grid-pattern {
-    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-    background-size: 24px 24px;
+  .dot-matrix {
+    background-image: radial-gradient(#d4d4d8 0.5px, transparent 0.5px);
+    background-size: 16px 16px;
   }
 
-  .compact-card {
-    @apply bg-surface border border-border rounded-md p-4 shadow-sm transition-all hover:shadow-md;
-  }
-
-  .data-grid {
-    @apply grid gap-4;
+  .bento-card {
+    @apply bg-white border-2 border-obsidian p-5 shadow-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-md;
   }
 
   .stat-badge {
-    @apply inline-flex items-center px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider rounded-full border;
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter border border-obsidian leading-none bg-white;
   }
 
   .win-badge {
-    @apply inline-flex items-center px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider rounded-full border bg-green-50 text-green-700 border-green-200;
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter border border-obsidian leading-none bg-accent text-obsidian;
   }
 
   .loss-badge {
-    @apply inline-flex items-center px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider rounded-full border bg-red-50 text-red-700 border-red-200;
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter border border-obsidian leading-none bg-obsidian text-white;
   }
 
-  .neutral-badge {
-    @apply inline-flex items-center px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider rounded-full border bg-slate-50 text-slate-700 border-slate-200;
+  .btn-elite {
+    @apply bg-obsidian text-white font-black px-6 py-2 border-2 border-obsidian transition-all hover:bg-white hover:text-obsidian active:translate-y-0.5 uppercase italic text-sm;
   }
 
-  .btn-primary {
-    @apply bg-primary text-white font-medium px-4 py-2 rounded-md transition-colors hover:bg-primary-hover;
+  .btn-volt {
+    @apply bg-accent text-obsidian font-black px-6 py-2 border-2 border-obsidian transition-all hover:bg-obsidian hover:text-white uppercase italic text-sm;
   }
 
   .nav-link {
-    @apply flex items-center gap-3 px-3 py-2 text-text-muted hover:text-text hover:bg-surface-hover rounded-md transition-all font-medium text-sm;
+    @apply flex items-center gap-3 px-3 py-2 text-text-muted hover:text-obsidian hover:bg-workspace border-l-2 border-transparent hover:border-obsidian transition-all font-bold uppercase text-xs;
   }
 
   .nav-link-active {
-    @apply flex items-center gap-3 px-3 py-2 text-primary bg-primary/5 rounded-md font-semibold text-sm;
+    @apply flex items-center gap-3 px-3 py-2 text-obsidian bg-workspace border-l-2 border-obsidian font-black uppercase text-xs;
   }
 }

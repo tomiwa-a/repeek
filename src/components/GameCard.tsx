@@ -1,157 +1,81 @@
-import type { Game } from '../data/mockGames'
-import { format } from 'date-fns'
-import { MessageSquare } from 'lucide-react'
+import { MessageSquare, ChevronRight } from 'lucide-react'
 
 interface GameCardProps {
-  game: Game
+  game: {
+    homeTeam: string
+    awayTeam: string
+    homeScore: number
+    awayScore: number
+    league: string
+    isLive: boolean
+    time: string
+    predictionCount: number
+  }
   compact?: boolean
 }
 
 export default function GameCard({ game, compact = false }: GameCardProps) {
   if (compact) {
     return (
-      <div className="flex items-center justify-between p-3 bg-white border border-border rounded-lg hover:border-primary/30 transition-all cursor-pointer group">
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <p className="text-[12px] font-semibold text-secondary truncate">{game.homeTeam}</p>
-          <p className="text-[12px] font-semibold text-secondary truncate">{game.awayTeam}</p>
-        </div>
-        <div className="flex flex-col items-end gap-0.5">
-          {game.isLive ? (
-            <>
-              <p className="text-[12px] font-bold text-primary leading-none">{game.homeScore}</p>
-              <p className="text-[12px] font-bold text-primary leading-none">{game.awayScore}</p>
-            </>
-          ) : (
-            <span className="text-[10px] font-bold text-text-muted">{format(game.startTime, 'HH:mm')}</span>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  if (game.isLive) {
-    return (
-      <div className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer group">
-        {/* Live Indicator */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
-            {game.league}
-          </span>
-          <div className="flex items-center gap-2 text-red-600">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-            </span>
-            <span className="text-[11px] font-bold uppercase tracking-widest">{game.matchTime}</span>
+      <div className="flex items-center justify-between p-3 bg-white border border-obsidian/10 hover:border-obsidian transition-all cursor-pointer group">
+        <div className="flex flex-col gap-1 flex-1">
+          <div className="flex items-center justify-between pr-4 text-obsidian">
+            <span className="text-[11px] font-black italic uppercase tracking-tighter truncate">{game.homeTeam}</span>
+            <span className="font-mono text-[11px] font-black">{game.isLive ? game.homeScore : '0'}</span>
+          </div>
+          <div className="flex items-center justify-between pr-4 text-obsidian">
+            <span className="text-[11px] font-black italic uppercase tracking-tighter truncate">{game.awayTeam}</span>
+            <span className="font-mono text-[11px] font-black">{game.isLive ? game.awayScore : '0'}</span>
           </div>
         </div>
-
-        {/* Teams and Score */}
-        <div className="space-y-3 mb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">
-              {game.homeTeam}
-            </span>
-            <span className="text-xl font-bold text-secondary">
-              {game.homeScore}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">
-              {game.awayTeam}
-            </span>
-            <span className="text-xl font-bold text-secondary">
-              {game.awayScore}
-            </span>
-          </div>
-        </div>
-
-        {/* Odds */}
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <button className="bg-workspace p-2 rounded-lg text-center transition-colors hover:bg-primary/5">
-            <div className="text-[10px] text-text-muted mb-1 font-bold">1</div>
-            <div className="font-bold text-primary text-sm">{game.odds.home.toFixed(2)}</div>
-          </button>
-          {game.odds.draw && (
-            <button className="bg-workspace p-2 rounded-lg text-center transition-colors hover:bg-primary/5">
-              <div className="text-[10px] text-text-muted mb-1 font-bold">X</div>
-              <div className="font-bold text-secondary text-sm">{game.odds.draw.toFixed(2)}</div>
-            </button>
-          )}
-          <button className="bg-workspace p-2 rounded-lg text-center transition-colors hover:bg-primary/5">
-            <div className="text-[10px] text-text-muted mb-1 font-bold">2</div>
-            <div className="font-bold text-secondary text-sm">{game.odds.away.toFixed(2)}</div>
-          </button>
-        </div>
-
-        {/* Predictions Count */}
-        <div className="flex items-center justify-between text-[11px] font-bold text-text-muted uppercase tracking-widest pt-3 border-t border-border-subtle">
-          <div className="flex items-center gap-1.5">
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>{game.predictionCount} picks</span>
-          </div>
-          <button className="text-primary hover:underline">
-            View Detail
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Upcoming game
-  return (
-    <div className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer group">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
-          {game.league}
-        </span>
-        <span className="text-[11px] font-bold text-text-muted bg-workspace px-2 py-0.5 rounded">
-          {format(game.startTime, 'HH:mm')}
-        </span>
-      </div>
-
-      {/* Teams */}
-      <div className="space-y-3 mb-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">
-            {game.homeTeam}
-          </span>
-          <span className="text-[11px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded leading-none">VS</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">
-            {game.awayTeam}
-          </span>
-        </div>
-      </div>
-
-      {/* Odds */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        <button className="bg-workspace p-2 rounded-lg text-center transition-colors hover:bg-primary/5">
-          <div className="text-[10px] text-text-muted mb-1 font-bold">1</div>
-          <div className="font-bold text-primary text-sm">{game.odds.home.toFixed(2)}</div>
-        </button>
-        {game.odds.draw && (
-          <button className="bg-workspace p-2 rounded-lg text-center transition-colors hover:bg-primary/5">
-            <div className="text-[10px] text-text-muted mb-1 font-bold">X</div>
-            <div className="font-bold text-secondary text-sm">{game.odds.draw.toFixed(2)}</div>
-          </button>
+        {game.isLive && (
+          <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse border border-obsidian/20"></div>
         )}
-        <button className="bg-workspace p-2 rounded-lg text-center transition-colors hover:bg-primary/5">
-          <div className="text-[10px] text-text-muted mb-1 font-bold">2</div>
-          <div className="font-bold text-secondary text-sm">{game.odds.away.toFixed(2)}</div>
-        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white border-2 border-obsidian p-5 shadow-sm hover:-translate-x-1 hover:-translate-y-1 hover:shadow-md transition-all group relative">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 pb-2 border-b border-obsidian/5">
+        <span className="text-[10px] font-black text-obsidian/40 tracking-widest uppercase italic">{game.league}</span>
+        {game.isLive ? (
+          <div className="flex items-center gap-1.5 bg-obsidian px-2 py-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+            <span className="text-[9px] font-black text-white italic">LIVE MATCH</span>
+          </div>
+        ) : (
+          <div className="bg-workspace border border-obsidian/10 px-2 py-1 text-obsidian/40">
+            <span className="text-[9px] font-black uppercase tracking-widest">{game.time}</span>
+          </div>
+        )}
       </div>
 
-      {/* Predictions Count */}
-      <div className="flex items-center justify-between text-[11px] font-bold text-text-muted uppercase tracking-widest pt-3 border-t border-border-subtle">
-        <div className="flex items-center gap-1.5">
-          <MessageSquare className="w-3.5 h-3.5" />
-          <span>{game.predictionCount} picks</span>
+      {/* Match Content */}
+      <div className="space-y-4 mb-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors">{game.homeTeam}</h3>
+          <div className="bg-obsidian text-white w-10 h-10 flex items-center justify-center font-mono text-xl font-black italic">
+            {game.isLive ? game.homeScore : '0'}
+          </div>
         </div>
-        <button className="text-primary hover:underline">
-          Predict Now
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors">{game.awayTeam}</h3>
+          <div className="bg-obsidian text-white w-10 h-10 flex items-center justify-center font-mono text-xl font-black italic">
+            {game.isLive ? game.awayScore : '0'}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Info */}
+      <div className="flex items-center justify-between pt-4 border-t border-obsidian/5">
+        <div className="flex items-center gap-1.5 text-obsidian/40 text-[10px] font-black uppercase italic">
+          <MessageSquare className="w-3.5 h-3.5" />
+          <span>{game.predictionCount} PICKS</span>
+        </div>
+        <button className="text-[10px] font-black italic uppercase hover:text-accent flex items-center gap-1 text-obsidian">
+          MATCH DETAILS <ChevronRight className="w-3 h-3" />
         </button>
       </div>
     </div>

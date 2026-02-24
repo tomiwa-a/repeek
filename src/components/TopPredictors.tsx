@@ -2,34 +2,22 @@ import { mockPredictors } from '../data/mockPredictors'
 import PredictorCard from './PredictorCard'
 
 export default function TopPredictors() {
-  // Sort by win rate and take top 10
-  const topPredictors = [...mockPredictors]
-    .sort((a, b) => b.winRate - a.winRate)
-    .slice(0, 10)
-
   return (
-    <div className="bg-white border border-border rounded-xl px-4 py-5 shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-secondary">
-          Leaderboard
-        </h2>
-        <button className="text-[11px] font-bold text-primary uppercase tracking-widest hover:underline">
-          View All
-        </button>
+    <div className="bg-white border-2 border-obsidian p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-6 pb-2 border-b border-obsidian/5 text-obsidian">
+        <h2 className="text-xs font-black tracking-widest uppercase italic">TOP PREDICTORS</h2>
+        <span className="text-[9px] font-mono font-black text-accent bg-obsidian px-1">LIVE</span>
       </div>
-
-      {/* List */}
-      <div className="flex flex-col gap-2">
-        {topPredictors.map((predictor, index) => (
-          <div key={predictor.id} className="flex items-center gap-3">
-             <span className="text-[11px] font-bold text-text-muted w-3 text-center">
-              {index + 1}
-            </span>
-            <PredictorCard predictor={predictor} compact />
-          </div>
+      
+      <div className="space-y-2">
+        {mockPredictors.slice(0, 5).map((predictor) => (
+          <PredictorCard key={predictor.id} predictor={predictor} compact={true} />
         ))}
       </div>
+
+      <button className="w-full mt-6 btn-elite py-2 text-[10px] tracking-widest">
+        VIEW ALL PREDICTORS
+      </button>
     </div>
   )
 }

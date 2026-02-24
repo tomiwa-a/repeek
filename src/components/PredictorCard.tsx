@@ -1,119 +1,92 @@
-import type { Predictor } from '../data/mockPredictors'
-import { TrendingUp, TrendingDown, UserPlus } from 'lucide-react'
+import { TrendingUp, UserPlus } from 'lucide-react'
 
 interface PredictorCardProps {
-  predictor: Predictor
+  predictor: {
+    username: string
+    displayName: string
+    winRate: number
+    followers: number
+    specialties: string[]
+    isPremium: boolean
+    streak: number
+  }
   compact?: boolean
 }
 
 export default function PredictorCard({ predictor, compact = false }: PredictorCardProps) {
-  const getTrendIcon = () => {
-    if (predictor.streakType === 'win') {
-      return <TrendingUp className="w-3.5 h-3.5 text-green-600" />
-    }
-    return <TrendingDown className="w-3.5 h-3.5 text-red-600" />
-  }
-
   if (compact) {
     return (
-      <div className="flex items-center gap-3 p-2.5 bg-white border border-border rounded-lg hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer group">
-        {/* Avatar */}
-        <div className="w-9 h-9 rounded-full bg-workspace border border-border flex items-center justify-center flex-shrink-0">
-          <span className="font-bold text-secondary text-xs">
-            {predictor.displayName.substring(0, 1).toUpperCase()}
-          </span>
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <p className="font-semibold text-[13px] text-secondary truncate group-hover:text-primary transition-colors">
+      <div className="flex items-center justify-between p-3 bg-white border border-obsidian/10 hover:border-obsidian transition-all group cursor-pointer">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-workspace border border-obsidian/5 flex items-center justify-center font-black text-[10px] italic text-obsidian">
+            {predictor.username.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <p className="text-[11px] font-black uppercase italic text-obsidian leading-none mb-1">
               {predictor.username}
             </p>
-            {predictor.isPremium && (
-              <span className="text-[10px]">💎</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 text-[11px] font-medium text-text-muted">
-            <span className="text-green-600">
-              {predictor.winRate.toFixed(0)}% WR
-            </span>
-            <span>•</span>
-            <span>{predictor.totalPredictions} picks</span>
+            <span className="text-[9px] font-bold text-text-muted">{predictor.winRate}% WR</span>
           </div>
         </div>
-
-        {/* Streak */}
-        <div className="flex items-center gap-1 px-2 py-1 bg-workspace rounded text-[11px] font-bold">
-          {getTrendIcon()}
-          <span className={predictor.streakType === 'win' ? 'text-green-600' : 'text-red-600'}>
-            {predictor.streak}
-          </span>
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-3 h-3 text-accent bg-obsidian" />
+          <span className="text-[10px] font-mono font-black text-obsidian">+{predictor.streak}</span>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group cursor-pointer">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-full bg-workspace border border-border flex items-center justify-center">
-            <span className="font-bold text-secondary text-lg">
-              {predictor.displayName.substring(0, 1).toUpperCase()}
-            </span>
-          </div>
+    <div className="bg-white border-2 border-obsidian p-5 shadow-sm hover:-translate-x-1 hover:-translate-y-1 hover:shadow-md transition-all group relative overflow-hidden">
+      {/* Absolute Rank Mark */}
+      <div className="absolute top-0 right-0 bg-obsidian text-white px-2 py-1 text-[9px] font-black italic tracking-tighter z-10">
+        TOP ANALYST
+      </div>
 
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-workspace border-2 border-obsidian flex items-center justify-center text-xl font-black italic group-hover:bg-accent transition-colors text-obsidian">
+            {predictor.username.charAt(0).toUpperCase()}
+          </div>
           <div>
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-secondary group-hover:text-primary transition-colors">
-                {predictor.username}
-              </p>
-              {predictor.isPremium && <span className="text-xs">💎</span>}
-            </div>
-            <p className="text-[11px] text-text-muted font-bold uppercase tracking-wider">
-              {predictor.followers.toLocaleString()} followers
-            </p>
+            <h3 className="text-base font-black uppercase italic tracking-tighter leading-none mb-1 text-obsidian">
+              {predictor.username}
+            </h3>
+            <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{predictor.displayName}</p>
           </div>
         </div>
-
-        {predictor.isFeatured && (
-          <span className="stat-badge bg-primary/10 text-primary border-transparent">
-            Featured
-          </span>
-        )}
+        {predictor.isPremium && <span className="text-xl">💎</span>}
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-workspace p-2.5 rounded-lg text-center">
-          <div className="text-lg font-bold text-green-600 leading-none mb-1">{predictor.winRate.toFixed(1)}%</div>
-          <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Win Rate</div>
+      <div className="grid grid-cols-2 gap-2 mb-6">
+        <div className="bg-workspace border border-obsidian/10 p-3">
+          <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block mb-1">ACCURACY</span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-xl font-black italic text-obsidian">{predictor.winRate}%</span>
+            {predictor.winRate > 80 && <span className="text-[9px] font-black text-accent bg-obsidian px-1">ELITE</span>}
+          </div>
         </div>
-        <div className="bg-workspace p-2.5 rounded-lg text-center">
-          <div className="text-lg font-bold text-secondary leading-none mb-1">{predictor.wins}</div>
-          <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Wins</div>
-        </div>
-        <div className="bg-workspace p-2.5 rounded-lg text-center">
-          <div className="text-lg font-bold text-secondary leading-none mb-1">{predictor.totalPredictions}</div>
-          <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Total</div>
+        <div className="bg-workspace border border-obsidian/10 p-3">
+          <span className="text-[9px] font-black text-text-muted uppercase tracking-widest block mb-1">FOLLOWERS</span>
+          <span className="text-xl font-black italic text-obsidian">{predictor.followers.toLocaleString()}</span>
         </div>
       </div>
 
       {/* Specialty Tags */}
-      <div className="flex flex-wrap gap-1.5 mb-5">
+      <div className="flex flex-wrap gap-1 mb-6">
         {predictor.specialties.map((specialty, index) => (
-          <span key={index} className="px-2 py-0.5 bg-workspace border border-border-subtle rounded text-[11px] font-bold text-text-muted uppercase tracking-tight">
+          <span key={index} className="text-[9px] font-black text-obsidian uppercase italic border border-obsidian/10 px-1.5 py-0.5 group-hover:border-obsidian transition-colors">
             {specialty}
           </span>
         ))}
       </div>
 
-      {/* Follow Button */}
-      <button className="w-full btn-primary py-2.5 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm shadow-primary/20">
-        <UserPlus className="w-3.5 h-3.5" />
-        Follow Predictor
+      {/* Follow Action */}
+      <button className="w-full btn-volt py-2.5 flex items-center justify-center gap-2 group-hover:scale-[1.02] transition-transform">
+        <UserPlus className="w-4 h-4" />
+        CHOOSE PREDICTOR
       </button>
     </div>
   )
