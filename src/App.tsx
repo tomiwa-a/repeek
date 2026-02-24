@@ -13,6 +13,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import { UIProvider, useUI } from './context/UIContext'
 import SlipBuilder from './components/SlipBuilder'
 import SlipDetail from './components/SlipDetail'
+import ScrollToTop from './components/ScrollToTop'
 import { mockPredictors } from './data/mockPredictors'
 import { mockGames } from './data/mockGames'
 import { generateMockSlips } from './data/mockSlips'
@@ -62,6 +63,7 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <UIProvider>
         <AppContent />
       </UIProvider>

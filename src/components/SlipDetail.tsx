@@ -8,14 +8,27 @@ interface SlipDetailProps {
   slip: Slip | null
 }
 
-export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
+export default function SlipDetail({ isOpen, onClose, slip: rawSlip }: SlipDetailProps) {
   const [expandedLegs, setExpandedLegs] = useState<Record<string, boolean>>({})
 
   const toggleLeg = (id: string) => {
     setExpandedLegs(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  if (!isOpen || !slip) return null
+  if (!isOpen || !rawSlip) return null
+
+  // Normalization Layer: Handle both Slip and PredictionEquivalent
+  const slip: Slip = (rawSlip as any).legs ? (rawSlip as Slip) : {
+    id: (rawSlip as any).slipId || rawSlip.id,
+    title: (rawSlip as any).pickLabel || 'PREDICTION_PROTOCOL',
+    predictor: (rawSlip as any).predictor,
+    legs: [rawSlip as any], // The prediction itself acts as the single leg
+    totalOdds: (rawSlip as any).odds || 0,
+    status: (rawSlip as any).status || 'pending',
+    isPremium: (rawSlip as any).isPremium || false,
+    timestamp: (rawSlip as any).timestamp || new Date(),
+    price: (rawSlip as any).isPremium ? 2.50 : 0
+  }
 
   const isWon = slip.status === 'won'
   const isLost = slip.status === 'lost'

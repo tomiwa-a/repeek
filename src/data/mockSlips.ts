@@ -38,14 +38,21 @@ export function generateMockSlips(predictors: Predictor[], games: Game[]): Slip[
     { type: 'btts-no' as const, label: 'BTTS - No' }
   ]
 
-  // Generate 20 slips
-  for (let i = 0; i < 20; i++) {
-    const predictor = predictors[Math.floor(Math.random() * predictors.length)]
+  // Generate 30 slips
+  for (let i = 0; i < 30; i++) {
+    // For the first 3 slips, force them to be 'pending' for the first predictor
+    const forcePending = i < 3
+    const predictor = forcePending ? predictors[0] : predictors[Math.floor(Math.random() * predictors.length)]
     const numLegs = Math.floor(Math.random() * 3) + 1 // 1-3 legs per slip
     const slipLegs: Leg[] = []
     
     for (let j = 0; j < numLegs; j++) {
-      const game = games[Math.floor(Math.random() * games.length)]
+      // If forcing pending, pick an upcoming game (id starts with 'u')
+      const upcomingGames = games.filter(g => !g.isLive)
+      const game = forcePending 
+        ? upcomingGames[Math.floor(Math.random() * upcomingGames.length)]
+        : games[Math.floor(Math.random() * games.length)]
+      
       const pick = pickTypes[Math.floor(Math.random() * pickTypes.length)]
       
       slipLegs.push({
@@ -55,16 +62,18 @@ export function generateMockSlips(predictors: Predictor[], games: Game[]): Slip[
         pickLabel: pick.label,
         odds: Number((Math.random() * 2 + 1.2).toFixed(2)),
         confidence: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as any,
-        status: game.isLive ? (Math.random() > 0.5 ? 'won' : 'lost') : 'pending',
-        analysis: 'TECHNICAL_ANALYSIS_PROTOCOL_ACTIVE: Leg matches historical form patterns.',
+        status: forcePending ? 'pending' : (game.isLive ? (Math.random() > 0.5 ? 'won' : 'lost') : 'pending'),
+        analysis: 'TECHNICAL_ANALYSIS_PROTOCOL_ACTIVE: Market inefficiency detected in pricing models.',
         likes: Math.floor(Math.random() * 150),
         comments: Math.floor(Math.random() * 40)
       })
     }
 
     const totalOdds = slipLegs.reduce((acc, leg) => acc * leg.odds, 1)
-    const overallStatus = slipLegs.every(l => l.status === 'won') ? 'won' : 
-                         slipLegs.some(l => l.status === 'lost') ? 'lost' : 'pending'
+    const overallStatus = forcePending ? 'pending' : (
+      slipLegs.every(l => l.status === 'won') ? 'won' : 
+      slipLegs.some(l => l.status === 'lost') ? 'lost' : 'pending'
+    )
 
     slips.push({
       id: `slip-${i}`,
