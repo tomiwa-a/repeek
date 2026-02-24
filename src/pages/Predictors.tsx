@@ -1,6 +1,6 @@
 import { mockPredictors } from '../data/mockPredictors'
 import PredictorCard from '../components/PredictorCard'
-import { Trophy, TrendingUp, Users, Terminal, Search, Filter, ChevronRight, Activity, Zap, Shield } from 'lucide-react'
+import { Trophy, Users, Search, Filter, ChevronRight, Activity, Zap, Shield } from 'lucide-react'
 import { useState, useMemo } from 'react'
 
 export default function Predictors() {
