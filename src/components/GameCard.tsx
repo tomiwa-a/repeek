@@ -36,46 +36,46 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
   }
 
   return (
-    <div className="bg-white border-2 border-obsidian p-5 shadow-sm hover:-translate-x-1 hover:-translate-y-1 hover:shadow-md transition-all group relative">
+    <div className="bg-white border-2 border-obsidian p-3 shadow-sm hover-glitch scanline-card transition-all group relative overflow-hidden flex flex-col h-full font-sans antialiased cursor-pointer">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 pb-2 border-b border-obsidian/5">
-        <span className="text-[10px] font-black text-obsidian/40 tracking-widest uppercase italic">{game.league}</span>
+      <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-obsidian/5">
+        <span className="text-[8px] font-black text-obsidian/40 tracking-widest uppercase italic">{game.league}</span>
         {game.isLive ? (
-          <div className="flex items-center gap-1.5 bg-obsidian px-2 py-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
-            <span className="text-[9px] font-black text-white italic">LIVE MATCH</span>
+          <div className="flex items-center gap-1.5 bg-obsidian px-1.5 py-0.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
+            <span className="text-[8px] font-black text-white italic">LIVE_MATCH</span>
           </div>
         ) : (
-          <div className="bg-workspace border border-obsidian/10 px-2 py-1 text-obsidian/40">
-            <span className="text-[9px] font-black uppercase tracking-widest">{game.time}</span>
+          <div className="bg-workspace border border-obsidian/10 px-1.5 py-0.5 text-obsidian/40">
+            <span className="text-[8px] font-black uppercase tracking-widest">{game.time}</span>
           </div>
         )}
       </div>
 
       {/* Match Content */}
-      <div className="space-y-4 mb-6">
+      <div className="space-y-2.5 mb-4 flex-1">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors">{game.homeTeam}</h3>
-          <div className="bg-obsidian text-white w-10 h-10 flex items-center justify-center font-mono text-xl font-black italic">
+          <h3 className="text-sm font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors truncate pr-2">{game.homeTeam}</h3>
+          <div className="bg-obsidian text-white w-8 h-8 flex items-center justify-center font-mono text-sm font-black italic shrink-0">
             {game.isLive ? game.homeScore : '0'}
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors">{game.awayTeam}</h3>
-          <div className="bg-obsidian text-white w-10 h-10 flex items-center justify-center font-mono text-xl font-black italic">
+          <h3 className="text-sm font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors truncate pr-2">{game.awayTeam}</h3>
+          <div className="bg-obsidian text-white w-8 h-8 flex items-center justify-center font-mono text-sm font-black italic shrink-0">
             {game.isLive ? game.awayScore : '0'}
           </div>
         </div>
       </div>
 
       {/* Footer Info */}
-      <div className="flex items-center justify-between pt-4 border-t border-obsidian/5">
-        <div className="flex items-center gap-1.5 text-obsidian/40 text-[10px] font-black uppercase italic">
-          <MessageSquare className="w-3.5 h-3.5" />
-          <span>{game.predictionCount} PICKS</span>
+      <div className="flex items-center justify-between pt-3 border-t border-obsidian/5">
+        <div className="flex items-center gap-1.5 text-obsidian/40 text-[8px] font-black uppercase italic">
+          <MessageSquare className="w-3 h-3" />
+          <span>{game.predictionCount}_PICKS</span>
         </div>
-        <button className="text-[10px] font-black italic uppercase hover:text-accent flex items-center gap-1 text-obsidian">
-          MATCH DETAILS <ChevronRight className="w-3 h-3" />
+        <button className="text-[8px] font-black italic uppercase hover:text-accent flex items-center gap-1 text-obsidian group/btn">
+          MATCH_DETAILS <ChevronRight className="w-2.5 h-2.5 group-hover/btn:translate-x-0.5 transition-transform" />
         </button>
       </div>
     </div>

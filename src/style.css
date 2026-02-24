@@ -92,4 +92,43 @@
   .nav-link-active {
     @apply flex items-center gap-3 px-3 py-2 text-obsidian bg-workspace border-l-2 border-obsidian font-black uppercase text-xs;
   }
+
+  /* 
+  .hover-glitch {
+    @apply transition-transform active:scale-95 hover:animate-glitch;
+  }
+
+  .scanline-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanline-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      rgba(163, 255, 0, 0) 50%,
+      rgba(163, 255, 0, 0.03) 50.5%,
+      rgba(163, 255, 0, 0) 51%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .scanline-card:hover::after {
+    opacity: 1;
+    animation: scanline 10s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+  }
+  */
 }
