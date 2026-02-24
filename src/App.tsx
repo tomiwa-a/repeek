@@ -6,6 +6,9 @@ import Home from './pages/Home'
 import Live from './pages/Live'
 import Predictors from './pages/Predictors'
 import Profile from './pages/Profile'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
 
 function App() {
   return (
@@ -28,6 +31,9 @@ function App() {
               <Route path="/live" element={<Live />} />
               <Route path="/predictors" element={<Predictors />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
             </Routes>
           </main>
         </div>

@@ -62,10 +62,14 @@ export default function Header() {
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-accent border border-obsidian"></span>
             </button>
 
-            <button className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5">
+            <Link to="/login" className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
               <User className="w-3.5 h-3.5" />
-              <span className="text-[10px] leading-none">ACCOUNT</span>
-            </button>
+              <span className="text-[10px] leading-none">LOGIN</span>
+            </Link>
+
+            <Link to="/register" className="hidden sm:flex items-center gap-2 btn-volt px-4 py-1.5 uppercase">
+              <span className="text-[10px] leading-none">SIGN UP</span>
+            </Link>
 
             {/* Mobile Menu Toggle */}
             <button 
