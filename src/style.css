@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  /* High-Contrast Elite Palette (No Gradients) */
+  --color-background: #ffffff;
+  --color-workspace: #f4f4f5;
+  --color-surface: #ffffff;
+  --color-surface-hover: #fafafa;
+  
+  --color-obsidian: #000000;
+  --color-obsidian-soft: #18181b;
+  
+  --color-primary: #000000; /* Flat Obsidian */
+  --color-accent: #a3ff00;  /* Electric Green (No Lemon) */
+  --color-accent-hover: #88ee00;
+  
+  --color-text: #000000;
+  --color-text-muted: #71717a;
+  --color-border: #000000; /* Sharp Black Borders */
+  --color-border-subtle: #e4e4e7;
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  /* Hard Radii */
+  --radius-sm: 0px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+
+  /* Sharp Shadows */
+  --shadow-sm: 2px 2px 0px 0px rgba(0,0,0,1);
+  --shadow-md: 4px 4px 0px 0px rgba(0,0,0,1);
+
+  /* Technical Animations */
+  --animate-glitch: glitch 0.2s ease-in-out;
+  
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text font-sans antialiased text-[14px] leading-tight;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black tracking-tighter text-obsidian uppercase italic;
+  }
+}
+
+@layer utilities {
+  .dot-matrix {
+    background-image: radial-gradient(#d4d4d8 0.5px, transparent 0.5px);
+    background-size: 16px 16px;
+  }
+
+  .bento-card {
+    @apply bg-white border-2 border-obsidian p-5 shadow-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  .stat-badge {
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter border border-obsidian leading-none bg-white;
+  }
+
+  .win-badge {
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter border border-obsidian leading-none bg-accent text-obsidian;
+  }
+
+  .loss-badge {
+    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter border border-obsidian leading-none bg-obsidian text-white;
+  }
+
+  .btn-elite {
+    @apply bg-obsidian text-white font-black px-6 py-2 border-2 border-obsidian transition-all hover:bg-white hover:text-obsidian active:translate-y-0.5 uppercase italic text-sm;
+  }
+
+  .btn-volt {
+    @apply bg-accent text-obsidian font-black px-6 py-2 border-2 border-obsidian transition-all hover:bg-obsidian hover:border-accent hover:text-accent uppercase italic text-sm;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-3 py-2 text-text-muted hover:text-obsidian hover:bg-workspace border-l-2 border-transparent hover:border-obsidian transition-all font-bold uppercase text-xs;
+  }
+
+  .nav-link-active {
+    @apply flex items-center gap-3 px-3 py-2 text-obsidian bg-workspace border-l-2 border-obsidian font-black uppercase text-xs;
+  }
+}
