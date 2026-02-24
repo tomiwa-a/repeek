@@ -9,15 +9,20 @@ export default function Live() {
     .slice(0, 12)
 
   return (
-    <div className="max-w-[1920px] mx-auto px-4 md:px-6 py-6">
+    <div className="max-w-[1920px] mx-auto px-4 md:px-6 py-8">
       {/* Live Games Section */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <Radio className="w-6 h-6 text-red-500" />
-          <h1 className="text-3xl font-black uppercase tracking-tight text-white">
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-secondary">
             Live Matches
           </h1>
-          <span className="text-text-muted">({liveGames.length})</span>
+          <span className="text-sm font-bold text-text-muted bg-workspace px-2 py-0.5 rounded">
+            {liveGames.length}
+          </span>
         </div>
         
         {liveGames.length > 0 ? (
@@ -27,18 +32,20 @@ export default function Live() {
             ))}
           </div>
         ) : (
-          <div className="compact-card text-center py-12">
-            <Radio className="w-12 h-12 text-text-muted mx-auto mb-4" />
-            <p className="text-text-muted">No live matches at the moment</p>
+          <div className="bg-white border border-border rounded-xl text-center py-16 shadow-sm">
+            <Radio className="w-10 h-10 text-text-muted/30 mx-auto mb-4" />
+            <p className="text-sm font-semibold text-text-muted">No live matches at the moment</p>
           </div>
         )}
       </div>
 
       {/* Upcoming Games Section */}
       <div>
-        <div className="flex items-center gap-2 mb-6">
-          <Clock className="w-6 h-6 text-primary" />
-          <h2 className="text-2xl font-black uppercase tracking-tight text-white">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-primary/5 rounded-lg">
+            <Clock className="w-5 h-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold tracking-tight text-secondary">
             Upcoming Matches
           </h2>
         </div>

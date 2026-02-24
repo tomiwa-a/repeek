@@ -15,66 +15,94 @@ export default function Predictors() {
   const sortedPredictors = [...filteredPredictors].sort((a, b) => b.winRate - a.winRate)
 
   return (
-    <div className="max-w-[1920px] mx-auto px-4 md:px-6 py-6">
+    <div className="max-w-[1920px] mx-auto px-4 md:px-6 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Trophy className="w-6 h-6 text-primary" />
-          <h1 className="text-3xl font-black uppercase tracking-tight text-white">
-            Top Predictors
-          </h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-primary/10 rounded-xl">
+            <Trophy className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-secondary leading-tight">
+              Top Predictors
+            </h1>
+            <p className="text-sm font-medium text-text-muted">The best performing pickers on the platform</p>
+          </div>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-4 mb-6 pb-4 border-b border-border">
-        <button
-          onClick={() => setFilter('all')}
-          className={`text-sm font-bold uppercase tracking-wider transition-colors ${
-            filter === 'all' ? 'text-primary' : 'text-text-muted hover:text-white'
-          }`}
-        >
-          All Predictors
-        </button>
-        <button
-          onClick={() => setFilter('featured')}
-          className={`text-sm font-bold uppercase tracking-wider transition-colors ${
-            filter === 'featured' ? 'text-primary' : 'text-text-muted hover:text-white'
-          }`}
-        >
-          <TrendingUp className="w-4 h-4 inline mr-1" />
-          Featured
-        </button>
-        <button
-          onClick={() => setFilter('premium')}
-          className={`text-sm font-bold uppercase tracking-wider transition-colors ${
-            filter === 'premium' ? 'text-primary' : 'text-text-muted hover:text-white'
-          }`}
-        >
-          💎 Premium
-        </button>
+        {/* Filters */}
+        <div className="flex items-center gap-2 p-1 bg-white border border-border rounded-xl shadow-sm self-start">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-1.5 text-[13px] font-semibold rounded-lg transition-all ${
+              filter === 'all' 
+                ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                : 'text-text-muted hover:bg-workspace hover:text-secondary'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('featured')}
+            className={`px-4 py-1.5 text-[13px] font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+              filter === 'featured' 
+                ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                : 'text-text-muted hover:bg-workspace hover:text-secondary'
+            }`}
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            Featured
+          </button>
+          <button
+            onClick={() => setFilter('premium')}
+            className={`px-4 py-1.5 text-[13px] font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+              filter === 'premium' 
+                ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                : 'text-text-muted hover:bg-workspace hover:text-secondary'
+            }`}
+          >
+            💎 Premium
+          </button>
+        </div>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="compact-card text-center">
-          <Users className="w-8 h-8 text-primary mx-auto mb-2" />
-          <div className="text-2xl font-black text-white">{mockPredictors.length}</div>
-          <div className="text-xs text-text-muted uppercase tracking-wider">Total Predictors</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Users className="w-5 h-5 text-blue-600" />
+            </div>
+            <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Community</span>
+          </div>
+          <div className="text-3xl font-bold text-secondary mb-1">{mockPredictors.length}</div>
+          <div className="text-[13px] font-medium text-text-muted">Total Predictors</div>
         </div>
-        <div className="compact-card text-center">
-          <Trophy className="w-8 h-8 text-green-400 mx-auto mb-2" />
-          <div className="text-2xl font-black text-white">
+        
+        <div className="bg-white border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-green-50 rounded-lg">
+              <Trophy className="w-5 h-5 text-green-600" />
+            </div>
+            <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Total Output</span>
+          </div>
+          <div className="text-3xl font-bold text-secondary mb-1">
             {mockPredictors.reduce((sum, p) => sum + p.totalPredictions, 0).toLocaleString()}
           </div>
-          <div className="text-xs text-text-muted uppercase tracking-wider">Total Predictions</div>
+          <div className="text-[13px] font-medium text-text-muted">Verified Predictions</div>
         </div>
-        <div className="compact-card text-center">
-          <TrendingUp className="w-8 h-8 text-primary mx-auto mb-2" />
-          <div className="text-2xl font-black text-white">
+
+        <div className="bg-white border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-primary/5 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Precision</span>
+          </div>
+          <div className="text-3xl font-bold text-secondary mb-1">
             {(mockPredictors.reduce((sum, p) => sum + p.winRate, 0) / mockPredictors.length).toFixed(1)}%
           </div>
-          <div className="text-xs text-text-muted uppercase tracking-wider">Avg Win Rate</div>
+          <div className="text-[13px] font-medium text-text-muted">Avg Success Rate</div>
         </div>
       </div>
 

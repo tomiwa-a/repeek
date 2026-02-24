@@ -10,20 +10,19 @@ import Profile from './pages/Profile'
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        {/* Grid Background */}
-        <div className="fixed inset-0 grid-pattern opacity-20 pointer-events-none -z-10"></div>
+      <div className="min-h-screen flex flex-col bg-workspace">
+        {/* Subtle Grid Background */}
+        <div className="fixed inset-0 grid-pattern opacity-40 pointer-events-none -z-10"></div>
         
         {/* Header */}
         <Header />
         
-        {/* Main Layout */}
-        <div className="flex flex-1">
-          {/* Sidebar */}
+        <div className="flex flex-1 max-w-[1920px] mx-auto w-full relative">
+          {/* Sidebar - Desktop Only */}
           <Sidebar />
           
           {/* Main Content */}
-          <main className="flex-1">
+          <main className="flex-1 min-w-0">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/live" element={<Live />} />
@@ -33,7 +32,6 @@ function App() {
           </main>
         </div>
         
-        {/* Footer */}
         <Footer />
       </div>
     </BrowserRouter>
