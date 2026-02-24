@@ -11,7 +11,7 @@ export default function TopPredictors() {
       
       <div className="space-y-2">
         {mockPredictors.slice(0, 5).map((predictor) => (
-          <PredictorCard key={predictor.id} predictor={predictor} compact={true} />
+          <PredictorCard key={predictor.id} predictor={predictor} />
         ))}
       </div>
 
