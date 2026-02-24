@@ -1,13 +1,7 @@
 import { useState, useMemo } from 'react'
-import { X, Search, Plus, Trash2, Shield, ShieldOff, DollarSign, Calculator } from 'lucide-react'
+import { X, Search, Plus, Trash2, Calculator, Shield, ShieldOff, DollarSign } from 'lucide-react'
 import { mockGames } from '../data/mockGames'
-import type { Game } from '../data/mockGames'
-
-interface SlipLeg {
-  game: Game
-  pick: 'home' | 'draw' | 'away'
-  analysis: string
-}
+import { useUI } from '../context/UIContext'
 
 interface SlipBuilderProps {
   isOpen: boolean
@@ -15,7 +9,13 @@ interface SlipBuilderProps {
 }
 
 export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
-  const [legs, setLegs] = useState<SlipLeg[]>([])
+  const { 
+    builderLegs, 
+    addLegToBuilder, 
+    removeLegFromBuilder, 
+    updateLegInBuilder 
+  } = useUI()
+  
   const [searchTerm, setSearchTerm] = useState('')
   const [price, setPrice] = useState('2.00')
   const [isLocked, setIsLocked] = useState(true)
@@ -27,29 +27,16 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
       (g.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) || 
        g.awayTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
        g.league.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      !legs.find(l => l.game.id === g.id)
+      !builderLegs.find(l => l.game.id === g.id)
     ).slice(0, 5)
-  }, [searchTerm, legs])
-
-  const addLeg = (game: Game) => {
-    setLegs([...legs, { game, pick: 'home', analysis: '' }])
-    setSearchTerm('')
-  }
-
-  const removeLeg = (id: string) => {
-    setLegs(legs.filter(l => l.game.id !== id))
-  }
-
-  const updateLeg = (id: string, updates: Partial<SlipLeg>) => {
-    setLegs(legs.map(l => l.game.id === id ? { ...l, ...updates } : l))
-  }
+  }, [searchTerm, builderLegs])
 
   const totalOdds = useMemo(() => {
-    return legs.reduce((acc, leg) => {
+    return builderLegs.reduce((acc, leg) => {
       const odd = leg.game.odds[leg.pick] || 1
       return acc * odd
     }, 1).toFixed(2)
-  }, [legs])
+  }, [builderLegs])
 
   if (!isOpen) return null
 
@@ -70,7 +57,7 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
             <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none mb-1">PROPOSE_NEW_SLIP</h2>
             <div className="flex gap-4">
               <span className="text-[10px] font-black text-accent uppercase italic">PROTOCOL: V.2.1</span>
-              <span className="text-[10px] font-black text-white/40 uppercase italic">OPERATOR: {legs.length > 0 ? `${legs.length}_LEGS` : 'EMPTY'}</span>
+              <span className="text-[10px] font-black text-white/40 uppercase italic">OPERATOR: {builderLegs.length > 0 ? `${builderLegs.length}_LEGS` : 'EMPTY'}</span>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/10 transition-colors">
@@ -99,7 +86,10 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
                 {availableGames.map(game => (
                   <button 
                     key={game.id}
-                    onClick={() => addLeg(game)}
+                    onClick={() => {
+                        addLegToBuilder(game);
+                        setSearchTerm('');
+                    }}
                     className="w-full flex justify-between items-center p-3 bg-white hover:bg-workspace transition-colors group"
                   >
                     <div className="text-left">
@@ -117,17 +107,17 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
           <section className="space-y-4">
             <h3 className="text-[10px] font-black text-obsidian/40 uppercase tracking-[0.2em] italic">ACTIVE_PROTOCOL_LEGS</h3>
             
-            {legs.length === 0 ? (
+            {builderLegs.length === 0 ? (
               <div className="py-20 border-2 border-dashed border-obsidian/10 flex flex-col items-center justify-center opacity-30">
                 <Calculator className="w-12 h-12 mb-4" />
                 <p className="text-[10px] font-black uppercase tracking-widest">ZERO_ACTIVE_LEGS_DETECTED</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {legs.map((leg, idx) => (
+                {builderLegs.map((leg, idx) => (
                   <div key={leg.game.id} className="bg-workspace border-l-4 border-obsidian p-4 space-y-4 relative group">
                     <button 
-                      onClick={() => removeLeg(leg.game.id)}
+                      onClick={() => removeLegFromBuilder(leg.game.id)}
                       className="absolute top-4 right-4 text-obsidian/20 hover:text-red-500 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -142,7 +132,7 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
                       {(['home', 'draw', 'away'] as const).map(option => (
                         <button
                           key={option}
-                          onClick={() => updateLeg(leg.game.id, { pick: option })}
+                          onClick={() => updateLegInBuilder(leg.game.id, { pick: option })}
                           className={`py-2 text-[10px] font-black uppercase italic border-2 transition-all ${
                             leg.pick === option 
                               ? 'bg-obsidian border-obsidian text-accent' 
@@ -156,7 +146,7 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
 
                     <textarea 
                       value={leg.analysis}
-                      onChange={(e) => updateLeg(leg.game.id, { analysis: e.target.value })}
+                      onChange={(e) => updateLegInBuilder(leg.game.id, { analysis: e.target.value })}
                       placeholder="ENTER_TECHNICAL_ANALYSIS_PROTOCOL..."
                       className="w-full bg-white border border-obsidian/10 p-3 text-[10px] font-bold uppercase italic outline-none focus:border-obsidian min-h-[80px] no-scrollbar"
                     />
@@ -211,7 +201,7 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
             <div className="text-3xl font-black italic text-obsidian leading-none">@{totalOdds}</div>
           </div>
           <button 
-            disabled={legs.length === 0}
+            disabled={builderLegs.length === 0}
             className="btn-volt py-4 px-10 text-xs tracking-widest flex items-center gap-3 disabled:opacity-20 disabled:grayscale transition-all"
             onClick={onClose}
           >

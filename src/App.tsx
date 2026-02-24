@@ -14,6 +14,7 @@ import { UIProvider, useUI } from './context/UIContext'
 import SlipBuilder from './components/SlipBuilder'
 import SlipDetail from './components/SlipDetail'
 import ScrollToTop from './components/ScrollToTop'
+import FloatingSlipButton from './components/FloatingSlipButton'
 import { mockPredictors } from './data/mockPredictors'
 import { mockGames } from './data/mockGames'
 import { generateMockSlips } from './data/mockSlips'
@@ -56,6 +57,7 @@ function AppContent() {
       
       <SlipBuilder isOpen={isSlipBuilderOpen} onClose={closeSlipBuilder} />
       <SlipDetail isOpen={isSlipDetailOpen} onClose={closeSlipDetail} slip={selectedSlip} />
+      <FloatingSlipButton />
     </div>
   )
 }

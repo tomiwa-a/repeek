@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState } from 'react'
 
 import type { Slip } from '../data/mockSlips'
+import type { Game } from '../data/mockGames'
+
+export interface SlipLeg {
+  game: Game
+  pick: 'home' | 'draw' | 'away'
+  analysis: string
+}
 
 interface UIContextType {
   isSlipBuilderOpen: boolean
@@ -10,6 +17,11 @@ interface UIContextType {
   selectedSlip: Slip | null
   openSlipDetail: (slip: Slip) => void
   closeSlipDetail: () => void
+  builderLegs: SlipLeg[]
+  addLegToBuilder: (game: Game) => void
+  removeLegFromBuilder: (gameId: string) => void
+  updateLegInBuilder: (gameId: string, updates: Partial<SlipLeg>) => void
+  clearBuilder: () => void
 }
 
 const UIContext = createContext<UIContextType | undefined>(undefined)
@@ -18,6 +30,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [isSlipBuilderOpen, setIsSlipBuilderOpen] = useState(false)
   const [isSlipDetailOpen, setIsSlipDetailOpen] = useState(false)
   const [selectedSlip, setSelectedSlip] = useState<Slip | null>(null)
+  const [builderLegs, setBuilderLegs] = useState<SlipLeg[]>([])
 
   const openSlipBuilder = () => setIsSlipBuilderOpen(true)
   const closeSlipBuilder = () => setIsSlipBuilderOpen(false)
@@ -32,10 +45,27 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => setSelectedSlip(null), 300) // Delay to match transition
   }
 
+  const addLegToBuilder = (game: Game) => {
+    if (!builderLegs.find(l => l.game.id === game.id)) {
+      setBuilderLegs(prev => [...prev, { game, pick: 'home', analysis: '' }])
+    }
+  }
+
+  const removeLegFromBuilder = (gameId: string) => {
+    setBuilderLegs(prev => prev.filter(l => l.game.id !== gameId))
+  }
+
+  const updateLegInBuilder = (gameId: string, updates: Partial<SlipLeg>) => {
+    setBuilderLegs(prev => prev.map(l => l.game.id === gameId ? { ...l, ...updates } : l))
+  }
+
+  const clearBuilder = () => setBuilderLegs([])
+
   return (
     <UIContext.Provider value={{ 
       isSlipBuilderOpen, openSlipBuilder, closeSlipBuilder,
-      isSlipDetailOpen, selectedSlip, openSlipDetail, closeSlipDetail
+      isSlipDetailOpen, selectedSlip, openSlipDetail, closeSlipDetail,
+      builderLegs, addLegToBuilder, removeLegFromBuilder, updateLegInBuilder, clearBuilder
     }}>
       {children}
     </UIContext.Provider>
