@@ -1,29 +1,16 @@
-import { mockPredictions } from '../data/mockPredictions'
+import { useMemo } from 'react'
+import { generateMockPredictions } from '../data/mockPredictions'
+import { mockPredictors } from '../data/mockPredictors'
+import { mockGames } from '../data/mockGames'
 import PredictionCard from '../components/PredictionCard'
 import LiveGames from '../components/LiveGames'
 import TopPredictors from '../components/TopPredictors'
 
 export default function Home() {
-  // Mapping mock data to expected card format
-  const formattedPredictions = mockPredictions.map(p => ({
-    id: p.id,
-    homeTeam: p.game.homeTeam,
-    awayTeam: p.game.awayTeam,
-    homeScore: p.game.homeScore || 0,
-    awayScore: p.game.awayScore || 0,
-    league: p.game.league,
-    isLive: p.game.isLive,
-    prediction: p.pickLabel,
-    odds: p.odds,
-    confidence: (p.confidence.toLowerCase() as any),
-    analysis: p.analysis,
-    predictorName: p.predictor.username,
-    winRate: p.predictor.winRate,
-    likes: p.likes,
-    comments: p.comments,
-    isPremium: p.isPremium,
-    status: (p.status || 'pending' as any)
-  }))
+  const predictions = useMemo(
+    () => generateMockPredictions(mockPredictors, mockGames),
+    []
+  )
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-12">
@@ -64,7 +51,7 @@ export default function Home() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {formattedPredictions.map((prediction) => (
+              {predictions.slice(0, 6).map((prediction) => (
                 <PredictionCard key={prediction.id} prediction={prediction} />
               ))}
             </div>
@@ -79,7 +66,7 @@ export default function Home() {
           <div className="bg-workspace border-2 border-obsidian p-6">
             <h3 className="text-[11px] font-black tracking-widest uppercase italic mb-4 text-obsidian">PLATFORM STATUS</h3>
             <p className="text-[10px] font-bold text-text-muted italic leading-tight mb-6">
-              REPEEK v4.2.0-STABLE <br />
+              REPEEK v4.2.0 <br />
               UPTIME: 99.99%
             </p>
             <div className="w-full h-1 bg-obsidian/10 relative overflow-hidden">
