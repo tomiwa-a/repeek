@@ -9,6 +9,7 @@ export interface Game {
   homeScore?: number
   awayScore?: number
   matchTime?: string
+  time?: string
   odds: {
     home: number
     draw?: number

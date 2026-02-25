@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { mockGames } from '../data/mockGames'
+import { mockGames, type Game } from '../data/mockGames'
 import { 
   ChevronLeft, 
   Activity, 
@@ -17,6 +17,8 @@ import {
 import { useUI } from '../context/UIContext'
 import SlipListItem from '../components/SlipListItem'
 import type { Slip } from '../data/mockSlips'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 interface MatchDetailProps {
   slips?: Slip[]
@@ -54,9 +56,27 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
 
   const totalPages = Math.ceil(filteredMatchSlips.length / itemsPerPage)
 
+  const convexGame = useQuery(api.games.getGameById, { id: id as string })
+
   const game = useMemo(() => {
-    return mockGames.find(g => g.id === id) || mockGames[0]
-  }, [id])
+    if (!convexGame) return mockGames[0] // Fallback while loading or if not found
+    
+    return {
+      id: convexGame.id,
+      homeTeam: convexGame.homeTeam,
+      awayTeam: convexGame.awayTeam,
+      league: convexGame.league,
+      sport: 'soccer' as const,
+      startTime: new Date(convexGame.commenceTime),
+      isLive: convexGame.isLive,
+      homeScore: convexGame.score?.home ?? 0,
+      awayScore: convexGame.score?.away ?? 0,
+      matchTime: convexGame.isLive ? "LIVE" : undefined,
+      odds: { home: 1.85, draw: 3.40, away: 4.20 }, // Dummy odds
+      predictionCount: Math.floor(Math.random() * 50) + 10,
+      sportKey: convexGame.sportKey
+    } as Game
+  }, [convexGame])
 
   const stats = [
     { label: 'POSSESSION', home: '54%', away: '46%', icon: Activity },

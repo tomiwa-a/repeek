@@ -43,14 +43,58 @@ export const syncUpcomingEvents = action({
   },
 });
 
-export const getUpcomingGames = query({
-  args: {},
-  handler: async (ctx) => {
+export const getGames = query({
+  args: {
+    sportKey: v.optional(v.string()),
+    status: v.optional(v.string()), // "LIVE", "UPCOMING", "ALL"
+    limit: v.number(),
+    offset: v.number(),
+  },
+  handler: async (ctx, args) => {
+    let allGames;
+
+    // Use specific indexes for performance
+    if (args.status === "LIVE") {
+      allGames = await ctx.db
+        .query("games")
+        .withIndex("by_isLive", (q) => q.eq("isLive", true))
+        .collect();
+    } else {
+      allGames = await ctx.db
+        .query("games")
+        .withIndex("by_commenceTime")
+        .collect();
+    }
+
+    // Filter by sportKey if provided
+    let filtered = allGames;
+    if (args.sportKey && args.sportKey !== "ALL_SPORTS") {
+      filtered = filtered.filter(g => g.sportKey === args.sportKey);
+    }
+
+    // Filter by status if "UPCOMING" (LIVE is handled by index above)
+    if (args.status === "UPCOMING") {
+      filtered = filtered.filter(g => !g.isLive);
+    }
+
+    // Re-sort to ensure consistency if needed, though commenceTime index should handle it
+    const total = filtered.length;
+    const paginated = filtered.slice(args.offset, args.offset + args.limit);
+
+    return {
+      games: paginated,
+      total
+    };
+  },
+});
+
+export const getGameById = query({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
     return await ctx.db
       .query("games")
-      .withIndex("by_commenceTime")
-      .order("asc")
-      .take(50);
+      .filter((q) => q.eq(q.field("id"), args.id))
+      .first();
   },
 });
 

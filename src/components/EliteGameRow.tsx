@@ -8,7 +8,7 @@ interface EliteGameRowProps {
     awayScore?: number
     league: string
     isLive: boolean
-    time: string
+    time?: string
     predictionCount: number
     sportKey?: string
   }
@@ -25,7 +25,7 @@ export default function EliteGameRow({ game }: EliteGameRowProps) {
             <span className="text-[10px] font-black italic">''42</span>
           </div>
         ) : (
-          <span className="text-[9px] font-mono font-bold tracking-tighter">{game.time}</span>
+          <span className="text-[9px] font-mono font-bold tracking-tighter">{game.time || '--:--'}</span>
         )}
       </div>
 
