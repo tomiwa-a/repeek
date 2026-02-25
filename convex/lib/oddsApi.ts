@@ -64,21 +64,38 @@ export async function fetchUpcomingEvents(
 }
 
 /**
- * Fetches the odds for games in a specific sport.
- * NOTE: This endpoint costs 1 quota credit per region per market.
- * @param sportKey The key of the sport to fetch (e.g., 'soccer', 'americanfootball_nfl')
+ * Fetches the odds for specific games in a sport.
+ * NOTE: This endpoint costs 3 quota credits (1 region * 3 markets).
+ * @param sportKey The key of the sport to fetch (e.g., 'soccer_uefa_champs_league')
+ * @param eventIds Array of specific match IDs to fetch odds for.
  * @returns Array of GameOdds objects.
  */
-export async function fetchGameOdds(sportKey: string = "soccer_uefa_champs_league"): Promise<GameOdds[]> {
+export async function fetchGameOdds(
+  sportKey: string,
+  eventIds: string[]
+): Promise<GameOdds[]> {
+  if (!eventIds || eventIds.length === 0) {
+    return []; 
+  }
+
   const apiKey = getApiKey();
   
-  // You can adjust regions (eu, us, uk, au) depending on where you want the prices from
-  const url = `${BASE_URL}/sports/${sportKey}/odds/?regions=eu,us&markets=h2h&oddsFormat=decimal&apiKey=${apiKey}`;
+  const params = new URLSearchParams({
+    apiKey,
+    regions: "uk", 
+    markets: "h2h,spreads,totals", 
+    eventIds: eventIds.join(","), 
+    includeLinks: "true",
+    includeSids: "true",
+    includeBetLimits: "true"
+  });
+
+  const url = `${BASE_URL}/sports/${sportKey}/odds?${params.toString()}`;
   
   const response = await fetch(url);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch games from Odds API: ${response.statusText}`);
+    throw new Error(`Failed to fetch odds from Odds API: ${response.statusText}`);
   }
   
   return await response.json();

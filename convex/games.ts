@@ -10,7 +10,6 @@ export const syncUpcomingEvents = action({
   handler: async (ctx) => {
     try {
       // Calculate timestamps for the next 7 days
-      // Calculate timestamps for the next 7 days
       const now = new Date();
       const nextWeek = new Date();
       nextWeek.setDate(now.getDate() + 7);
