@@ -1,7 +1,41 @@
-import { Link } from 'react-router-dom'
-import { Mail, Lock, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Mail, Lock, ChevronRight, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react'
+import { useAuthActions } from "@convex-dev/auth/react"
 
 export default function Login() {
+  const { signIn } = useAuthActions()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+    try {
+      await signIn("password", { email, password, flow: "signIn" })
+      navigate("/")
+    } catch {
+      setError("Invalid credentials. Please check your email and password.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setError(null)
+    try {
+      await signIn("google")
+    } catch {
+      setError("Google sign-in failed. Please try again.")
+    }
+  }
+
   return (
     <div className="min-h-[calc(100vh-140px)] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -23,8 +57,16 @@ export default function Login() {
               </p>
             </div>
 
+            {/* Error */}
+            {error && (
+              <div className="mb-6 flex items-center gap-3 bg-red-50 border-l-4 border-red-600 px-4 py-3">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <p className="text-[10px] font-black uppercase text-red-700 tracking-widest">{error}</p>
+              </div>
+            )}
+
             {/* Form */}
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-obsidian tracking-widest ml-1">
                   EMAIL ADDRESS
@@ -33,6 +75,9 @@ export default function Login() {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-obsidian/30" />
                   <input 
                     type="email" 
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
                     placeholder="operator@repeek.com"
                     className="w-full bg-workspace border-2 border-obsidian px-10 py-3 text-sm font-bold focus:outline-none focus:bg-white focus:border-accent transition-all"
                   />
@@ -51,15 +96,33 @@ export default function Login() {
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-obsidian/30" />
                   <input 
-                    type="password" 
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
                     className="w-full bg-workspace border-2 border-obsidian px-10 py-3 text-sm font-bold focus:outline-none focus:bg-white focus:border-accent transition-all"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(p => !p)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-obsidian/30 hover:text-obsidian transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
-              <button className="w-full btn-volt py-4 text-base tracking-widest flex items-center justify-center gap-2 group">
-                AUTHORIZE <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <button 
+                type="submit"
+                disabled={loading}
+                className="w-full btn-volt py-4 text-base tracking-widest flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> VERIFYING...</>
+                ) : (
+                  <>AUTHORIZE <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>
+                )}
               </button>
             </form>
 
@@ -70,7 +133,11 @@ export default function Login() {
             </div>
 
             {/* Social Auth */}
-            <button className="w-full bg-white border-2 border-obsidian p-3 flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest hover:bg-workspace transition-all">
+            <button 
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="w-full bg-white border-2 border-obsidian p-3 flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest hover:bg-workspace transition-all"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -98,3 +165,4 @@ export default function Login() {
     </div>
   )
 }
+
