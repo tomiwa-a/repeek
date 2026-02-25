@@ -94,7 +94,7 @@ function AppContent() {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/match/:id" element={<MatchDetail />} />
+              <Route path="/match/:id" element={<MatchDetail slips={slips} />} />
             </Routes>
           </AuthGuard>
         </main>
