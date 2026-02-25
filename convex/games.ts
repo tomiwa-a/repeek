@@ -1,6 +1,7 @@
 import { action, internalMutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { v } from "convex/values";
+import type { GameOdds, Bookmaker, Market, Outcome } from "../src/types/oddsApi";
 
 const ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/soccer/odds/?regions=eu&markets=h2h&oddsFormat=decimal";
 
@@ -18,9 +19,9 @@ export const syncUpcomingGames = action({
         throw new Error(`Failed to fetch from Odds API: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data: GameOdds[] = await response.json();
       
-      await ctx.runMutation(internal.games.importGames, { rawData: data });
+      await ctx.runMutation(internal.games.importGames, { rawData: data as any });
       
       return { success: true, count: data.length };
     } catch (error: any) {
@@ -44,7 +45,7 @@ export const getUpcomingGames = query({
 export const importGames = internalMutation({
   args: { rawData: v.any() },
   handler: async (ctx, args) => {
-    const games = args.rawData;
+    const games: GameOdds[] = args.rawData;
 
     for (const game of games) {
       const existing = await ctx.db
@@ -57,20 +58,20 @@ export const importGames = internalMutation({
           id: game.id,
           homeTeam: game.home_team,
           awayTeam: game.away_team,
-          league: game.sport_title,
+          league: game.sport_title || game.sport_key, // Fallback if title is missing
           sportKey: game.sport_key,
           commenceTime: new Date(game.commence_time).getTime(),
           isLive: false,
         });
 
         if (game.bookmakers && game.bookmakers.length > 0) {
-          const bookmaker = game.bookmakers[0];
-          const market = bookmaker.markets.find((m: any) => m.key === "h2h");
+          const bookmaker: Bookmaker = game.bookmakers[0];
+          const market: Market | undefined = bookmaker.markets.find((m) => m.key === "h2h");
           
           if (market) {
-            const homeOdds = market.outcomes.find((o: any) => o.name === game.home_team)?.price;
-            const awayOdds = market.outcomes.find((o: any) => o.name === game.away_team)?.price;
-            const drawOdds = market.outcomes.find((o: any) => o.name === "Draw")?.price;
+            const homeOdds = market.outcomes.find((o) => o.name === game.home_team)?.price;
+            const awayOdds = market.outcomes.find((o) => o.name === game.away_team)?.price;
+            const drawOdds = market.outcomes.find((o) => o.name === "Draw")?.price;
 
             await ctx.db.insert("odds", {
               gameId,
