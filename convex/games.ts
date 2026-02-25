@@ -67,7 +67,6 @@ export const getGames = query({
         .collect();
     }
 
-    // Filter by group OR sportKey
     let filtered = allGames;
     
     if (args.sportKey && args.sportKey !== "ALL_SPORTS") {
@@ -82,12 +81,9 @@ export const getGames = query({
       filtered = filtered.filter(g => validSportKeys.has(g.sportKey));
     }
 
-    // Filter by status if "UPCOMING" (LIVE is handled by index above)
     if (args.status === "UPCOMING") {
       filtered = filtered.filter(g => !g.isLive);
     }
-
-    // Re-sort to ensure consistency if needed, though commenceTime index should handle it
     const total = filtered.length;
     const paginated = filtered.slice(args.offset, args.offset + args.limit);
 

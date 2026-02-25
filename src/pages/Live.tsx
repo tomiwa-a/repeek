@@ -1,27 +1,11 @@
 import { useState, useMemo, useEffect } from 'react'
 import { type Game } from '../data/mockGames'
 import EliteGameRow from '../components/EliteGameRow'
+import TechnicalSpinner from '../components/TechnicalSpinner'
 import { Filter, ChevronRight, Activity, Search, ChevronDown, ChevronLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-
-// Skeleton Component for High Density Feed
-const EliteSkeletonRow = () => (
-  <div className="h-10 bg-white border border-obsidian/5 flex items-center animate-pulse">
-    <div className="w-12 h-full bg-workspace border-r border-obsidian/5"></div>
-    <div className="hidden md:block w-16 h-full bg-workspace/30 border-r border-obsidian/5"></div>
-    <div className="flex-1 px-4 flex items-center gap-4">
-      <div className="h-2 w-24 bg-workspace/50 ml-auto"></div>
-      <div className="h-4 w-4 bg-workspace/50"></div>
-      <div className="h-2 w-8 bg-workspace/20"></div>
-      <div className="h-4 w-4 bg-workspace/50"></div>
-      <div className="h-2 w-24 bg-workspace/50"></div>
-    </div>
-    <div className="hidden md:block w-24 h-full bg-workspace/20 border-l border-obsidian/5"></div>
-    <div className="w-8 h-full bg-workspace/10 border-l border-obsidian/5"></div>
-  </div>
-)
 
 export default function Live() {
   const navigate = useNavigate()
@@ -34,7 +18,6 @@ export default function Live() {
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 20
 
-  // 1. Sport Caching Logic
   const rawSportsFromDB = useQuery(api.sports.getActiveSports, {})
   const [cachedSports, setCachedSports] = useState<any[]>(() => {
     const saved = localStorage.getItem('REPEEK_SPORTS_CACHE')
@@ -48,7 +31,27 @@ export default function Live() {
     }
   }, [rawSportsFromDB])
 
-  // 2. Local Group Derivation
+  const [cachedGamesResponse, setCachedGamesResponse] = useState<any>(() => {
+    const saved = localStorage.getItem('REPEEK_GAMES_FEED_CACHE')
+    return saved ? JSON.parse(saved) : null
+  })
+
+  const convexData = useQuery(api.games.getGames, {
+    sportKey: activeSportKey || undefined,
+    group: activeTab === 'ALL_SPORTS' ? undefined : activeTab,
+    status: statusFilter,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize
+  })
+
+  useEffect(() => {
+    if (convexData) {
+      setCachedGamesResponse(convexData)
+      localStorage.setItem('REPEEK_GAMES_FEED_CACHE', JSON.stringify(convexData))
+    }
+  }, [convexData])
+
+  // Local Group Derivation
   const sportsByGroup = useMemo(() => {
     const groups: Record<string, any[]> = {}
     cachedSports.forEach(sport => {
@@ -60,28 +63,21 @@ export default function Live() {
 
   const sportGroups = useMemo(() => Object.keys(sportsByGroup).sort(), [sportsByGroup])
 
-  // 3. Unified Query for Games
-  const convexData = useQuery(api.games.getGames, {
-    sportKey: activeSportKey || undefined,
-    group: activeTab === 'ALL_SPORTS' ? undefined : activeTab,
-    status: statusFilter,
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize
-  })
-
   const toggleGroup = (group: string) => {
     setExpandedSports(prev => 
       prev.includes(group) ? prev.filter(k => k !== group) : [...prev, group]
     )
     setActiveTab(group)
-    setActiveSportKey(null) // Reset specific sport filter when group changes
+    setActiveSportKey(null) 
     setCurrentPage(1)
   }
 
+  const dataToProcess = convexData || cachedGamesResponse
+
   const processedGames = useMemo(() => {
-    if (!convexData) return []
+    if (!dataToProcess) return []
     
-    return convexData.games.map(g => ({
+    return dataToProcess.games.map((g: any) => ({
       id: g.id,
       homeTeam: g.homeTeam,
       awayTeam: g.awayTeam,
@@ -97,12 +93,11 @@ export default function Live() {
       predictionCount: Math.floor(Math.random() * 50) + 10,
       sportKey: g.sportKey
     })) as Game[]
-  }, [convexData])
+  }, [dataToProcess])
 
-  const totalPages = Math.ceil((convexData?.total || 0) / pageSize)
+  const totalPages = Math.ceil((dataToProcess?.total || 0) / pageSize)
 
   const handleMatchClick = (game: Game) => {
-    // PASS DATA VIA STATE (Hybrid Approach)
     navigate(`/match/${game.id}`, { state: { game } })
   }
 
@@ -215,17 +210,26 @@ export default function Live() {
               LIVESCORE_FEED
             </h1>
           </div>
-          {convexData && (
-             <div className="text-[9px] font-black italic uppercase tracking-widest">
-               {convexData.total} SIGNALS_RECOVERED
+          {dataToProcess && (
+             <div className="flex items-center gap-4">
+                {!convexData && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-accent animate-ping rounded-full"></div>
+                    <span className="text-[8px] font-black italic text-accent uppercase">SYNCING...</span>
+                  </div>
+                )}
+                <div className="text-[9px] font-black italic uppercase tracking-widest">
+                  {dataToProcess.total} GAMES_IDENTIFIED
+                </div>
              </div>
           )}
         </div>
 
-        {/* Loading State with Skeletons */}
-        <div className="space-y-px bg-obsidian/5 border border-obsidian/5">
-          {!convexData ? (
-             Array.from({ length: 15 }).map((_, i) => <EliteSkeletonRow key={i} />)
+        <div className="space-y-px bg-obsidian/5 border border-obsidian/5 min-h-[400px]">
+          {convexData === undefined ? (
+             <div className="flex flex-col h-[400px] items-center justify-center">
+               <TechnicalSpinner label="INITIALIZING_CORE_FEED" />
+             </div>
           ) : processedGames.length > 0 ? (
             processedGames.map(game => (
               <div key={game.id} onClick={() => handleMatchClick(game)} className="cursor-pointer">
@@ -233,16 +237,16 @@ export default function Live() {
               </div>
             ))
           ) : (
-            <div className="py-32 text-center bg-white border border-obsidian/10 flex flex-col items-center gap-4">
+            <div className="h-[400px] text-center flex flex-col items-center justify-center gap-4">
               <Search className="w-8 h-8 text-obsidian/5" />
               <p className="text-[10px] font-black italic uppercase text-obsidian/20 tracking-widest">
-                NO_SIGNALS_FOUND_IN_PROTOCOL
+                NO_GAMES_FOUND_IN_PROTOCOL
               </p>
             </div>
           )}
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 py-8 border-t border-obsidian/5">
             <button 

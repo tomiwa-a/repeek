@@ -24,7 +24,7 @@ interface MatchDetailProps {
   slips?: Slip[]
 }
 
-// Full Page Skeleton - Elite Grade
+// Full Page Skeleton
 const MatchDetailSkeleton = () => (
    <div className="max-w-[1400px] mx-auto min-h-screen bg-white animate-pulse">
       <header className="h-20 border-b-2 border-obsidian/5 flex items-center justify-between px-8">
@@ -48,20 +48,14 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
   const location = useLocation()
   const { addLegToBuilder, openSlipBuilder } = useUI()
   
-  // 1. Hybrid Data Access: Check location state first
   const initialGameData = location.state?.game as Game | undefined
-  
-  // 2. Background Reactive Query
   const convexGameResponse = useQuery(api.games.getGameById, { id: id as string })
 
-  // 3. Final Derived Game Object
   const game = useMemo(() => {
-    // Priority: Database Response > Passed State
     const source = convexGameResponse || initialGameData
     
     if (!source) return null
     
-    // Map to the common Game interface
     return {
       id: source.id,
       homeTeam: source.homeTeam,
@@ -120,7 +114,6 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
     { label: 'AWAY_WIN [2]', odds: '3.20', trend: 'stable' }
   ]
 
-  // IMPORTANT: FULL PAGE SKELETON IF NO DATA
   if (!game) return <MatchDetailSkeleton />
 
   return (
