@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { type Game } from '../data/mockGames'
 import EliteGameRow from '../components/EliteGameRow'
 import { Filter, ChevronRight, Activity, Search, ChevronDown, ChevronLeft } from 'lucide-react'
@@ -6,33 +6,76 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 
+// Skeleton Component for High Density Feed
+const EliteSkeletonRow = () => (
+  <div className="h-10 bg-white border border-obsidian/5 flex items-center animate-pulse">
+    <div className="w-12 h-full bg-workspace border-r border-obsidian/5"></div>
+    <div className="hidden md:block w-16 h-full bg-workspace/30 border-r border-obsidian/5"></div>
+    <div className="flex-1 px-4 flex items-center gap-4">
+      <div className="h-2 w-24 bg-workspace/50 ml-auto"></div>
+      <div className="h-4 w-4 bg-workspace/50"></div>
+      <div className="h-2 w-8 bg-workspace/20"></div>
+      <div className="h-4 w-4 bg-workspace/50"></div>
+      <div className="h-2 w-24 bg-workspace/50"></div>
+    </div>
+    <div className="hidden md:block w-24 h-full bg-workspace/20 border-l border-obsidian/5"></div>
+    <div className="w-8 h-full bg-workspace/10 border-l border-obsidian/5"></div>
+  </div>
+)
+
 export default function Live() {
   const navigate = useNavigate()
-  const [activeSport, setActiveSport] = useState<string>('ALL_SPORTS')
+  const [activeTab, setActiveTab] = useState<string>('ALL_SPORTS')
+  const [activeSportKey, setActiveSportKey] = useState<string | null>(null)
+  
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'LIVE' | 'UPCOMING'>('ALL')
   const [expandedSports, setExpandedSports] = useState<string[]>([])
   
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 20
 
-  // Live Convex Data - Unified Query
+  // 1. Sport Caching Logic
+  const rawSportsFromDB = useQuery(api.sports.getActiveSports, {})
+  const [cachedSports, setCachedSports] = useState<any[]>(() => {
+    const saved = localStorage.getItem('REPEEK_SPORTS_CACHE')
+    return saved ? JSON.parse(saved) : []
+  })
+
+  useEffect(() => {
+    if (rawSportsFromDB) {
+      setCachedSports(rawSportsFromDB)
+      localStorage.setItem('REPEEK_SPORTS_CACHE', JSON.stringify(rawSportsFromDB))
+    }
+  }, [rawSportsFromDB])
+
+  // 2. Local Group Derivation
+  const sportsByGroup = useMemo(() => {
+    const groups: Record<string, any[]> = {}
+    cachedSports.forEach(sport => {
+      if (!groups[sport.group]) groups[sport.group] = []
+      groups[sport.group].push(sport)
+    })
+    return groups
+  }, [cachedSports])
+
+  const sportGroups = useMemo(() => Object.keys(sportsByGroup).sort(), [sportsByGroup])
+
+  // 3. Unified Query for Games
   const convexData = useQuery(api.games.getGames, {
-    sportKey: activeSport === 'ALL_SPORTS' ? undefined : activeSport,
+    sportKey: activeSportKey || undefined,
+    group: activeTab === 'ALL_SPORTS' ? undefined : activeTab,
     status: statusFilter,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize
   })
 
-  const convexSports = useQuery(api.sports.getActiveSports, {}) || []
-  const convexGroups = useQuery(api.sports.getActiveSportGroups, {}) || []
-
-  const toggleSport = (key: string) => {
-    setExpandedSports((prev: string[]) => 
-      prev.includes(key) ? prev.filter((k: string) => k !== key) : [...prev, key]
+  const toggleGroup = (group: string) => {
+    setExpandedSports(prev => 
+      prev.includes(group) ? prev.filter(k => k !== group) : [...prev, group]
     )
-    setActiveSport(key)
-    setCurrentPage(1) // Reset pagination on filter change
+    setActiveTab(group)
+    setActiveSportKey(null) // Reset specific sport filter when group changes
+    setCurrentPage(1)
   }
 
   const processedGames = useMemo(() => {
@@ -58,18 +101,9 @@ export default function Live() {
 
   const totalPages = Math.ceil((convexData?.total || 0) / pageSize)
 
-  // Group sports by their "group"
-  const sportsByGroup = useMemo(() => {
-    const groups: Record<string, typeof convexSports> = {}
-    convexSports.forEach(sport => {
-      if (!groups[sport.group]) groups[sport.group] = []
-      groups[sport.group].push(sport)
-    })
-    return groups
-  }, [convexSports])
-
-  const handleMatchClick = (id: string) => {
-    navigate(`/match/${id}`)
+  const handleMatchClick = (game: Game) => {
+    // PASS DATA VIA STATE (Hybrid Approach)
+    navigate(`/match/${game.id}`, { state: { game } })
   }
 
   return (
@@ -104,11 +138,12 @@ export default function Live() {
             <div className="flex flex-col gap-1">
               <button
                 onClick={() => {
-                  setActiveSport('ALL_SPORTS')
+                  setActiveTab('ALL_SPORTS')
+                  setActiveSportKey(null)
                   setCurrentPage(1)
                 }}
                 className={`text-left px-3 py-2 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
-                  activeSport === 'ALL_SPORTS' 
+                  activeTab === 'ALL_SPORTS' 
                     ? 'bg-obsidian text-white border-obsidian' 
                     : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
                 }`}
@@ -116,12 +151,12 @@ export default function Live() {
                 ALL_SPORTS
               </button>
               
-              {convexGroups.map(groupName => (
+              {sportGroups.map(groupName => (
                 <div key={groupName} className="space-y-1">
                   <button
-                    onClick={() => toggleSport(groupName)}
+                    onClick={() => toggleGroup(groupName)}
                     className={`w-full text-left px-3 py-2 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
-                      activeSport === groupName 
+                      activeTab === groupName 
                         ? 'bg-obsidian text-white border-obsidian' 
                         : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
                     }`}
@@ -130,30 +165,31 @@ export default function Live() {
                        <ChevronDown className={`w-3 h-3 transition-transform ${expandedSports.includes(groupName) ? 'rotate-0' : '-rotate-90'}`} />
                        {groupName.replace(/_/g, ' ')}
                     </span>
-                    <ChevronRight className={`w-3 h-3 transition-transform ${activeSport === groupName ? 'translate-x-0' : '-translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'}`} />
+                    <ChevronRight className={`w-3 h-3 transition-transform ${activeTab === groupName ? 'translate-x-0' : '-translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'}`} />
                   </button>
                   
                   {expandedSports.includes(groupName) && sportsByGroup[groupName] && (
                     <div className="flex flex-col gap-0.5 ml-3 pl-2 border-l border-obsidian/10">
                       <button
-                        onClick={() => { setActiveSport(groupName); setCurrentPage(1); }}
+                        onClick={() => { setActiveTab(groupName); setActiveSportKey(null); setCurrentPage(1); }}
                         className={`text-left px-2 py-1.5 text-[8px] font-black uppercase italic tracking-widest transition-all ${
-                          activeSport === groupName
+                          activeTab === groupName && !activeSportKey
                             ? 'text-obsidian' 
                             : 'text-obsidian/30 hover:text-obsidian'
                         }`}
                       >
                         ALL_{groupName.toUpperCase()}
                       </button>
-                      {sportsByGroup[groupName].map(sport => (
+                      {sportsByGroup[groupName].map((sport: any) => (
                         <button
                           key={sport.key}
                           onClick={() => {
-                            setActiveSport(sport.key)
+                            setActiveSportKey(sport.key)
+                            setActiveTab(groupName)
                             setCurrentPage(1)
                           }}
                           className={`text-left px-2 py-1.5 text-[8px] font-black uppercase italic tracking-widest transition-all ${
-                            activeSport === sport.key 
+                            activeSportKey === sport.key 
                               ? 'text-obsidian' 
                               : 'text-obsidian/30 hover:text-obsidian'
                           }`}
@@ -170,7 +206,7 @@ export default function Live() {
         </div>
       </aside>
 
-      {/* Feed */}
+      {/* Main Command Center Feed */}
       <main className="flex-1 space-y-4 text-obsidian">
         <div className="flex items-center justify-between border-b-2 border-obsidian pb-2">
           <div className="flex items-center gap-2">
@@ -180,14 +216,19 @@ export default function Live() {
             </h1>
           </div>
           {convexData && (
-            <div className="text-[9px] font-black italic uppercase tracking-widest text-obsidian">{convexData.total} TOTAL_NODES_IDENTIFIED</div>
+             <div className="text-[9px] font-black italic uppercase tracking-widest">
+               {convexData.total} SIGNALS_RECOVERED
+             </div>
           )}
         </div>
 
+        {/* Loading State with Skeletons */}
         <div className="space-y-px bg-obsidian/5 border border-obsidian/5">
-          {processedGames.length > 0 ? (
+          {!convexData ? (
+             Array.from({ length: 15 }).map((_, i) => <EliteSkeletonRow key={i} />)
+          ) : processedGames.length > 0 ? (
             processedGames.map(game => (
-              <div key={game.id} onClick={() => handleMatchClick(game.id)} className="cursor-pointer">
+              <div key={game.id} onClick={() => handleMatchClick(game)} className="cursor-pointer">
                 <EliteGameRow game={game} />
               </div>
             ))
@@ -201,7 +242,7 @@ export default function Live() {
           )}
         </div>
 
-        {/* Global Pagination */}
+        {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 py-8 border-t border-obsidian/5">
             <button 

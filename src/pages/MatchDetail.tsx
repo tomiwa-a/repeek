@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { mockGames, type Game } from '../data/mockGames'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { type Game } from '../data/mockGames'
 import { 
   ChevronLeft, 
   Activity, 
@@ -24,11 +24,62 @@ interface MatchDetailProps {
   slips?: Slip[]
 }
 
+// Full Page Skeleton - Elite Grade
+const MatchDetailSkeleton = () => (
+   <div className="max-w-[1400px] mx-auto min-h-screen bg-white animate-pulse">
+      <header className="h-20 border-b-2 border-obsidian/5 flex items-center justify-between px-8">
+         <div className="w-32 h-4 bg-workspace/20"></div>
+         <div className="w-24 h-4 bg-workspace/20"></div>
+      </header>
+      <section className="h-96 bg-obsidian flex flex-col items-center justify-center gap-12">
+         <div className="w-48 h-6 bg-white/5"></div>
+         <div className="flex items-center gap-16">
+            <div className="w-64 h-16 bg-white/5"></div>
+            <div className="w-32 h-32 bg-white/10"></div>
+            <div className="w-64 h-16 bg-white/5"></div>
+         </div>
+      </section>
+   </div>
+)
+
 export default function MatchDetail({ slips = [] }: MatchDetailProps) {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { addLegToBuilder, openSlipBuilder } = useUI()
   
+  // 1. Hybrid Data Access: Check location state first
+  const initialGameData = location.state?.game as Game | undefined
+  
+  // 2. Background Reactive Query
+  const convexGameResponse = useQuery(api.games.getGameById, { id: id as string })
+
+  // 3. Final Derived Game Object
+  const game = useMemo(() => {
+    // Priority: Database Response > Passed State
+    const source = convexGameResponse || initialGameData
+    
+    if (!source) return null
+    
+    // Map to the common Game interface
+    return {
+      id: source.id,
+      homeTeam: source.homeTeam,
+      awayTeam: source.awayTeam,
+      league: source.league,
+      sport: 'soccer' as const,
+      startTime: new Date('commenceTime' in source ? source.commenceTime : (source as Game).startTime),
+      isLive: source.isLive,
+      homeScore: (source as any).score?.home ?? (source as Game).homeScore ?? 0,
+      awayScore: (source as any).score?.away ?? (source as Game).awayScore ?? 0,
+      matchTime: source.isLive ? "LIVE" : undefined,
+      time: (source as any).time || (source as any).commenceTime ? new Date((source as any).commenceTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--',
+      odds: (source as Game).odds || { home: 1.85, draw: 3.40, away: 4.20 },
+      predictionCount: (source as Game).predictionCount || Math.floor(Math.random() * 50) + 10,
+      sportKey: source.sportKey
+    } as Game
+  }, [convexGameResponse, initialGameData])
+
   // Slips filtering & pagination
   const [slipPage, setSlipPage] = useState(1)
   const itemsPerPage = 5
@@ -56,28 +107,6 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
 
   const totalPages = Math.ceil(filteredMatchSlips.length / itemsPerPage)
 
-  const convexGame = useQuery(api.games.getGameById, { id: id as string })
-
-  const game = useMemo(() => {
-    if (!convexGame) return mockGames[0] // Fallback while loading or if not found
-    
-    return {
-      id: convexGame.id,
-      homeTeam: convexGame.homeTeam,
-      awayTeam: convexGame.awayTeam,
-      league: convexGame.league,
-      sport: 'soccer' as const,
-      startTime: new Date(convexGame.commenceTime),
-      isLive: convexGame.isLive,
-      homeScore: convexGame.score?.home ?? 0,
-      awayScore: convexGame.score?.away ?? 0,
-      matchTime: convexGame.isLive ? "LIVE" : undefined,
-      odds: { home: 1.85, draw: 3.40, away: 4.20 }, // Dummy odds
-      predictionCount: Math.floor(Math.random() * 50) + 10,
-      sportKey: convexGame.sportKey
-    } as Game
-  }, [convexGame])
-
   const stats = [
     { label: 'POSSESSION', home: '54%', away: '46%', icon: Activity },
     { label: 'SHOTS_ON_TARGET', home: '6', away: '4', icon: Target },
@@ -90,6 +119,9 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
     { label: 'DRAW [X]', odds: '3.40', trend: 'down' },
     { label: 'AWAY_WIN [2]', odds: '3.20', trend: 'stable' }
   ]
+
+  // IMPORTANT: FULL PAGE SKELETON IF NO DATA
+  if (!game) return <MatchDetailSkeleton />
 
   return (
     <div className="max-w-[1400px] mx-auto min-h-screen bg-white font-sans antialiased pb-20">
@@ -238,7 +270,7 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
           {/* Right Column (Sidebar): Markets & Stats */}
           <aside className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
             
-            {/* 1. REALTIME_MARKETS (Moved above stats) */}
+            {/* 1. REALTIME_MARKETS */}
             <div className="bg-white border-2 border-obsidian shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <div className="bg-obsidian text-white px-4 py-2.5 flex items-center justify-between">
                 <span className="text-[10px] font-black italic uppercase tracking-widest text-accent">REALTIME_MARKETS</span>
@@ -273,7 +305,7 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
               </div>
             </div>
 
-            {/* 2. TECHNICAL_MATRICES (Moved below markets) */}
+            {/* 2. TECHNICAL_MATRICES */}
             <div className="bg-workspace p-5 border-b-4 border-obsidian relative overflow-hidden">
                <div className="flex items-center gap-3 mb-4">
                  <Activity className="w-4 h-4 text-obsidian" />

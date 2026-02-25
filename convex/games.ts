@@ -46,6 +46,7 @@ export const syncUpcomingEvents = action({
 export const getGames = query({
   args: {
     sportKey: v.optional(v.string()),
+    group: v.optional(v.string()),
     status: v.optional(v.string()), // "LIVE", "UPCOMING", "ALL"
     limit: v.number(),
     offset: v.number(),
@@ -66,10 +67,19 @@ export const getGames = query({
         .collect();
     }
 
-    // Filter by sportKey if provided
+    // Filter by group OR sportKey
     let filtered = allGames;
+    
     if (args.sportKey && args.sportKey !== "ALL_SPORTS") {
       filtered = filtered.filter(g => g.sportKey === args.sportKey);
+    } else if (args.group && args.group !== "ALL_SPORTS") {
+      const sportsInGroup = await ctx.db
+        .query("sports")
+        .filter((q) => q.eq(q.field("group"), args.group))
+        .collect();
+      
+      const validSportKeys = new Set(sportsInGroup.map(s => s.key));
+      filtered = filtered.filter(g => validSportKeys.has(g.sportKey));
     }
 
     // Filter by status if "UPCOMING" (LIVE is handled by index above)
