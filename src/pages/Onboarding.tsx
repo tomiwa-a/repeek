@@ -1,23 +1,61 @@
-import { useState } from 'react'
-import { User, ChevronRight, Check, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { User, ChevronRight, Check, AlertCircle, Loader2 } from 'lucide-react'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { useNavigate } from 'react-router-dom'
 
 export default function Onboarding() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
-  const [isChecking, setIsChecking] = useState(false)
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null)
+  const [debouncedUsername, setDebouncedUsername] = useState('')
+  const [isDebouncing, setIsDebouncing] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const setUsernameMutation = useMutation(api.users.setUsername)
+
+  // Debounce username input by 600ms
+  useEffect(() => {
+    if (username.length < 4) {
+      setDebouncedUsername('')
+      setIsDebouncing(false)
+      return
+    }
+    setIsDebouncing(true)
+    const timer = setTimeout(() => {
+      setDebouncedUsername(username)
+      setIsDebouncing(false)
+    }, 600)
+    return () => clearTimeout(timer)
+  }, [username])
+
+  // Live availability check — only fires when debouncedUsername is set
+  const availabilityResult = useQuery(
+    api.users.checkUsername,
+    debouncedUsername.length >= 4 ? { username: debouncedUsername } : 'skip'
+  )
+
+  const isChecking = isDebouncing || (debouncedUsername.length >= 4 && availabilityResult === undefined)
+  const isAvailable = !isChecking && debouncedUsername.length >= 4 ? (availabilityResult?.available ?? null) : null
+  const reason = availabilityResult?.reason
 
   const handleUsernameChange = (val: string) => {
     const cleanVal = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
     setUsername(cleanVal)
-    if (cleanVal.length > 3) {
-      setIsChecking(true)
-      // Simulate API check
-      setTimeout(() => {
-        setIsChecking(false)
-        setIsAvailable(true)
-      }, 800)
-    } else {
-      setIsAvailable(null)
+    setError(null)
+  }
+
+  const handleSubmit = async () => {
+    if (!isAvailable || isChecking) return
+    setSubmitting(true)
+    setError(null)
+    try {
+      await setUsernameMutation({ username })
+      navigate('/')
+    } catch (e: any) {
+      setError(e.message ?? 'Failed to set username. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -59,7 +97,7 @@ export default function Onboarding() {
                   )}
                   {isAvailable === false && !isChecking && (
                     <span className="flex items-center gap-1 text-[8px] font-black text-red-600 italic">
-                      <AlertCircle className="w-2.5 h-2.5" /> ID_RESERVED
+                      <AlertCircle className="w-2.5 h-2.5" /> {reason ?? 'ID_RESERVED'}
                     </span>
                   )}
                 </div>
@@ -73,6 +111,7 @@ export default function Onboarding() {
                     value={username}
                     onChange={(e) => handleUsernameChange(e.target.value)}
                     placeholder="alpha_one"
+                    maxLength={15}
                     className={`w-full bg-workspace border-2 px-10 py-5 text-xl font-black italic focus:outline-none transition-all ${
                       isAvailable === true ? 'border-green-600 bg-green-50/10' : 
                       isAvailable === false ? 'border-red-600 bg-red-50/10' : 
@@ -80,23 +119,36 @@ export default function Onboarding() {
                     }`}
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <User className={`w-5 h-5 transition-colors ${isAvailable === true ? 'text-green-600' : 'text-obsidian/10'}`} />
+                    {isChecking
+                      ? <Loader2 className="w-5 h-5 text-obsidian/30 animate-spin" />
+                      : <User className={`w-5 h-5 transition-colors ${isAvailable === true ? 'text-green-600' : 'text-obsidian/10'}`} />
+                    }
                   </div>
                 </div>
                 <p className="text-[9px] font-medium text-text-muted italic px-1">
                   * LENGTH: 4-15 CHARACTERS // A-Z, 0-9, UNDERSCORE ONLY
                 </p>
+
+                {error && (
+                  <div className="flex items-center gap-2 text-[10px] font-black text-red-600 uppercase px-1">
+                    <AlertCircle className="w-3 h-3 shrink-0" /> {error}
+                  </div>
+                )}
               </div>
 
               <button 
-                disabled={!isAvailable || isChecking}
+                onClick={handleSubmit}
+                disabled={!isAvailable || isChecking || submitting}
                 className={`w-full py-5 text-lg font-black italic tracking-[0.2em] flex items-center justify-center gap-3 transition-all ${
-                  isAvailable && !isChecking 
+                  isAvailable && !isChecking && !submitting
                   ? 'btn-volt shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0' 
                   : 'bg-zinc-200 text-zinc-400 border-2 border-zinc-300 cursor-not-allowed uppercase'
                 }`}
               >
-                INITIALIZE_ACCOUNT <ChevronRight className={`w-6 h-6 ${isAvailable ? 'animate-bounce-x' : ''}`} />
+                {submitting
+                  ? <><Loader2 className="w-5 h-5 animate-spin" /> INITIALIZING...</>
+                  : <>INITIALIZE_ACCOUNT <ChevronRight className={`w-6 h-6 ${isAvailable ? 'animate-bounce-x' : ''}`} /></>
+                }
               </button>
             </div>
           </div>
@@ -117,3 +169,5 @@ export default function Onboarding() {
     </div>
   )
 }
+
+
