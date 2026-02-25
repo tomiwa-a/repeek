@@ -9,12 +9,13 @@ import {
 import { useUI } from '../context/UIContext'
 
 import SlipListItem from '../components/SlipListItem'
+import SettingsTab from '../components/profile/SettingsTab'
 import type { Slip } from '../data/mockSlips'
 
 export default function Profile({ slips = [] }: { slips?: Slip[] }) {
   const user = mockPredictors[0]
   const { openSlipBuilder } = useUI()
-  const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis'>('ongoing')
+  const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis' | 'settings'>('ongoing')
   const [page, setPage] = useState(1)
   const itemsPerPage = 10
   
@@ -194,11 +195,19 @@ export default function Profile({ slips = [] }: { slips?: Slip[] }) {
               </button>
               <button 
                 onClick={() => { setActiveTab('analysis'); setPage(1); }}
-                className={`flex-1 min-w-[120px] px-6 py-4 text-xs font-black uppercase italic tracking-widest transition-all ${
+                className={`flex-1 min-w-[120px] px-6 py-4 text-xs font-black uppercase italic tracking-widest transition-all border-r-2 border-obsidian ${
                   activeTab === 'analysis' ? 'bg-obsidian text-accent' : 'text-obsidian hover:bg-workspace'
                 }`}
               >
                 AUDIT_LOG
+              </button>
+              <button 
+                onClick={() => { setActiveTab('settings'); setPage(1); }}
+                className={`flex-1 min-w-[120px] px-6 py-4 text-xs font-black uppercase italic tracking-widest transition-all ${
+                  activeTab === 'settings' ? 'bg-obsidian text-accent' : 'text-obsidian hover:bg-workspace'
+                }`}
+              >
+                SETTINGS
               </button>
             </div>
 
@@ -292,6 +301,8 @@ export default function Profile({ slips = [] }: { slips?: Slip[] }) {
                     </div>
                   </div>
                 </div>
+              ) : activeTab === 'settings' ? (
+                <SettingsTab />
               ) : (
                 <div className="flex flex-col gap-2">
                   {paginatedSlips.length > 0 ? (

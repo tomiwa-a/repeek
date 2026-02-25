@@ -10,6 +10,7 @@ import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
+import Onboarding from './pages/Onboarding'
 import { UIProvider, useUI } from './context/UIContext'
 import SlipBuilder from './components/SlipBuilder'
 import SlipDetail from './components/SlipDetail'
@@ -49,6 +50,7 @@ function AppContent() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/onboarding" element={<Onboarding />} />
           </Routes>
         </main>
       </div>
