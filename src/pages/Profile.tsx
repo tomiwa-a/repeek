@@ -4,16 +4,31 @@ import {
   Target, 
   Share2, UserPlus, BarChart3, 
   ChevronLeft, ChevronRight, Filter, Search,
-  Trophy, Clock, Activity, Plus
+  Trophy, Clock, Activity, Plus,
+  Loader2
 } from 'lucide-react'
 import { useUI } from '../context/UIContext'
+import { useConvexAuth, useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 import SlipListItem from '../components/SlipListItem'
 import SettingsTab from '../components/profile/SettingsTab'
 import type { Slip } from '../data/mockSlips'
 
 export default function Profile({ slips = [] }: { slips?: Slip[] }) {
-  const user = mockPredictors[0]
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
+  const viewer = useQuery(api.users.getViewer, isAuthenticated ? {} : 'skip')
+  
+  const isProfileLoading = isAuthLoading || (isAuthenticated && viewer === undefined)
+
+  const mockUser = mockPredictors[0]
+  const user = useMemo(() => ({
+    ...mockUser,
+    username: viewer?.username || mockUser.username,
+    email: viewer?.email || 'operator@repeek.com',
+    isPremium: viewer?.isPremium ?? mockUser.isPremium
+  }), [viewer, mockUser])
+
   const { openSlipBuilder } = useUI()
   const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis' | 'settings'>('ongoing')
   const [page, setPage] = useState(1)
@@ -76,20 +91,25 @@ export default function Profile({ slips = [] }: { slips?: Slip[] }) {
           <div className="bg-obsidian p-8 border-b-8 border-accent relative overflow-hidden">
             <div className="absolute inset-0 dot-matrix opacity-10 pointer-events-none"></div>
             <div className="relative z-10 space-y-6">
-              <div className="flex items-center gap-6">
                 <div className="w-20 h-20 bg-white border-2 border-accent flex items-center justify-center -rotate-2">
                   <span className="font-black text-obsidian text-3xl italic">
-                    {user.username.charAt(1).toUpperCase()}
+                    {isProfileLoading ? (
+                      <Loader2 className="w-8 h-8 animate-spin opacity-20" />
+                    ) : (
+                      (user.username.startsWith('@') ? user.username.charAt(1) : user.username.charAt(0)).toUpperCase()
+                    )}
                   </span>
                 </div>
                 <div>
-                  {/* Explicit text-white for maximum contrast */}
-                  <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none mb-2 text-white shadow-sm">
-                    {user.username}
-                  </h1>
+                  {isProfileLoading ? (
+                    <div className="h-8 w-48 bg-white/10 animate-pulse mb-2" />
+                  ) : (
+                    <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none mb-2 text-white shadow-sm">
+                      {user.username}
+                    </h1>
+                  )}
                   {user.isPremium && <span className="bg-accent text-obsidian px-2 py-0.5 text-[9px] font-black italic">ELITE_OPERATOR</span>}
                 </div>
-              </div>
 
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
                 <div>
@@ -302,7 +322,7 @@ export default function Profile({ slips = [] }: { slips?: Slip[] }) {
                   </div>
                 </div>
               ) : activeTab === 'settings' ? (
-                <SettingsTab />
+                <SettingsTab email={user.email} />
               ) : (
                 <div className="flex flex-col gap-2">
                   {paginatedSlips.length > 0 ? (

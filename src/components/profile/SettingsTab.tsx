@@ -12,7 +12,7 @@ import {
   AlertTriangle
 } from 'lucide-react'
 
-export default function SettingsTab() {
+export default function SettingsTab({ email }: { email?: string }) {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
@@ -33,7 +33,7 @@ export default function SettingsTab() {
             <span className="text-[9px] font-black text-zinc-500 uppercase italic tracking-widest flex items-center gap-2">
               <Mail className="w-3 h-3" /> REGISTERED_EMAIL
             </span>
-            <div className="text-sm font-black italic text-obsidian">j.wick@continental.com</div>
+            <div className="text-sm font-black italic text-obsidian">{email || 'INITIALIZING...'}</div>
           </div>
           <div className="bg-workspace p-6 border-b-4 border-obsidian/10 space-y-2">
             <span className="text-[9px] font-black text-zinc-500 uppercase italic tracking-widest flex items-center gap-2">
