@@ -31,12 +31,28 @@ export async function fetchSports(): Promise<Sport[]> {
 /**
  * Fetches the upcoming games (fixtures) for a specific sport.
  * NOTE: This endpoint costs 0 usage quota credits.
- * @param sportKey The key of the sport to fetch (e.g., 'soccer', 'americanfootball_nfl')
+ * @param sportKey The key of the sport to fetch (e.g., 'soccer_uefa_champs_league')
+ * @param commenceTimeFrom Optional ISO 8601 string to fetch games on or after this time.
+ * @param commenceTimeTo Optional ISO 8601 string to fetch games on or before this time.
  * @returns Array of Event objects (without odds).
  */
-export async function fetchUpcomingEvents(sportKey: string = "soccer_uefa_champs_league"): Promise<Event[]> {
+export async function fetchUpcomingEvents(
+  sportKey: string = "soccer_uefa_champs_league",
+  commenceTimeFrom?: string,
+  commenceTimeTo?: string
+): Promise<Event[]> {
   const apiKey = getApiKey();
-  const url = `${BASE_URL}/sports/${sportKey}/events?apiKey=${apiKey}`;
+  
+  const params = new URLSearchParams({ apiKey });
+  
+  if (commenceTimeFrom) {
+    params.append("commenceTimeFrom", commenceTimeFrom);
+  }
+  if (commenceTimeTo) {
+    params.append("commenceTimeTo", commenceTimeTo);
+  }
+
+  const url = `${BASE_URL}/sports/${sportKey}/events?${params.toString()}`;
   
   const response = await fetch(url);
   

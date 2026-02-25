@@ -9,8 +9,22 @@ export const syncUpcomingEvents = action({
   args: {},
   handler: async (ctx) => {
     try {
-      // Example: We can iterate through active sports later. For now, just test Champions League.
-      const data: Event[] = await fetchUpcomingEvents("soccer_uefa_champs_league");
+      // Calculate timestamps for the next 7 days
+      // Calculate timestamps for the next 7 days
+      const now = new Date();
+      const nextWeek = new Date();
+      nextWeek.setDate(now.getDate() + 7);
+
+      // The Odds API expects format "2023-09-09T00:00:00Z" (no milliseconds)
+      const timeFrom = now.toISOString().split('.')[0] + 'Z';
+      const timeTo = nextWeek.toISOString().split('.')[0] + 'Z';
+
+      // Example: Fetch exactly 7 days of Champions League games
+      const data: Event[] = await fetchUpcomingEvents(
+        "soccer_uefa_champs_league",
+        timeFrom,
+        timeTo
+      );
       
       await ctx.runMutation(internal.games.importEvents, { rawData: data as any });
       
