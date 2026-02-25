@@ -2,6 +2,15 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  sports: defineTable({
+    key: v.string(),
+    group: v.string(),
+    title: v.string(),
+    description: v.string(),
+    active: v.boolean(),
+    has_outrights: v.boolean(),
+  }).index("by_key", ["key"]),
+
   games: defineTable({
     id: v.string(),
     homeTeam: v.string(),
