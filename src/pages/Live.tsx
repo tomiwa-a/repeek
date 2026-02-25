@@ -1,23 +1,37 @@
 import { useState, useMemo } from 'react'
 import { mockGames } from '../data/mockGames'
 import EliteGameRow from '../components/EliteGameRow'
-import { Filter, ChevronRight, Activity, Search } from 'lucide-react'
+import { Filter, ChevronRight, Activity, Search, ChevronDown } from 'lucide-react'
 
 export default function Live() {
   const [activeSport, setActiveSport] = useState<string>('ALL_SPORTS')
+  const [activeLeague, setActiveLeague] = useState<string>('ALL_LEAGUES')
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'LIVE' | 'UPCOMING'>('ALL')
+  const [expandedSports, setExpandedSports] = useState<string[]>(['SOCCER'])
+
+  const toggleSport = (key: string) => {
+    setExpandedSports((prev: string[]) => 
+      prev.includes(key) ? prev.filter((k: string) => k !== key) : [...prev, key]
+    )
+    setActiveSport(key)
+    setActiveLeague('ALL_LEAGUES')
+  }
 
   const processedGames = useMemo(() => {
     return mockGames.filter(game => {
       const matchesSport = activeSport === 'ALL_SPORTS' || 
                            game.sportKey?.toUpperCase() === activeSport ||
-                           game.league.toUpperCase().includes(activeSport)
+                           game.league.toUpperCase().includes(activeSport) ||
+                           (activeSport === 'SOCCER' && game.sport === 'soccer')
       
+      const matchesLeague = activeLeague === 'ALL_LEAGUES' || 
+                            game.league.toUpperCase() === activeLeague.toUpperCase()
+
       const matchesStatus = statusFilter === 'ALL' || 
                             (statusFilter === 'LIVE' && game.isLive) || 
                             (statusFilter === 'UPCOMING' && !game.isLive)
       
-      return matchesSport && matchesStatus
+      return matchesSport && matchesLeague && matchesStatus
     }).map(game => ({
       ...game,
       homeScore: game.homeScore ?? 0,
@@ -25,17 +39,25 @@ export default function Live() {
       time: game.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       predictionCount: Math.floor(Math.random() * 25) + 2 // Simulation
     }))
-  }, [activeSport, statusFilter])
+  }, [activeSport, activeLeague, statusFilter])
 
   const liveCount = mockGames.filter(g => g.isLive).length
 
   const sports = [
-    { label: 'ALL_SPORTS', key: 'ALL_SPORTS' },
-    { label: 'SOCCER', key: 'SOCCER' },
-    { label: 'NBA_BASKETBALL', key: 'NBA' },
-    { label: 'NFL_FOOTBALL', key: 'NFL' },
-    { label: 'MLB_BASEBALL', key: 'MLB' },
+    { 
+      label: 'SOCCER', 
+      key: 'SOCCER',
+      leagues: ['PREMIER LEAGUE', 'LA LIGA', 'BUNDESLIGA', 'SERIE A', 'LIGUE 1']
+    },
+    { label: 'NBA_BASKETBALL', key: 'NBA', leagues: [] },
+    { label: 'NFL_FOOTBALL', key: 'NFL', leagues: [] },
+    { label: 'MLB_BASEBALL', key: 'MLB', leagues: [] },
   ]
+
+  const handleMatchClick = (id: string) => {
+    console.log(`Navigating to match: ${id}`)
+    // navigate(`/match/${id}`)
+  }
 
   return (
     <div className="max-w-[1920px] mx-auto px-4 md:px-6 py-6 flex flex-col lg:flex-row gap-6 bg-white font-sans antialiased min-h-screen">
@@ -69,19 +91,70 @@ export default function Live() {
           <div className="space-y-1.5">
             <label className="text-[8px] font-black text-obsidian/40 uppercase tracking-widest italic ml-1">SPORT_NODES</label>
             <div className="flex flex-col gap-1">
+              <button
+                onClick={() => {
+                  setActiveSport('ALL_SPORTS')
+                  setActiveLeague('ALL_LEAGUES')
+                }}
+                className={`text-left px-3 py-2 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
+                  activeSport === 'ALL_SPORTS' 
+                    ? 'bg-obsidian text-white border-obsidian' 
+                    : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
+                }`}
+              >
+                ALL_SPORTS
+              </button>
+              
               {sports.map(sport => (
-                <button
-                  key={sport.key}
-                  onClick={() => setActiveSport(sport.key)}
-                  className={`text-left px-3 py-2.5 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
-                    activeSport === sport.key 
-                      ? 'bg-obsidian text-white border-obsidian' 
-                      : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
-                  }`}
-                >
-                  {sport.label}
-                  <ChevronRight className={`w-3 h-3 transition-transform ${activeSport === sport.key ? 'translate-x-0' : '-translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'}`} />
-                </button>
+                <div key={sport.key} className="space-y-1">
+                  <button
+                    onClick={() => toggleSport(sport.key)}
+                    className={`w-full text-left px-3 py-2 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
+                      activeSport === sport.key 
+                        ? 'bg-obsidian text-white border-obsidian' 
+                        : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                       {sport.leagues.length > 0 && (
+                         <ChevronDown className={`w-3 h-3 transition-transform ${expandedSports.includes(sport.key) ? 'rotate-0' : '-rotate-90'}`} />
+                       )}
+                       {sport.label}
+                    </span>
+                    <ChevronRight className={`w-3 h-3 transition-transform ${activeSport === sport.key ? 'translate-x-0' : '-translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'}`} />
+                  </button>
+                  
+                  {expandedSports.includes(sport.key) && sport.leagues.length > 0 && (
+                    <div className="flex flex-col gap-0.5 ml-3 pl-2 border-l border-obsidian/10">
+                      <button
+                        onClick={() => setActiveLeague('ALL_LEAGUES')}
+                        className={`text-left px-2 py-1.5 text-[8px] font-black uppercase italic tracking-widest transition-all ${
+                          activeLeague === 'ALL_LEAGUES' && activeSport === sport.key
+                            ? 'text-obsidian' 
+                            : 'text-obsidian/30 hover:text-obsidian'
+                        }`}
+                      >
+                        ALL_{sport.key}_LEAGUES
+                      </button>
+                      {sport.leagues.map(league => (
+                        <button
+                          key={league}
+                          onClick={() => {
+                            setActiveSport(sport.key)
+                            setActiveLeague(league)
+                          }}
+                          className={`text-left px-2 py-1.5 text-[8px] font-black uppercase italic tracking-widest transition-all ${
+                            activeLeague === league 
+                              ? 'text-obsidian' 
+                              : 'text-obsidian/30 hover:text-obsidian'
+                          }`}
+                        >
+                          {league}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -121,7 +194,9 @@ export default function Live() {
         <div className="space-y-px bg-obsidian/5 border border-obsidian/5">
           {processedGames.length > 0 ? (
             processedGames.map(game => (
-              <EliteGameRow key={game.id} game={game} />
+              <div key={game.id} onClick={() => handleMatchClick(game.id)}>
+                <EliteGameRow game={game} />
+              </div>
             ))
           ) : (
             <div className="py-32 text-center bg-white border border-obsidian/10 flex flex-col items-center gap-4">

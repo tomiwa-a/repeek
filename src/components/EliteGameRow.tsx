@@ -56,7 +56,7 @@ export default function EliteGameRow({ game }: EliteGameRowProps) {
       {/* Prediction Intel */}
       <div className="w-24 border-l border-obsidian/5 flex items-center justify-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity shrink-0">
         <MessageSquare className="w-2.5 h-2.5" />
-        <span className="text-[9px] font-black italic tracking-tighter">{game.predictionCount} NODES</span>
+        <span className="text-[9px] font-black italic tracking-tighter">{game.predictionCount} SIGNALS</span>
       </div>
 
       {/* Action Indicator */}
