@@ -236,7 +236,7 @@ export default function SettingsTab({ email }: { email?: string }) {
           onClick={() => setIsDeleteModalOpen(true)}
           className="bg-red-900 text-white px-6 py-4 text-[10px] font-black italic uppercase tracking-[0.2em] hover:bg-red-700 transition-colors shadow-[6px_6px_0px_0px_rgba(153,27,27,0.3)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0"
         >
-          TERMINATE_ACCOUNT_v4.2
+          TERMINATE_ACCOUNT
         </button>
       </section>
 

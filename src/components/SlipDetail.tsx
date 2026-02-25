@@ -213,7 +213,7 @@ export default function SlipDetail({ isOpen, onClose, slip: rawSlip }: SlipDetai
              </div>
            )}
            <div className="text-center">
-              <span className="text-[9px] font-black text-zinc-400 uppercase italic tracking-[0.2em]">PROTOCOL: ELITE_ALPHA_v4.2</span>
+               <span className="text-[9px] font-black text-zinc-400 uppercase italic tracking-[0.2em]">PROTOCOL: ELITE_ALPHA</span>
            </div>
         </div>
 

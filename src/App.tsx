@@ -22,6 +22,7 @@ import { mockPredictors } from './data/mockPredictors'
 import { mockGames } from './data/mockGames'
 import { generateMockSlips } from './data/mockSlips'
 import Notifications from './pages/Notifications'
+import MatchDetail from './pages/MatchDetail'
 
 // Redirects unauthenticated users away from protected routes,
 // and authenticated-but-not-onboarded users to /onboarding
@@ -93,6 +94,7 @@ function AppContent() {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/match/:id" element={<MatchDetail />} />
             </Routes>
           </AuthGuard>
         </main>

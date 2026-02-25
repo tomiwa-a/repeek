@@ -62,7 +62,7 @@ export default function Footer() {
         {/* Legal & Anchor */}
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-[10px] font-black text-zinc-600 tracking-tighter uppercase italic">
-            © {currentYear} REPEEK // PROFESSIONAL SPORTS ANALYSIS // v4.2.0
+            © {currentYear} REPEEK // PROFESSIONAL SPORTS ANALYSIS
           </div>
           <div className="flex gap-6 text-[10px] font-black text-zinc-600 uppercase italic">
             <span className="hover:text-white cursor-pointer transition-colors">TERMS</span>

@@ -72,7 +72,7 @@ export default function Onboarding() {
           <div className="relative z-10">
             <div className="mb-10">
               <div className="inline-block bg-accent text-obsidian px-3 py-1 text-[10px] font-black italic mb-4">
-                IDENTITY_INITIALIZATION_v1.0
+                IDENTITY_INITIALIZATION
               </div>
               <h1 className="text-4xl font-black italic uppercase tracking-tighter text-obsidian leading-none mb-4">
                 SELECT YOUR <br />
@@ -161,7 +161,7 @@ export default function Onboarding() {
             ENCRYPTION: AES-256
           </div>
           <div className="text-[8px] font-black text-obsidian/30 uppercase italic flex items-center gap-2 justify-end text-right">
-            PROTO: REP_v4.2
+            PROTO: REP_NODE
             <div className="w-1 h-1 bg-obsidian/40 rounded-full"></div>
           </div>
         </div>

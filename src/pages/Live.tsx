@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react'
 import { mockGames } from '../data/mockGames'
 import EliteGameRow from '../components/EliteGameRow'
 import { Filter, ChevronRight, Activity, Search, ChevronDown } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Live() {
+  const navigate = useNavigate()
   const [activeSport, setActiveSport] = useState<string>('ALL_SPORTS')
   const [activeLeague, setActiveLeague] = useState<string>('ALL_LEAGUES')
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'LIVE' | 'UPCOMING'>('ALL')
@@ -55,8 +57,7 @@ export default function Live() {
   ]
 
   const handleMatchClick = (id: string) => {
-    console.log(`Navigating to match: ${id}`)
-    // navigate(`/match/${id}`)
+    navigate(`/match/${id}`)
   }
 
   return (
@@ -177,7 +178,7 @@ export default function Live() {
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-obsidian" />
             <h1 className="text-lg font-black italic uppercase tracking-tighter">
-              LIVESCORE_FEED_v4.2
+              LIVESCORE_FEED
             </h1>
           </div>
           <div className="flex items-center gap-4">

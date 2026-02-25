@@ -66,7 +66,7 @@ export default function Home() {
           <div className="bg-workspace border-2 border-obsidian p-6">
             <h3 className="text-[11px] font-black tracking-widest uppercase italic mb-4 text-obsidian">PLATFORM STATUS</h3>
             <p className="text-[10px] font-bold text-text-muted italic leading-tight mb-6">
-              REPEEK v4.2.0 <br />
+              REPEEK_SYSTEM <br />
               UPTIME: 99.99%
             </p>
             <div className="w-full h-1 bg-obsidian/10 relative overflow-hidden">
