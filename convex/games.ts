@@ -19,16 +19,20 @@ export const syncUpcomingEvents = action({
       const timeFrom = now.toISOString().split('.')[0] + 'Z';
       const timeTo = nextWeek.toISOString().split('.')[0] + 'Z';
 
-      // Example: Fetch exactly 7 days of Champions League games
-      const data: Event[] = await fetchUpcomingEvents(
-        "soccer_uefa_champs_league",
-        timeFrom,
-        timeTo
-      );
+      const targetLeagues = ["soccer_uefa_champs_league", "soccer_epl"];
+      let totalImported = 0;
+
+      for (const league of targetLeagues) {
+        const data: Event[] = await fetchUpcomingEvents(
+          league,
+          timeFrom,
+          timeTo
+        );
+        const result = await ctx.runMutation(internal.games.importEvents, { rawData: data as any });
+        totalImported += result.inserted;
+      }
       
-      await ctx.runMutation(internal.games.importEvents, { rawData: data as any });
-      
-      return { success: true, count: data.length };
+      return { success: true, count: totalImported };
     } catch (error: any) {
       console.error("Sync failed:", error);
       return { success: false, error: error.message };
