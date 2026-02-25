@@ -181,7 +181,7 @@ export default function Live() {
               LIVESCORE_FEED
             </h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-4">
             <div className="flex items-center gap-1.5">
                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
                <span className="text-[9px] font-black italic uppercase tracking-widest text-obsidian">{liveCount} ACTIVE_NODES</span>

@@ -7,9 +7,7 @@ import {
   Target, 
   Zap, 
   TrendingUp, 
-  Shield, 
   Clock,
-  BarChart3,
   MessageSquare,
   Share2,
   ChevronRight,
@@ -19,7 +17,7 @@ import {
 export default function MatchDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<'ANALYSIS' | 'SIGNALS' | 'MARKETS'>('ANALYSIS')
+  const [activeTab, setActiveTab] = useState<'SIGNALS' | 'MARKETS'>('SIGNALS')
 
   const game = useMemo(() => {
     return mockGames.find(g => g.id === id) || mockGames[0]
@@ -79,21 +77,21 @@ export default function MatchDetail() {
             </div>
           </div>
 
-          <div className="w-full flex items-center justify-between gap-8 md:gap-16">
+          <div className="w-full flex items-center justify-between gap-4 md:gap-16 flex-col md:flex-row">
             {/* Home Team */}
-            <div className="flex-1 text-center md:text-right space-y-4">
-              <div className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">{game.homeTeam}</div>
+            <div className="flex-1 text-center md:text-right space-y-2 md:space-y-4">
+              <div className="text-3xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">{game.homeTeam}</div>
               <div className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] italic">HOST_ENTITY</div>
             </div>
 
             {/* Score */}
-            <div className="flex flex-col items-center gap-4 shrink-0">
+            <div className="flex flex-col items-center gap-4 shrink-0 order-first md:order-none mb-8 md:mb-0">
                <div className="flex items-center gap-3">
-                  <div className="text-6xl md:text-8xl font-black italic tracking-tighter bg-white/5 border border-white/10 px-6 py-2 rounded-lg">
+                  <div className="text-5xl md:text-8xl font-black italic tracking-tighter bg-white/5 border border-white/10 px-4 md:px-6 py-2 rounded-lg">
                     {game.homeScore ?? 0}
                   </div>
                   <div className="text-2xl font-black text-white/20 italic">:</div>
-                  <div className="text-6xl md:text-8xl font-black italic tracking-tighter bg-white/5 border border-white/10 px-6 py-2 rounded-lg">
+                  <div className="text-5xl md:text-8xl font-black italic tracking-tighter bg-white/5 border border-white/10 px-4 md:px-6 py-2 rounded-lg">
                     {game.awayScore ?? 0}
                   </div>
                </div>
@@ -104,28 +102,28 @@ export default function MatchDetail() {
             </div>
 
             {/* Away Team */}
-            <div className="flex-1 text-center md:text-left space-y-4">
-              <div className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">{game.awayTeam}</div>
+            <div className="flex-1 text-center md:text-left space-y-2 md:space-y-4">
+              <div className="text-3xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">{game.awayTeam}</div>
               <div className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] italic">VISITOR_ENTITY</div>
             </div>
           </div>
 
-          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-8">
             {stats.map(stat => (
-              <div key={stat.label} className="bg-white/5 border border-white/5 p-4 space-y-2 group hover:bg-white/10 transition-all">
+              <div key={stat.label} className="bg-white/5 border border-white/10 p-4 space-y-2 group hover:bg-white/15 transition-all">
                 <div className="flex items-center justify-between">
-                  <stat.icon className="w-3.5 h-3.5 text-white/20 group-hover:text-accent transition-colors" />
-                  <span className="text-[8px] font-black text-white/20 uppercase italic tracking-widest">{stat.label}</span>
+                  <stat.icon className="w-3.5 h-3.5 text-white/40 group-hover:text-accent transition-colors" />
+                  <span className="text-[9px] font-black text-white uppercase italic tracking-widest">{stat.label}</span>
                 </div>
                 <div className="flex items-end justify-between">
-                   <span className="text-lg font-black italic text-white/80">{stat.home}</span>
-                   <div className="flex-1 h-[2px] bg-white/5 mx-3 mb-2 relative overflow-hidden">
+                   <span className="text-xl font-black italic text-white">{stat.home}</span>
+                   <div className="flex-1 h-[2px] bg-white/10 mx-3 mb-2 relative overflow-hidden">
                       <div 
                         className="absolute h-full bg-accent transition-all duration-1000" 
                         style={{ width: stat.home }}
                       ></div>
                    </div>
-                   <span className="text-lg font-black italic text-white/40">{stat.away}</span>
+                   <span className="text-xl font-black italic text-white">{stat.away}</span>
                 </div>
               </div>
             ))}
@@ -139,7 +137,6 @@ export default function MatchDetail() {
           {/* Tab Selector */}
           <div className="flex border-b-2 border-obsidian overflow-x-auto no-scrollbar">
             {[
-              { id: 'ANALYSIS', icon: BarChart3, label: 'TECHNICAL_ANALYSIS' },
               { id: 'SIGNALS', icon: MessageSquare, label: 'PREDICTION_SIGNALS' },
               { id: 'MARKETS', icon: TrendingUp, label: 'MARKET_ODDS' }
             ].map(tab => (
@@ -162,60 +159,6 @@ export default function MatchDetail() {
           </div>
 
           <div className="p-8">
-            {activeTab === 'ANALYSIS' && (
-              <div className="space-y-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-                      <Shield className="w-5 h-5 text-accent" />
-                      DEFENSIVE_POSTURE
-                    </h3>
-                    <p className="text-sm font-bold text-text-muted leading-relaxed uppercase italic">
-                      HOME_ENTITY IS OPERATING AT 84% DEFENSIVE EFFICIENCY. 
-                      EXPECTED_CONCESSION RATE REMAINS LOW AT 0.12 PER 15 MIN_NODES.
-                    </p>
-                    <div className="space-y-3">
-                      <div className="h-2 bg-workspace rounded-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-obsidian w-3/4"></div>
-                      </div>
-                      <div className="flex justify-between text-[10px] font-black italic text-obsidian/40 uppercase">
-                        <span>THREAT_LEVEL: MODERATE</span>
-                        <span>75/100</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-                      <Target className="w-5 h-5 text-accent" />
-                      ATTACK_VECTORS
-                    </h3>
-                    <p className="text-sm font-bold text-text-muted leading-relaxed uppercase italic">
-                      VISITOR_ENTITY DEPLOYING HIGH-PRESS PROTOCOL. 
-                      62% OF ATTACKS ORIGINATING FROM FLANK_NODES.
-                    </p>
-                    <div className="space-y-3">
-                      <div className="h-2 bg-workspace rounded-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-accent w-[62%]"></div>
-                      </div>
-                      <div className="flex justify-between text-[10px] font-black italic text-obsidian/40 uppercase">
-                        <span>FLANK_PRESSURE: CRITICAL</span>
-                        <span>62/100</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border border-obsidian/5 bg-workspace p-6">
-                   <h3 className="text-[10px] font-black italic uppercase tracking-[0.3em] text-obsidian/30 mb-4">SYSTEM_COMMENTARY</h3>
-                   <p className="text-xs font-mono text-obsidian/60 leading-relaxed uppercase">
-                     [NODE_742]: MATCH DYNAMICS SHIFTED AT 24' AFTER HOME GOAL. <br />
-                     [NODE_811]: ODDS VOLATILITY INCREASED IN 1X2 MARKETS. <br />
-                     [NODE_905]: HIGH CORRELATION DETECTED BETWEEN SHOTS AND SUCCESSFUL SIGNALS.
-                   </p>
-                </div>
-              </div>
-            )}
-
             {activeTab === 'SIGNALS' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between mb-2">
@@ -287,18 +230,6 @@ export default function MatchDetail() {
           </div>
         </div>
       </main>
-
-      {/* Floating Status Indicator */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40">
-        <div className="bg-obsidian text-white px-6 py-3 border-2 border-white/10 shadow-2xl flex items-center gap-4">
-           <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-              <span className="text-[10px] font-black italic uppercase tracking-widest">SIGNAL_LOCK_ACTIVE</span>
-           </div>
-           <div className="h-4 w-px bg-white/10"></div>
-           <div className="text-[10px] font-black italic text-accent tracking-tighter">ELITE_HUB // CRYPTO_SECURE</div>
-        </div>
-      </div>
     </div>
   )
 }
