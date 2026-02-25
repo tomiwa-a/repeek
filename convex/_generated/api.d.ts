@@ -14,6 +14,7 @@ import type * as games from "../games.js";
 import type * as http from "../http.js";
 import type * as internal_migrations from "../internal_migrations.js";
 import type * as lib_oddsApi from "../lib/oddsApi.js";
+import type * as slips from "../slips.js";
 import type * as sports from "../sports.js";
 import type * as users from "../users.js";
 
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   internal_migrations: typeof internal_migrations;
   "lib/oddsApi": typeof lib_oddsApi;
+  slips: typeof slips;
   sports: typeof sports;
   users: typeof users;
 }>;

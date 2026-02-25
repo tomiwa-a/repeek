@@ -44,6 +44,7 @@ export default defineSchema({
         away: v.number(),
       })
     ),
+    slipCount: v.optional(v.number()),
   })
     .index("by_sportKey", ["sportKey"])
     .index("by_isLive", ["isLive"])
@@ -84,7 +85,7 @@ export default defineSchema({
     title: v.string(),
     price: v.number(),
     totalOdds: v.number(),
-    status: v.string(),
+    status: v.union(v.literal("OPEN"), v.literal("WON"), v.literal("LOST"), v.literal("VOID")),
     timestamp: v.number(),
     legs: v.array(
       v.object({
