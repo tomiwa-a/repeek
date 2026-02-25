@@ -22,6 +22,8 @@ interface UIContextType {
   removeLegFromBuilder: (gameId: string) => void
   updateLegInBuilder: (gameId: string, updates: Partial<SlipLeg>) => void
   clearBuilder: () => void
+  isSidebarOpen: boolean
+  setIsSidebarOpen: (open: boolean) => void
 }
 
 const UIContext = createContext<UIContextType | undefined>(undefined)
@@ -31,6 +33,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [isSlipDetailOpen, setIsSlipDetailOpen] = useState(false)
   const [selectedSlip, setSelectedSlip] = useState<Slip | null>(null)
   const [builderLegs, setBuilderLegs] = useState<SlipLeg[]>([])
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const openSlipBuilder = () => setIsSlipBuilderOpen(true)
   const closeSlipBuilder = () => setIsSlipBuilderOpen(false)
@@ -65,7 +68,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     <UIContext.Provider value={{ 
       isSlipBuilderOpen, openSlipBuilder, closeSlipBuilder,
       isSlipDetailOpen, selectedSlip, openSlipDetail, closeSlipDetail,
-      builderLegs, addLegToBuilder, removeLegFromBuilder, updateLegInBuilder, clearBuilder
+      builderLegs, addLegToBuilder, removeLegFromBuilder, updateLegInBuilder, clearBuilder,
+      isSidebarOpen, setIsSidebarOpen
     }}>
       {children}
     </UIContext.Provider>

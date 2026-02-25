@@ -1,9 +1,9 @@
 import { Link, NavLink } from 'react-router-dom'
 import { Search, Bell, User, Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useUI } from '../context/UIContext'
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { isSidebarOpen, setIsSidebarOpen } = useUI()
 
   const navLinks = [
     { to: '/', label: 'HOME' },
@@ -74,23 +74,23 @@ export default function Header() {
             {/* Mobile Menu Toggle */}
             <button 
               className="md:hidden p-2 text-obsidian hover:bg-workspace border border-transparent hover:border-obsidian"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
+      {isSidebarOpen && (
         <div className="md:hidden border-t border-border bg-white animate-fade-in">
           <nav className="flex flex-col p-4 gap-2">
             {navLinks.map(link => (
               <NavLink
                 key={link.to}
                 to={link.to}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => setIsSidebarOpen(false)}
                 className={({ isActive }) => 
                   `px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                     isActive ? 'bg-primary/5 text-primary' : 'text-text-muted'

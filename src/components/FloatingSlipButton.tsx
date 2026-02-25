@@ -2,8 +2,18 @@ import { Plus, Layout } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 
 export default function FloatingSlipButton() {
-  const { openSlipBuilder, builderLegs } = useUI()
+  const { 
+    openSlipBuilder, 
+    builderLegs, 
+    isSlipBuilderOpen, 
+    isSlipDetailOpen,
+    isSidebarOpen 
+  } = useUI()
+  
   const activeLegsCount = builderLegs.length
+  
+  // Hide if any sidebar/drawer/menu is open
+  if (isSlipBuilderOpen || isSlipDetailOpen || isSidebarOpen) return null
 
   return (
     <div className="fixed bottom-6 right-6 z-[60] group">
