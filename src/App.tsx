@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useConvexAuth, useQuery } from 'convex/react'
+import { api } from '../convex/_generated/api'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Footer from './components/Footer'
@@ -21,6 +23,35 @@ import { mockGames } from './data/mockGames'
 import { generateMockSlips } from './data/mockSlips'
 import Notifications from './pages/Notifications'
 
+// Redirects unauthenticated users away from protected routes,
+// and authenticated-but-not-onboarded users to /onboarding
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useConvexAuth()
+  const location = useLocation()
+
+  const viewer = useQuery(
+    api.users.getViewer,
+    isAuthenticated ? {} : 'skip'
+  )
+
+  if (isLoading || (isAuthenticated && viewer === undefined)) return null
+
+  const publicPaths = ['/login', '/register', '/forgot-password']
+  const isPublicPath = publicPaths.includes(location.pathname)
+
+  // Authenticated but no username → force onboarding
+  if (isAuthenticated && !viewer?.username && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />
+  }
+
+  // Authenticated and onboarded → redirect away from auth pages
+  if (isAuthenticated && viewer?.username && isPublicPath) {
+    return <Navigate to="/" replace />
+  }
+
+  return <>{children}</>
+}
+
 function AppContent() {
   const { isSlipBuilderOpen, closeSlipBuilder, isSlipDetailOpen, closeSlipDetail, selectedSlip } = useUI()
   
@@ -41,17 +72,19 @@ function AppContent() {
         
         {/* Main Content */}
         <main className="flex-1 min-w-0 bg-white shadow-sm border-l border-obsidian/10">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/live" element={<Live />} />
-            <Route path="/predictors" element={<Predictors />} />
-            <Route path="/profile" element={<Profile slips={slips} />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-          </Routes>
+          <AuthGuard>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/live" element={<Live />} />
+              <Route path="/predictors" element={<Predictors />} />
+              <Route path="/profile" element={<Profile slips={slips} />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+            </Routes>
+          </AuthGuard>
         </main>
       </div>
       
@@ -76,3 +109,4 @@ function App() {
 }
 
 export default App
+

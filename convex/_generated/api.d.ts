@@ -13,6 +13,7 @@ import type * as games from "../games.js";
 import type * as http from "../http.js";
 import type * as lib_oddsApi from "../lib/oddsApi.js";
 import type * as sports from "../sports.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "lib/oddsApi": typeof lib_oddsApi;
   sports: typeof sports;
+  users: typeof users;
 }>;
 
 /**

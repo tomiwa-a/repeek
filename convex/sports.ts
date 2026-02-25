@@ -7,7 +7,9 @@ import { fetchSports } from "./lib/oddsApi";
 export const seedSports = action({
   args: {},
   handler: async (ctx): Promise<any> => {
-    const data: Sport[] = await fetchSports();
+    const apiKey = process.env["ODDS_API_KEY"];
+    if (!apiKey) throw new Error("Missing ODDS_API_KEY");
+    const data: Sport[] = await fetchSports(apiKey);
     const result: any = await ctx.runMutation(internal.sports.insertSports, { sportsData: data as any });
     
     return result;

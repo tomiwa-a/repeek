@@ -1,9 +1,19 @@
-import { Link, NavLink } from 'react-router-dom'
-import { Search, Bell, User, Menu, X } from 'lucide-react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Search, Bell, User, Menu, X, LogOut } from 'lucide-react'
 import { useUI } from '../context/UIContext'
+import { useConvexAuth } from 'convex/react'
+import { useAuthActions } from '@convex-dev/auth/react'
 
 export default function Header() {
   const { isSidebarOpen, setIsSidebarOpen } = useUI()
+  const { isAuthenticated } = useConvexAuth()
+  const { signOut } = useAuthActions()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    await signOut()
+    navigate('/login')
+  }
 
   const navLinks = [
     { to: '/', label: 'HOME' },
@@ -62,15 +72,31 @@ export default function Header() {
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-accent border border-obsidian"></span>
             </button>
 
-            <Link to="/login" className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
-              <User className="w-3.5 h-3.5" />
-              <span className="text-[10px] leading-none">LOGIN</span>
-            </Link>
-
-            <Link to="/register" className="hidden sm:flex items-center gap-2 btn-volt px-4 py-1.5 uppercase">
-              <span className="text-[10px] leading-none">SIGN UP</span>
-            </Link>
-
+            {isAuthenticated ? (
+              <>
+                <Link to="/profile" className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
+                  <User className="w-3.5 h-3.5" />
+                  <span className="text-[10px] leading-none">PROFILE</span>
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="hidden sm:flex items-center gap-2 btn-volt px-4 py-1.5 uppercase"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="text-[10px] leading-none">LOGOUT</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
+                  <User className="w-3.5 h-3.5" />
+                  <span className="text-[10px] leading-none">LOGIN</span>
+                </Link>
+                <Link to="/register" className="hidden sm:flex items-center gap-2 btn-volt px-4 py-1.5 uppercase">
+                  <span className="text-[10px] leading-none">SIGN UP</span>
+                </Link>
+              </>
+            )}
             {/* Mobile Menu Toggle */}
             <button 
               className="md:hidden p-2 text-obsidian hover:bg-workspace border border-transparent hover:border-obsidian"
