@@ -35,11 +35,18 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   )
 
   const authOnlyPaths = ['/login', '/register', '/forgot-password', '/onboarding']
+  const protectedPaths = ['/profile', '/notifications']
   const isAuthOnlyPath = authOnlyPaths.includes(location.pathname)
+  const isProtectedRoute = protectedPaths.includes(location.pathname)
 
   // While auth or viewer is loading, just show the page (no blank flash)
   if (isLoading || (isAuthenticated && viewer === undefined)) {
     return <>{children}</>
+  }
+
+  // Unauthenticated → redirect away from protected routes
+  if (!isAuthenticated && isProtectedRoute) {
+    return <Navigate to="/login" replace />
   }
 
   // Authenticated but no username → force onboarding
