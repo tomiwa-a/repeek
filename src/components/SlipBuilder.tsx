@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
-import { X, Search, Plus, Trash2, Calculator, Shield, ShieldOff, DollarSign } from 'lucide-react'
-import { mockGames } from '../data/mockGames'
+import { X, Trash2, Calculator, Shield, DollarSign, Activity, Target, Zap } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 
 interface SlipBuilderProps {
@@ -11,25 +10,18 @@ interface SlipBuilderProps {
 export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
   const { 
     builderLegs, 
-    addLegToBuilder, 
     removeLegFromBuilder, 
     updateLegInBuilder 
   } = useUI()
   
-  const [searchTerm, setSearchTerm] = useState('')
-  const [price, setPrice] = useState('2.00')
-  const [isLocked, setIsLocked] = useState(true)
+  const [price, setPrice] = useState('0.00')
+  const [isLocked, setIsLocked] = useState(false)
+  const [editingAnalysisId, setEditingAnalysisId] = useState<string | null>(null)
 
-  // Filter games based on search
-  const availableGames = useMemo(() => {
-    return mockGames.filter(g => 
-      !g.isLive && 
-      (g.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) || 
-       g.awayTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       g.league.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      !builderLegs.find(l => l.game.id === g.id)
-    ).slice(0, 5)
-  }, [searchTerm, builderLegs])
+  const activeLegForAnalysis = useMemo(() => 
+    builderLegs.find(l => l.game.id === editingAnalysisId),
+    [editingAnalysisId, builderLegs]
+  )
 
   const totalOdds = useMemo(() => {
     return builderLegs.reduce((acc, leg) => {
@@ -44,172 +36,192 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-obsidian/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-obsidian/60 backdrop-blur-md transition-opacity"
         onClick={onClose}
       ></div>
 
-      {/* Drawer */}
-      <div className="relative w-full max-w-xl bg-white border-l-4 border-obsidian flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300">
+      {/* Drawer - Synchronized width and style with SlipDetail */}
+      <div className="relative w-full max-w-md bg-white border-l-4 border-obsidian flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300">
         
-        {/* Header */}
-        <div className="bg-obsidian text-white p-6 flex justify-between items-center border-b-4 border-accent">
-          <div>
-            <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none mb-1">PROPOSE_NEW_SLIP</h2>
-            <div className="flex gap-4">
-              <span className="text-[10px] font-black text-accent uppercase italic">PROTOCOL: V.2.1</span>
-              <span className="text-[10px] font-black text-white/40 uppercase italic">OPERATOR: {builderLegs.length > 0 ? `${builderLegs.length}_LEGS` : 'EMPTY'}</span>
+        {/* Header - High Density */}
+        <div className="bg-obsidian text-white p-4 relative overflow-hidden shrink-0">
+          <div className="absolute inset-0 dot-matrix opacity-10 pointer-events-none"></div>
+          <div className="relative z-10 flex justify-between items-start">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-1.5 py-0.5 text-[8px] font-black italic border bg-white/10 border-white/20 text-white/40">
+                  DRAFT_STAGING
+                </span>
+                <span className="text-[8px] font-black text-white/40 uppercase tracking-widest italic">VERSION: 2.1</span>
+              </div>
+              <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none">PROPOSE_NEW_SLIP</h2>
             </div>
+            <button onClick={onClose} className="p-1.5 hover:bg-white/10 transition-colors">
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 transition-colors">
-            <X className="w-6 h-6" />
-          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar">
           
-          {/* Game Selection */}
-          <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-obsidian/40 uppercase tracking-[0.2em] italic">SEARCH_GAME_FEED</h3>
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-obsidian/20 group-focus-within:text-accent transition-colors" />
-              <input 
-                type="text" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="FIND_TEAMS_LEAGUES..." 
-                className="w-full bg-workspace border-2 border-obsidian px-10 py-3 text-[11px] font-black uppercase italic outline-none focus:border-accent transition-all" 
-              />
-            </div>
-
-            {searchTerm && availableGames.length > 0 && (
-              <div className="bg-obsidian border-2 border-accent p-1 space-y-1 mt-2">
-                {availableGames.map(game => (
-                  <button 
-                    key={game.id}
-                    onClick={() => {
-                        addLegToBuilder(game);
-                        setSearchTerm('');
-                    }}
-                    className="w-full flex justify-between items-center p-3 bg-white hover:bg-workspace transition-colors group"
-                  >
-                    <div className="text-left">
-                      <div className="text-[10px] font-black uppercase italic text-obsidian">{game.homeTeam} VS {game.awayTeam}</div>
-                      <div className="text-[8px] font-bold text-zinc-500 uppercase">{game.league}</div>
-                    </div>
-                    <Plus className="w-4 h-4 text-obsidian/20 group-hover:text-accent group-hover:scale-125 transition-all" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Added Legs */}
-          <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-obsidian/40 uppercase tracking-[0.2em] italic">ACTIVE_PROTOCOL_LEGS</h3>
+          {/* Active Legs - Compact & Dense */}
+          <section className="space-y-3">
+            <h3 className="text-[9px] font-black text-obsidian/40 uppercase tracking-[0.2em] italic flex items-center gap-1.5">
+              <Activity className="w-3 h-3" /> COMPONENT_LEGS
+            </h3>
             
             {builderLegs.length === 0 ? (
-              <div className="py-20 border-2 border-dashed border-obsidian/10 flex flex-col items-center justify-center opacity-30">
-                <Calculator className="w-12 h-12 mb-4" />
-                <p className="text-[10px] font-black uppercase tracking-widest">ZERO_ACTIVE_LEGS_DETECTED</p>
+              <div className="py-12 border border-dashed border-obsidian/10 flex flex-col items-center justify-center opacity-20">
+                <Calculator className="w-8 h-8 mb-2" />
+                <p className="text-[8px] font-black uppercase tracking-widest italic">ZERO_ACTIVE_LEGS</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {builderLegs.map((leg, idx) => (
-                  <div key={leg.game.id} className="bg-workspace border-l-4 border-obsidian p-4 space-y-4 relative group">
+                  <div key={leg.game.id} className="border border-obsidian p-3 space-y-2.5 relative group">
                     <button 
                       onClick={() => removeLegFromBuilder(leg.game.id)}
-                      className="absolute top-4 right-4 text-obsidian/20 hover:text-red-500 transition-colors"
+                      className="absolute top-2 right-2 text-obsidian/20 hover:text-red-500 transition-colors"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3" />
                     </button>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-black text-white bg-obsidian px-1.5 py-0.5 italic leading-none">LEG_{idx + 1}</span>
-                      <span className="text-[11px] font-black uppercase italic text-obsidian">{leg.game.homeTeam} VS {leg.game.awayTeam}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="bg-obsidian text-white text-[7px] font-black px-1 py-0.5 italic leading-none">L_{idx + 1}</span>
+                      <span className="text-[8px] font-black text-obsidian/30 uppercase italic">{leg.game.league}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-1.5">
+                      <h4 className="text-sm font-black italic uppercase tracking-tighter text-obsidian leading-none pr-6 truncate flex-1">{leg.game.homeTeam} VS {leg.game.awayTeam}</h4>
+                      <button
+                        onClick={() => setEditingAnalysisId(leg.game.id)}
+                        className={`p-1.5 border transition-all flex items-center gap-1.5 ${
+                          leg.analysis.trim() 
+                            ? 'bg-accent border-accent text-obsidian shadow-[0_0_10px_rgba(163,255,0,0.3)]' 
+                            : 'bg-white border-obsidian/10 text-obsidian/20 hover:border-obsidian hover:text-obsidian'
+                        }`}
+                      >
+                        <Zap className={`w-3 h-3 ${leg.analysis.trim() ? 'fill-obsidian' : ''}`} />
+                        <span className="text-[7px] font-black uppercase italic tracking-widest">
+                          {leg.analysis.trim() ? 'ANALYSIS_ATTACHED' : 'ADD_ANALYSIS'}
+                        </span>
+                      </button>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5">
                       {(['home', 'draw', 'away'] as const).map(option => (
                         <button
                           key={option}
                           onClick={() => updateLegInBuilder(leg.game.id, { pick: option })}
-                          className={`py-2 text-[10px] font-black uppercase italic border-2 transition-all ${
+                          className={`py-1.5 text-[9px] font-black uppercase italic border transition-all ${
                             leg.pick === option 
                               ? 'bg-obsidian border-obsidian text-accent' 
-                              : 'bg-white border-obsidian/5 text-obsidian/40 hover:border-obsidian hover:text-obsidian shadow-sm'
+                              : 'bg-white border-obsidian/10 text-obsidian/40 hover:border-obsidian'
                           }`}
                         >
                           {option} (@{leg.game.odds[option]})
                         </button>
                       ))}
                     </div>
-
-                    <textarea 
-                      value={leg.analysis}
-                      onChange={(e) => updateLegInBuilder(leg.game.id, { analysis: e.target.value })}
-                      placeholder="ENTER_TECHNICAL_ANALYSIS_PROTOCOL..."
-                      className="w-full bg-white border border-obsidian/10 p-3 text-[10px] font-bold uppercase italic outline-none focus:border-obsidian min-h-[80px] no-scrollbar"
-                    />
                   </div>
                 ))}
               </div>
             )}
           </section>
+        </div>
 
-          {/* Pricing & Visibility */}
-          <section className="pt-8 border-t-2 border-obsidian/5 space-y-6">
-            <h3 className="text-[10px] font-black text-obsidian/40 uppercase tracking-[0.2em] italic">ACCESS_CONFIGURATION</h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              {/* Toggle Lock */}
-              <button 
+        {/* Footer Fixed Section - High Density Configuration */}
+        <div className="bg-white border-t-4 border-obsidian shrink-0">
+          {/* Access Configuration - Fixed at bottom of content scroll */}
+          <div className="p-4 bg-workspace/50 border-b-2 border-obsidian/5 grid grid-cols-2 gap-3">
+             <button 
                 onClick={() => setIsLocked(!isLocked)}
-                className={`flex items-center justify-between p-4 border-2 transition-all ${
-                  isLocked ? 'bg-obsidian border-obsidian' : 'bg-white border-obsidian'
+                className={`flex items-center justify-between p-3 border transition-all ${
+                  isLocked ? 'bg-obsidian border-obsidian' : 'bg-white border-obsidian/20'
                 }`}
               >
                 <div className="text-left">
-                  <div className={`text-[10px] font-black uppercase italic ${isLocked ? 'text-accent' : 'text-obsidian'}`}>ENCRYPTION</div>
-                  <div className={`text-[8px] font-bold uppercase ${isLocked ? 'text-white/40' : 'text-zinc-400'}`}>
-                    {isLocked ? 'PROTOCOL: LOCKED' : 'PROTOCOL: PUBLIC'}
+                  <div className={`text-[8px] font-black uppercase italic ${isLocked ? 'text-accent' : 'text-obsidian'}`}>VISIBILITY</div>
+                  <div className={`text-[7px] font-bold uppercase leading-none mt-0.5 ${isLocked ? 'text-white/40' : 'text-zinc-400'}`}>
+                    {isLocked ? 'PREMIUM_ONLY' : 'PUBLIC_ACCESS'}
                   </div>
                 </div>
-                {isLocked ? <Shield className="w-5 h-5 text-accent" /> : <ShieldOff className="w-5 h-5 text-obsidian/20" />}
+                <Shield className={`w-3.5 h-3.5 ${isLocked ? 'text-accent' : 'text-obsidian/20'}`} />
               </button>
 
-              {/* Price Input */}
-              <div className="bg-white border-2 border-obsidian p-4 relative">
-                <div className="text-[10px] font-black uppercase italic text-obsidian mb-1">PRICE_UNIT</div>
-                <div className="flex items-center gap-1">
-                  <DollarSign className="w-4 h-4 text-obsidian" />
-                  <input 
-                    type="text" 
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="w-full font-black text-lg outline-none italic"
-                  />
+              <div className={`bg-white border p-2.5 flex items-center justify-between transition-all ${isLocked ? 'border-obsidian/20' : 'border-obsidian/5 opacity-50'}`}>
+                <div>
+                  <div className="text-[8px] font-black uppercase italic text-obsidian mb-0.5">ACCESS_FEE</div>
+                  <div className="flex items-center">
+                    <DollarSign className={`w-3 h-3 ${isLocked ? 'text-obsidian/40' : 'text-obsidian/20'}`} />
+                    <input 
+                      type="text" 
+                      value={price}
+                      disabled={!isLocked}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="bg-transparent font-black text-sm outline-none italic w-16 disabled:cursor-not-allowed"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
-
-        {/* Footer / Summary */}
-        <div className="bg-workspace p-6 border-t-4 border-obsidian flex items-center justify-between">
-          <div className="text-left">
-            <div className="text-[10px] font-black text-obsidian/40 uppercase italic tracking-widest">TOTAL_CALCULATED_ODDS</div>
-            <div className="text-3xl font-black italic text-obsidian leading-none">@{totalOdds}</div>
           </div>
-          <button 
-            disabled={builderLegs.length === 0}
-            className="btn-volt py-4 px-10 text-xs tracking-widest flex items-center gap-3 disabled:opacity-20 disabled:grayscale transition-all"
-            onClick={onClose}
-          >
-            INITIATE_PROTOCOL <Plus className="w-4 h-4" />
-          </button>
+
+          <div className="p-4 flex items-center justify-between">
+            <div className="text-left">
+              <div className="text-[8px] font-black text-obsidian/40 uppercase italic tracking-widest leading-none">CALCULATED_ODDS</div>
+              <div className="text-2xl font-black italic text-obsidian mt-1 leading-none">@{totalOdds}</div>
+            </div>
+            <button 
+              disabled={builderLegs.length === 0}
+              className="btn-volt py-3 px-8 text-[10px] tracking-widest flex items-center gap-2 font-black italic disabled:opacity-20 transition-all uppercase"
+              onClick={onClose}
+            >
+              DEPLOY_PROTOCOL <Target className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="pb-4 text-center">
+             <span className="text-[8px] font-black text-zinc-300 uppercase italic tracking-[0.2em]">OPERATIONAL_STATUS: READY</span>
+          </div>
         </div>
 
       </div>
+
+      {/* Analysis Modal Overlay */}
+      {editingAnalysisId && activeLegForAnalysis && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-obsidian/40 backdrop-blur-sm transition-all animate-in fade-in duration-200">
+          <div className="w-full max-w-sm bg-white border-2 border-obsidian relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-200">
+             <div className="bg-obsidian text-white p-3 flex justify-between items-center border-b border-accent">
+                <div className="flex items-center gap-2">
+                   <Zap className="w-3 h-3 text-accent fill-accent" />
+                   <span className="text-[10px] font-black uppercase italic tracking-widest">TECHNICAL_ANALYSIS_MODAL</span>
+                </div>
+                <button onClick={() => setEditingAnalysisId(null)} className="p-1 hover:bg-white/10 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+             </div>
+             <div className="p-4 space-y-4">
+                <div className="space-y-1">
+                   <div className="text-[8px] font-black text-obsidian/40 uppercase italic">{activeLegForAnalysis.game.league}</div>
+                   <div className="text-sm font-black text-obsidian uppercase italic">{activeLegForAnalysis.game.homeTeam} VS {activeLegForAnalysis.game.awayTeam}</div>
+                </div>
+                <textarea 
+                  autoFocus
+                  value={activeLegForAnalysis.analysis}
+                  onChange={(e) => updateLegInBuilder(activeLegForAnalysis.game.id, { analysis: e.target.value })}
+                  placeholder="ENTER_PROTOCOL_INTEL_HERE..."
+                  className="w-full bg-workspace border border-obsidian/10 p-4 text-[11px] font-bold uppercase italic outline-none focus:border-obsidian min-h-[160px] no-scrollbar resize-none"
+                />
+                <button 
+                  onClick={() => setEditingAnalysisId(null)}
+                  className="w-full btn-volt py-3 text-[10px] font-black uppercase italic tracking-widest"
+                >
+                  SAVE_PROTOCOL_REPORT
+                </button>
+             </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

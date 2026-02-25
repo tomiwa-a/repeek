@@ -4,11 +4,13 @@ import EliteGameRow from '../components/EliteGameRow'
 import TechnicalSpinner from '../components/TechnicalSpinner'
 import { Filter, ChevronRight, Activity, Search, ChevronDown, ChevronLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useUI } from '../context/UIContext'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 
 export default function Live() {
   const navigate = useNavigate()
+  const { addLegToBuilder, openSlipBuilder } = useUI()
   const [activeTab, setActiveTab] = useState<string>('ALL_SPORTS')
   const [activeSportKey, setActiveSportKey] = useState<string | null>(null)
   
@@ -246,7 +248,13 @@ export default function Live() {
           ) : processedGames.length > 0 ? (
             processedGames.map(game => (
               <div key={game.id} onClick={() => handleMatchClick(game)} className="cursor-pointer">
-                <EliteGameRow game={game} />
+                <EliteGameRow 
+                  game={game} 
+                  onAdd={() => {
+                    addLegToBuilder(game);
+                    openSlipBuilder();
+                  }}
+                />
               </div>
             ))
           ) : (

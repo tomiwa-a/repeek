@@ -1,4 +1,4 @@
-import { MessageSquare, ChevronRight } from 'lucide-react'
+import { MessageSquare, ChevronRight, Plus } from 'lucide-react'
 
 interface EliteGameRowProps {
   game: {
@@ -11,10 +11,13 @@ interface EliteGameRowProps {
     time?: string
     predictionCount: number
     sportKey?: string
+    id: string
+    odds?: any
   }
+  onAdd?: (e: React.MouseEvent) => void
 }
 
-export default function EliteGameRow({ game }: EliteGameRowProps) {
+export default function EliteGameRow({ game, onAdd }: EliteGameRowProps) {
   return (
     <div className="group relative bg-white border border-obsidian/10 hover:border-obsidian transition-all cursor-pointer flex items-center h-10 overflow-hidden select-none">
       {/* Time / Status Side-rail */}
@@ -59,9 +62,20 @@ export default function EliteGameRow({ game }: EliteGameRowProps) {
         <span className="text-[9px] font-black italic tracking-tighter">{game.predictionCount} SIGNALS</span>
       </div>
 
-      {/* Action Indicator */}
-      <div className="w-8 h-full flex items-center justify-center bg-workspace/0 group-hover:bg-workspace transition-colors border-l border-obsidian/5">
-        <ChevronRight className="w-3 h-3 text-obsidian transform group-hover:translate-x-0.5 transition-transform" />
+      {/* Action Indicators */}
+      <div className="flex h-full border-l border-obsidian/5">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onAdd?.(e);
+          }}
+          className="w-8 h-full flex items-center justify-center bg-workspace/0 hover:bg-accent group/add transition-colors border-r border-obsidian/5"
+        >
+          <Plus className="w-3.5 h-3.5 text-obsidian/40 group-hover/add:text-obsidian transition-colors" />
+        </button>
+        <div className="w-8 h-full flex items-center justify-center bg-workspace/0 group-hover:bg-workspace transition-colors">
+          <ChevronRight className="w-3 h-3 text-obsidian transform group-hover:translate-x-0.5 transition-transform" />
+        </div>
       </div>
 
       {/* Active Scanline Effect (Hover Only) */}
