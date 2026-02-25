@@ -6,7 +6,7 @@ import { useAuthActions } from '@convex-dev/auth/react'
 
 export default function Header() {
   const { isSidebarOpen, setIsSidebarOpen } = useUI()
-  const { isAuthenticated } = useConvexAuth()
+  const { isAuthenticated, isLoading } = useConvexAuth()
   const { signOut } = useAuthActions()
   const navigate = useNavigate()
 
@@ -72,7 +72,12 @@ export default function Header() {
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-accent border border-obsidian"></span>
             </button>
 
-            {isAuthenticated ? (
+            {isLoading ? (
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="w-16 h-8 bg-obsidian/5 border border-obsidian/10 animate-pulse"></div>
+                <div className="w-20 h-8 bg-obsidian/5 border border-obsidian/10 animate-pulse"></div>
+              </div>
+            ) : isAuthenticated ? (
               <>
                 <Link to="/profile" className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
                   <User className="w-3.5 h-3.5" />

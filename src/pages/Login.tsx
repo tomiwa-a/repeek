@@ -1,17 +1,22 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Mail, Lock, ChevronRight, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react'
 import { useAuthActions } from "@convex-dev/auth/react"
+import { useConvexAuth, useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Login() {
+  const { isAuthenticated } = useConvexAuth()
+  const viewer = useQuery(api.users.getViewer, isAuthenticated ? {} : 'skip')
   const { signIn } = useAuthActions()
-  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const isActuallyLoading = loading || (isAuthenticated && viewer === undefined)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -19,10 +24,9 @@ export default function Login() {
     setLoading(true)
     try {
       await signIn("password", { email, password, flow: "signIn" })
-      navigate("/onboarding")
+      // No manual navigate here - let AuthGuard handle it once viewer data arrives
     } catch {
       setError("Invalid credentials. Please check your email and password.")
-    } finally {
       setLoading(false)
     }
   }
@@ -115,11 +119,11 @@ export default function Login() {
 
               <button 
                 type="submit"
-                disabled={loading}
+                disabled={isActuallyLoading}
                 className="w-full btn-volt py-4 text-base tracking-widest flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /> VERIFYING...</>
+                {isActuallyLoading ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> AUTHENTICATING...</>
                 ) : (
                   <>AUTHORIZE <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>
                 )}

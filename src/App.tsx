@@ -34,11 +34,13 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     isAuthenticated ? {} : 'skip'
   )
 
-  if (isLoading || (isAuthenticated && viewer === undefined)) return null
-
-  const publicPaths = ['/login', '/register', '/forgot-password']
-  const authOnlyPaths = [...publicPaths, '/onboarding']
+  const authOnlyPaths = ['/login', '/register', '/forgot-password', '/onboarding']
   const isAuthOnlyPath = authOnlyPaths.includes(location.pathname)
+
+  // While auth or viewer is loading, just show the page (no blank flash)
+  if (isLoading || (isAuthenticated && viewer === undefined)) {
+    return <>{children}</>
+  }
 
   // Authenticated but no username → force onboarding
   if (isAuthenticated && !viewer?.username && location.pathname !== '/onboarding') {
