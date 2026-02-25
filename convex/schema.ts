@@ -12,6 +12,7 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
+    name: v.optional(v.string()),
 
     username: v.optional(v.string()),
     isPremium: v.optional(v.boolean()),
