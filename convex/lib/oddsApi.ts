@@ -1,4 +1,4 @@
-import type { Sport, GameOdds } from "../../src/types/oddsApi";
+import type { Sport, GameOdds, Event } from "../../src/types/oddsApi";
 
 const BASE_URL = "https://api.the-odds-api.com/v4";
 
@@ -29,11 +29,31 @@ export async function fetchSports(): Promise<Sport[]> {
 }
 
 /**
- * Fetches the upcoming games and odds for a specific sport.
+ * Fetches the upcoming games (fixtures) for a specific sport.
+ * NOTE: This endpoint costs 0 usage quota credits.
+ * @param sportKey The key of the sport to fetch (e.g., 'soccer', 'americanfootball_nfl')
+ * @returns Array of Event objects (without odds).
+ */
+export async function fetchUpcomingEvents(sportKey: string = "soccer_uefa_champs_league"): Promise<Event[]> {
+  const apiKey = getApiKey();
+  const url = `${BASE_URL}/sports/${sportKey}/events?apiKey=${apiKey}`;
+  
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch events from Odds API: ${response.statusText}`);
+  }
+  
+  return await response.json();
+}
+
+/**
+ * Fetches the odds for games in a specific sport.
+ * NOTE: This endpoint costs 1 quota credit per region per market.
  * @param sportKey The key of the sport to fetch (e.g., 'soccer', 'americanfootball_nfl')
  * @returns Array of GameOdds objects.
  */
-export async function fetchUpcomingGames(sportKey: string = "soccer"): Promise<GameOdds[]> {
+export async function fetchGameOdds(sportKey: string = "soccer_uefa_champs_league"): Promise<GameOdds[]> {
   const apiKey = getApiKey();
   
   // You can adjust regions (eu, us, uk, au) depending on where you want the prices from

@@ -1,17 +1,18 @@
 import { action, internalMutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { v } from "convex/values";
-import type { GameOdds, Bookmaker, Market, Outcome } from "../src/types/oddsApi";
-import { fetchUpcomingGames } from "./lib/oddsApi";
+import type { Event } from "../src/types/oddsApi";
+import { fetchUpcomingEvents } from "./lib/oddsApi";
 
-export const syncUpcomingGames = action({
+// Action to sync the schedule (costs 0 API credits)
+export const syncUpcomingEvents = action({
   args: {},
   handler: async (ctx) => {
     try {
-      // For MVP, we'll fetch soccer. Later we can pass sportKey as an arg.
-      const data: GameOdds[] = await fetchUpcomingGames("soccer");
+      // Example: We can iterate through active sports later. For now, just test Champions League.
+      const data: Event[] = await fetchUpcomingEvents("soccer_uefa_champs_league");
       
-      await ctx.runMutation(internal.games.importGames, { rawData: data as any });
+      await ctx.runMutation(internal.games.importEvents, { rawData: data as any });
       
       return { success: true, count: data.length };
     } catch (error: any) {
@@ -32,51 +33,32 @@ export const getUpcomingGames = query({
   },
 });
 
-export const importGames = internalMutation({
+export const importEvents = internalMutation({
   args: { rawData: v.any() },
   handler: async (ctx, args) => {
-    const games: GameOdds[] = args.rawData;
+    const events: Event[] = args.rawData;
+    let inserted = 0;
 
-    for (const game of games) {
+    for (const match of events) {
       const existing = await ctx.db
         .query("games")
-        .filter((q) => q.eq(q.field("id"), game.id))
+        .filter((q) => q.eq(q.field("id"), match.id))
         .first();
 
       if (!existing) {
-        const gameId = await ctx.db.insert("games", {
-          id: game.id,
-          homeTeam: game.home_team,
-          awayTeam: game.away_team,
-          league: game.sport_title || game.sport_key, // Fallback if title is missing
-          sportKey: game.sport_key,
-          commenceTime: new Date(game.commence_time).getTime(),
-          isLive: false,
+        await ctx.db.insert("games", {
+          id: match.id,
+          homeTeam: match.home_team,
+          awayTeam: match.away_team,
+          league: match.sport_title || match.sport_key,
+          sportKey: match.sport_key,
+          commenceTime: new Date(match.commence_time).getTime(),
+          isLive: false, // Default to false, can use a different endpoint to track live status later
         });
-
-        if (game.bookmakers && game.bookmakers.length > 0) {
-          const bookmaker: Bookmaker = game.bookmakers[0];
-          const market: Market | undefined = bookmaker.markets.find((m) => m.key === "h2h");
-          
-          if (market) {
-            const homeOdds = market.outcomes.find((o) => o.name === game.home_team)?.price;
-            const awayOdds = market.outcomes.find((o) => o.name === game.away_team)?.price;
-            const drawOdds = market.outcomes.find((o) => o.name === "Draw")?.price;
-
-            await ctx.db.insert("odds", {
-              gameId,
-              bookmaker: bookmaker.title,
-              lastUpdated: new Date(bookmaker.last_update).getTime(),
-              markets: [{
-                type: "h2h",
-                home: homeOdds,
-                away: awayOdds,
-                draw: drawOdds,
-              }]
-            });
-          }
-        }
+        inserted++;
       }
     }
+    
+    return { success: true, inserted };
   },
 });
