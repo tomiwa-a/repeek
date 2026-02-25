@@ -1,14 +1,18 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Search, Bell, User, Menu, X, LogOut } from 'lucide-react'
 import { useUI } from '../context/UIContext'
-import { useConvexAuth } from 'convex/react'
+import { useConvexAuth, useQuery } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Header() {
   const { isSidebarOpen, setIsSidebarOpen } = useUI()
   const { isAuthenticated, isLoading } = useConvexAuth()
+  const viewer = useQuery(api.users.getViewer, isAuthenticated ? {} : 'skip')
   const { signOut } = useAuthActions()
   const navigate = useNavigate()
+
+  const isAuthLoading = isLoading || (isAuthenticated && viewer === undefined)
 
   async function handleSignOut() {
     await signOut()
@@ -72,10 +76,10 @@ export default function Header() {
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-accent border border-obsidian"></span>
             </button>
 
-            {isLoading ? (
-              <div className="hidden sm:flex items-center gap-2">
+            {isAuthLoading ? (
+              <div className="flex items-center gap-2">
                 <div className="w-16 h-8 bg-obsidian/5 border border-obsidian/10 animate-pulse"></div>
-                <div className="w-20 h-8 bg-obsidian/5 border border-obsidian/10 animate-pulse"></div>
+                <div className="hidden sm:block w-20 h-8 bg-obsidian/5 border border-obsidian/10 animate-pulse"></div>
               </div>
             ) : isAuthenticated ? (
               <>
