@@ -6,7 +6,6 @@ export default defineSchema({
   ...authTables,
 
   users: defineTable({
-    name: v.optional(v.string()),
     image: v.optional(v.string()),
     email: v.optional(v.string()),
     emailVerificationTime: v.optional(v.number()),
@@ -15,8 +14,8 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
 
     username: v.optional(v.string()),
-    isPremium: v.boolean(),
-    onboardingComplete: v.boolean(),
+    isPremium: v.optional(v.boolean()),
+    onboardingComplete: v.optional(v.boolean()),
   })
     .index("email", ["email"])
     .index("by_username", ["username"]),

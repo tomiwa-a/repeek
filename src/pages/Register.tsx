@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, User, ChevronRight, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, ChevronRight, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react'
 import { useAuthActions } from "@convex-dev/auth/react"
 
 export default function Register() {
   const { signIn } = useAuthActions()
   const navigate = useNavigate()
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -19,7 +18,7 @@ export default function Register() {
     setError(null)
     setLoading(true)
     try {
-      await signIn("password", { name, email, password, flow: "signUp" })
+      await signIn("password", { email, password, flow: "signUp" })
       navigate("/onboarding")
     } catch {
       setError("Registration failed. This email may already be in use.")
@@ -68,22 +67,6 @@ export default function Register() {
 
             {/* Form */}
             <form className="space-y-5" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-obsidian tracking-widest ml-1">
-                  FULL NAME
-                </label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-obsidian/30" />
-                  <input 
-                    type="text"
-                    required
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="John Doe"
-                    className="w-full bg-workspace border-2 border-obsidian px-10 py-3 text-sm font-bold focus:outline-none focus:bg-white focus:border-accent transition-all"
-                  />
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-obsidian tracking-widest ml-1">
