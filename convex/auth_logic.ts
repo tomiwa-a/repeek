@@ -1,4 +1,4 @@
-import { action, query } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
 import { getAuthUserId, modifyAccountCredentials, invalidateSessions } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { Scrypt } from "lucia";
@@ -8,19 +8,45 @@ export const getAuthStatus = query({
   args: {},
   handler: async (ctx, _args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) return { hasPassword: false, isAnonymous: true };
+    if (!userId) return { hasPassword: false, isAnonymous: true, linkedProviders: [] };
 
     const accounts = await ctx.db
       .query("authAccounts")
       .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))
       .collect();
 
-    const hasPassword = accounts.some((a) => a.provider === "password");
+    const linkedProviders = accounts.map(a => a.provider);
+    const hasPassword = linkedProviders.includes("password");
     
     return { 
       hasPassword,
-      isAnonymous: false 
+      isAnonymous: false,
+      linkedProviders
     };
+  },
+});
+
+export const unlinkProvider = mutation({
+  args: { provider: v.string() },
+  handler: async (ctx, { provider }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const accounts = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))
+      .collect();
+
+    if (accounts.length <= 1) {
+      throw new Error("Cannot unlink the last remaining authentication method. Add another provider first.");
+    }
+
+    const account = accounts.find(a => a.provider === provider);
+    if (!account) throw new Error(`Account not found for provider: ${provider}`);
+
+    await ctx.db.delete(account._id);
+    
+    return { success: true };
   },
 });
 
