@@ -15,6 +15,7 @@ export interface Game {
     away: number
   }
   predictionCount: number
+  sportKey?: string
 }
 
 export const mockGames: Game[] = [
@@ -31,7 +32,8 @@ export const mockGames: Game[] = [
     awayScore: 2,
     matchTime: "67'",
     odds: { home: 2.10, draw: 3.40, away: 3.20 },
-    predictionCount: 342
+    predictionCount: 342,
+    sportKey: 'SOCCER'
   },
   {
     id: 'l2',
@@ -45,7 +47,8 @@ export const mockGames: Game[] = [
     awayScore: 0,
     matchTime: "52'",
     odds: { home: 2.45, draw: 3.10, away: 2.85 },
-    predictionCount: 489
+    predictionCount: 489,
+    sportKey: 'SOCCER'
   },
   {
     id: 'l3',
@@ -59,7 +62,8 @@ export const mockGames: Game[] = [
     awayScore: 1,
     matchTime: "38'",
     odds: { home: 1.75, draw: 3.80, away: 4.50 },
-    predictionCount: 267
+    predictionCount: 267,
+    sportKey: 'SOCCER'
   },
   {
     id: 'l4',
@@ -73,7 +77,8 @@ export const mockGames: Game[] = [
     awayScore: 1,
     matchTime: "72'",
     odds: { home: 1.55, draw: 4.20, away: 5.80 },
-    predictionCount: 198
+    predictionCount: 198,
+    sportKey: 'SOCCER'
   },
 
   // Upcoming matches - Next 6 hours
@@ -86,7 +91,8 @@ export const mockGames: Game[] = [
     startTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
     isLive: false,
     odds: { home: 2.20, draw: 3.30, away: 3.10 },
-    predictionCount: 428
+    predictionCount: 428,
+    sportKey: 'SOCCER'
   },
   {
     id: 'u2',
