@@ -19,7 +19,7 @@ export default function Login() {
     setLoading(true)
     try {
       await signIn("password", { email, password, flow: "signIn" })
-      navigate("/")
+      navigate("/onboarding")
     } catch {
       setError("Invalid credentials. Please check your email and password.")
     } finally {

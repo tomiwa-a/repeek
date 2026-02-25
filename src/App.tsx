@@ -37,15 +37,16 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   if (isLoading || (isAuthenticated && viewer === undefined)) return null
 
   const publicPaths = ['/login', '/register', '/forgot-password']
-  const isPublicPath = publicPaths.includes(location.pathname)
+  const authOnlyPaths = [...publicPaths, '/onboarding']
+  const isAuthOnlyPath = authOnlyPaths.includes(location.pathname)
 
   // Authenticated but no username → force onboarding
   if (isAuthenticated && !viewer?.username && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />
   }
 
-  // Authenticated and onboarded → redirect away from auth pages
-  if (isAuthenticated && viewer?.username && isPublicPath) {
+  // Authenticated and onboarded → redirect away from auth/onboarding pages
+  if (isAuthenticated && viewer?.username && isAuthOnlyPath) {
     return <Navigate to="/" replace />
   }
 
