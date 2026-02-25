@@ -9,6 +9,7 @@
  */
 
 import type * as games from "../games.js";
+import type * as lib_oddsApi from "../lib/oddsApi.js";
 import type * as sports from "../sports.js";
 
 import type {
@@ -19,6 +20,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   games: typeof games;
+  "lib/oddsApi": typeof lib_oddsApi;
   sports: typeof sports;
 }>;
 

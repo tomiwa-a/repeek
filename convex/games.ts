@@ -2,24 +2,14 @@ import { action, internalMutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { v } from "convex/values";
 import type { GameOdds, Bookmaker, Market, Outcome } from "../src/types/oddsApi";
-
-const ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/soccer/odds/?regions=eu&markets=h2h&oddsFormat=decimal";
+import { fetchUpcomingGames } from "./lib/oddsApi";
 
 export const syncUpcomingGames = action({
   args: {},
   handler: async (ctx) => {
-    const apiKey = process.env.ODDS_API_KEY;
-    if (!apiKey) {
-      throw new Error("Missing ODDS_API_KEY in environment variables");
-    }
-
     try {
-      const response = await fetch(`${ODDS_API_URL}&apiKey=${apiKey}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch from Odds API: ${response.statusText}`);
-      }
-
-      const data: GameOdds[] = await response.json();
+      // For MVP, we'll fetch soccer. Later we can pass sportKey as an arg.
+      const data: GameOdds[] = await fetchUpcomingGames("soccer");
       
       await ctx.runMutation(internal.games.importGames, { rawData: data as any });
       

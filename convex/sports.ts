@@ -2,21 +2,12 @@ import { action, internalMutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import type { Sport } from "../src/types/oddsApi";
-
-const ODDS_API_URL = "https://api.the-odds-api.com/v4/sports/";
+import { fetchSports } from "./lib/oddsApi";
 
 export const seedSports = action({
   args: {},
   handler: async (ctx): Promise<any> => {
-    const apiKey = process.env.ODDS_API_KEY;
-    if (!apiKey) throw new Error("Missing ODDS_API_KEY");
-
-    const response = await fetch(`${ODDS_API_URL}?apiKey=${apiKey}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch from Odds API: ${response.statusText}`);
-    }
-
-    const data: Sport[] = await response.json();
+    const data: Sport[] = await fetchSports();
     const result: any = await ctx.runMutation(internal.sports.insertSports, { sportsData: data as any });
     
     return result;
