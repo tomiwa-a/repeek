@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@convex-dev/auth": "^0.0.90",
     "convex": "^1.32.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.575.0",
