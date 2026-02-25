@@ -1,7 +1,26 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  ...authTables,
+
+  users: defineTable({
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    name: v.optional(v.string()),
+
+    username: v.optional(v.string()),
+    isPremium: v.optional(v.boolean()),
+    onboardingComplete: v.optional(v.boolean()),
+  })
+    .index("email", ["email"])
+    .index("by_username", ["username"]),
+
   sports: defineTable({
     key: v.string(),
     group: v.string(),
@@ -80,3 +99,4 @@ export default defineSchema({
     .index("by_timestamp", ["timestamp"])
     .index("by_status", ["status"]),
 });
+

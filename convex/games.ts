@@ -1,5 +1,5 @@
 import { action, internalMutation, query } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import type { Event } from "../src/types/oddsApi";
 import { fetchUpcomingEvents } from "./lib/oddsApi";
@@ -9,6 +9,9 @@ export const syncUpcomingEvents = action({
   args: {},
   handler: async (ctx) => {
     try {
+      const apiKey = process.env["ODDS_API_KEY"];
+      if (!apiKey) throw new Error("Missing ODDS_API_KEY");
+
       // Calculate timestamps for the next 7 days
       const now = new Date();
       const nextWeek = new Date();
@@ -23,6 +26,7 @@ export const syncUpcomingEvents = action({
 
       for (const league of targetLeagues) {
         const data: Event[] = await fetchUpcomingEvents(
+          apiKey,
           league,
           timeFrom,
           timeTo

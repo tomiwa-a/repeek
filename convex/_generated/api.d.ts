@@ -8,9 +8,14 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
+import type * as auth_logic from "../auth_logic.js";
 import type * as games from "../games.js";
+import type * as http from "../http.js";
+import type * as internal_migrations from "../internal_migrations.js";
 import type * as lib_oddsApi from "../lib/oddsApi.js";
 import type * as sports from "../sports.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +24,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
+  auth_logic: typeof auth_logic;
   games: typeof games;
+  http: typeof http;
+  internal_migrations: typeof internal_migrations;
   "lib/oddsApi": typeof lib_oddsApi;
   sports: typeof sports;
+  users: typeof users;
 }>;
 
 /**
