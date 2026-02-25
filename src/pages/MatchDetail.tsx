@@ -8,14 +8,11 @@ import {
   Zap, 
   TrendingUp, 
   Clock,
-  MessageSquare,
   Share2,
   ChevronRight,
-  User,
   Plus,
   Filter,
-  Search,
-  Layers
+  Search
 } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 import SlipListItem from '../components/SlipListItem'
@@ -28,7 +25,7 @@ interface MatchDetailProps {
 export default function MatchDetail({ slips = [] }: MatchDetailProps) {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { addLegToBuilder } = useUI()
+  const { addLegToBuilder, openSlipBuilder } = useUI()
   
   // Slips filtering & pagination
   const [slipPage, setSlipPage] = useState(1)
@@ -218,37 +215,10 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
             )}
           </div>
 
-          {/* Right Column (Sidebar): Stats & Markets */}
+          {/* Right Column (Sidebar): Markets & Stats */}
           <aside className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
             
-            {/* 1. TECHNICAL_MATRICES (Moved here) */}
-            <div className="bg-workspace p-5 border-b-4 border-obsidian relative overflow-hidden">
-               <div className="flex items-center gap-3 mb-4">
-                 <Activity className="w-4 h-4 text-obsidian" />
-                 <h2 className="text-[11px] font-black italic uppercase tracking-widest text-obsidian">TECHNICAL_MATRICES</h2>
-               </div>
-               <div className="space-y-4">
-                {stats.map(stat => (
-                  <div key={stat.label} className="bg-white border border-obsidian/10 p-3 space-y-2 group hover:border-obsidian transition-all">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-black text-obsidian/40 uppercase italic tracking-widest">{stat.label}</span>
-                    </div>
-                    <div className="flex items-end justify-between">
-                       <span className="text-[16px] font-black italic text-obsidian leading-none">{stat.home}</span>
-                       <div className="flex-1 h-[2px] bg-obsidian/5 mx-3 mb-1.5 relative overflow-hidden">
-                          <div 
-                            className="absolute h-full bg-obsidian/40" 
-                            style={{ width: stat.home }}
-                          ></div>
-                       </div>
-                       <span className="text-[16px] font-black italic text-obsidian leading-none">{stat.away}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 2. REALTIME_MARKETS */}
+            {/* 1. REALTIME_MARKETS (Moved above stats) */}
             <div className="bg-white border-2 border-obsidian shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <div className="bg-obsidian text-white px-4 py-2.5 flex items-center justify-between">
                 <span className="text-[10px] font-black italic uppercase tracking-widest text-accent">REALTIME_MARKETS</span>
@@ -272,11 +242,41 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
                 ))}
                 
                 <button 
-                  onClick={() => addLegToBuilder(game)}
+                  onClick={() => {
+                    addLegToBuilder(game);
+                    openSlipBuilder();
+                  }}
                   className="w-full mt-4 bg-accent text-obsidian font-black py-4 border-2 border-obsidian shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0 transition-all flex items-center justify-center gap-2 uppercase italic text-xs tracking-widest"
                 >
                   <Plus className="w-4 h-4" /> ADD_TO_SLIP
                 </button>
+              </div>
+            </div>
+
+            {/* 2. TECHNICAL_MATRICES (Moved below markets) */}
+            <div className="bg-workspace p-5 border-b-4 border-obsidian relative overflow-hidden">
+               <div className="flex items-center gap-3 mb-4">
+                 <Activity className="w-4 h-4 text-obsidian" />
+                 <h2 className="text-[11px] font-black italic uppercase tracking-widest text-obsidian">TECHNICAL_MATRICES</h2>
+               </div>
+               <div className="space-y-4">
+                {stats.map(stat => (
+                  <div key={stat.label} className="bg-white border border-obsidian/10 p-3 space-y-2 group hover:border-obsidian transition-all">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-black text-obsidian/40 uppercase italic tracking-widest">{stat.label}</span>
+                    </div>
+                    <div className="flex items-end justify-between">
+                       <span className="text-[16px] font-black italic text-obsidian leading-none">{stat.home}</span>
+                       <div className="flex-1 h-[2px] bg-obsidian/5 mx-3 mb-1.5 relative overflow-hidden">
+                          <div 
+                            className="absolute h-full bg-obsidian/40" 
+                            style={{ width: stat.home }}
+                          ></div>
+                       </div>
+                       <span className="text-[16px] font-black italic text-obsidian leading-none">{stat.away}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
