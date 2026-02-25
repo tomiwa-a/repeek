@@ -192,8 +192,8 @@ export default function SettingsTab() {
               </p>
             </div>
 
-            <div className="space-y-6">
-              <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="space-y-4">
                 <label className="block mb-2 text-[10px] font-black uppercase text-red-900 tracking-widest leading-none">
                   TYPE <span className="text-red-600 underline">TERMINATE</span> TO CONFIRM
                 </label>
