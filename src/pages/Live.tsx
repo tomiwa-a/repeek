@@ -63,13 +63,21 @@ export default function Live() {
 
   const sportGroups = useMemo(() => Object.keys(sportsByGroup).sort(), [sportsByGroup])
 
-  const toggleGroup = (group: string) => {
+  const handleGroupExpand = (e: React.MouseEvent, group: string) => {
+    e.stopPropagation()
     setExpandedSports(prev => 
       prev.includes(group) ? prev.filter(k => k !== group) : [...prev, group]
     )
+  }
+
+  const handleGroupSelect = (group: string) => {
     setActiveTab(group)
     setActiveSportKey(null) 
     setCurrentPage(1)
+    // Also expand if it's not already
+    if (!expandedSports.includes(group)) {
+      setExpandedSports(prev => [...prev, group])
+    }
   }
 
   const dataToProcess = convexData || cachedGamesResponse
@@ -149,7 +157,7 @@ export default function Live() {
               {sportGroups.map(groupName => (
                 <div key={groupName} className="space-y-1">
                   <button
-                    onClick={() => toggleGroup(groupName)}
+                    onClick={() => handleGroupSelect(groupName)}
                     className={`w-full text-left px-3 py-2 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
                       activeTab === groupName 
                         ? 'bg-obsidian text-white border-obsidian' 
@@ -157,7 +165,12 @@ export default function Live() {
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                       <ChevronDown className={`w-3 h-3 transition-transform ${expandedSports.includes(groupName) ? 'rotate-0' : '-rotate-90'}`} />
+                       <div 
+                         onClick={(e) => handleGroupExpand(e, groupName)}
+                         className="p-1 -ml-1 hover:bg-white/10 transition-colors"
+                       >
+                         <ChevronDown className={`w-3 h-3 transition-transform ${expandedSports.includes(groupName) ? 'rotate-0' : '-rotate-90'}`} />
+                       </div>
                        {groupName.replace(/_/g, ' ')}
                     </span>
                     <ChevronRight className={`w-3 h-3 transition-transform ${activeTab === groupName ? 'translate-x-0' : '-translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0'}`} />
