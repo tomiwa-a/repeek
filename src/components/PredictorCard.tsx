@@ -11,9 +11,10 @@ export default function PredictorCard({ predictor }: PredictorCardProps) {
 
   return (
     <div 
-      onClick={() => navigate(`/profile?u=${predictor.username}`)}
+      onClick={() => navigate(`/${predictor.username}`)}
       className="bg-white border-2 border-obsidian p-3 shadow-sm hover-glitch scanline-card cursor-pointer transition-all flex flex-col h-full font-sans antialiased group"
     >
+      {/* ... (middle content remains unchanged) */}
       {/* Header */}
       <div className="flex justify-between items-start mb-4 pb-2 border-b border-obsidian/5">
         <div className="flex items-center gap-2.5">
@@ -84,10 +85,15 @@ export default function PredictorCard({ predictor }: PredictorCardProps) {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="mt-auto">
-        <button className="w-full btn-volt py-3 text-[10px] font-black italic uppercase tracking-[0.2em] flex items-center justify-center gap-2 group/btn">
-          VIEW_PROFILE_PROTOCOL
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/${predictor.username}`);
+          }}
+          className="w-full btn-volt py-3 text-[10px] font-black italic uppercase tracking-[0.2em] flex items-center justify-center gap-2 group/btn"
+        >
+          VIEW_PROFILE
           <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
         </button>
       </div>

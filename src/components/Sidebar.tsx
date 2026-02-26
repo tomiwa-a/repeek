@@ -1,15 +1,20 @@
 import { NavLink } from 'react-router-dom'
 import { Home, Radio, User, Users, Plus, Bell } from 'lucide-react'
 import { useUI } from '../context/UIContext'
+import { useConvexAuth, useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Sidebar() {
   const { openSlipBuilder } = useUI()
+  const { isAuthenticated } = useConvexAuth()
+  const viewer = useQuery(api.users.getViewer, isAuthenticated ? {} : 'skip')
+
   const menuItems = [
     { icon: Home, label: 'HOME', to: '/' },
     { icon: Radio, label: 'LIVESCORE', to: '/live' },
     { icon: Users, label: 'LEADERBOARD', to: '/predictors' },
     { icon: Bell, label: 'NOTIFICATIONS', to: '/notifications', badge: 2 },
-    { icon: User, label: 'PROFILE', to: '/profile' },
+    { icon: User, label: 'PROFILE', to: viewer?.username ? `/${viewer.username}` : (isAuthenticated ? '#' : '/login') },
   ]
 
   return (

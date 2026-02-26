@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useParams, Navigate } from 'react-router-dom'
 import {
   UserPlus, BarChart3,
   ChevronLeft, ChevronRight,
@@ -13,27 +14,32 @@ import SettingsTab from '../components/profile/SettingsTab'
 import { useUI } from '../context/UIContext'
 
 export default function Profile() {
+  const { username } = useParams<{ username: string }>()
   const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
   const viewer = useQuery(api.users.getViewer, isAuthenticated ? {} : 'skip')
   
-  const isProfileLoading = isAuthLoading || (isAuthenticated && viewer === undefined)
+  // Fetch the target profile user
+  const profileUser = useQuery(api.users.getUserByUsername, { username: username || '' })
+  
+  const isProfileLoading = isAuthLoading || (isAuthenticated && viewer === undefined) || profileUser === undefined
+  const isOwnProfile = viewer?._id === profileUser?._id
 
   const user = useMemo(() => ({
-    username: viewer?.username || 'ANONYMOUS',
-    email: viewer?.email || '',
-    isPremium: viewer?.isPremium ?? false,
+    username: profileUser?.username || 'ANONYMOUS',
+    email: profileUser?.email || '',
+    isPremium: profileUser?.isPremium ?? false,
     followers: 0,
-    winRate: viewer?.stats?.winRate || 0,
-    totalSlips: viewer?.stats?.totalSlips || 0,
-    totalGames: viewer?.stats?.totalGames || 0,
-    roi: viewer?.stats?.roi || 0,
+    winRate: profileUser?.stats?.winRate || 0,
+    totalSlips: profileUser?.stats?.totalSlips || 0,
+    totalGames: profileUser?.stats?.totalGames || 0,
+    roi: profileUser?.stats?.roi || 0,
     wins: 0,
     losses: 0,
     streak: 0,
     streakType: 'win' as const
-  }), [viewer])
+  }), [profileUser])
 
-  const liveSlips = useQuery(api.slips.getSlipsByUser, {}) || []
+  const liveSlips = useQuery(api.slips.getSlipsByUser, profileUser ? { userId: profileUser._id } : 'skip') || []
   const { openSlipBuilder: _unused_openSlipBuilder } = useUI()
   const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis' | 'settings'>('ongoing')
   const [page, setPage] = useState(1)
@@ -42,7 +48,13 @@ export default function Profile() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sportFilter, setSportFilter] = useState<'all' | 'soccer' | 'basketball' | 'football'>('all')
 
+  // Redirect if user not found after loading
+  if (!isProfileLoading && !profileUser) {
+    return <Navigate to="/" replace />
+  }
+
   const userSlips = useMemo(() => {
+    // ... same mapping logic ...
     return liveSlips.map(s => ({
       ...s,
       id: s._id,
@@ -185,9 +197,11 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <button className="w-full mt-6 bg-accent text-obsidian font-black py-4 border-2 border-obsidian shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0 transition-all flex items-center justify-center gap-2 uppercase italic text-xs tracking-widest">
-                  <UserPlus className="w-4 h-4" /> FOLLOW_ANALYST
-                </button>
+                {!isOwnProfile && !isProfileLoading && (
+                  <button className="w-full mt-6 bg-accent text-obsidian font-black py-4 border-2 border-obsidian shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0 transition-all flex items-center justify-center gap-2 uppercase italic text-xs tracking-widest">
+                    <UserPlus className="w-4 h-4" /> FOLLOW_ANALYST
+                  </button>
+                )}
             </div>
           </div>
         </aside>
@@ -196,7 +210,9 @@ export default function Profile() {
         <main className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between border-b-2 border-obsidian/5 pb-4">
              <div className="flex items-center gap-8">
-                {(['ongoing', 'previous', 'analysis', 'settings'] as const).map((tab) => (
+                {(['ongoing', 'previous', 'analysis', 'settings'] as const)
+                  .filter(tab => tab !== 'settings' || isOwnProfile)
+                  .map((tab) => (
                   <button
                     key={tab}
                     onClick={() => { setActiveTab(tab); setPage(1); }}

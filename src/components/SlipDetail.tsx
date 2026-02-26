@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { X, Shield, Lock, User, Target, Share2, ChevronDown, ChevronUp, Zap, Activity } from 'lucide-react'
 import type { Slip } from '../types/slips'
 
@@ -9,6 +10,7 @@ interface SlipDetailProps {
 }
 
 export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
+  const navigate = useNavigate()
   const [expandedLegs, setExpandedLegs] = useState<Record<string, boolean>>({})
 
   const toggleLeg = (id: string) => {
@@ -119,9 +121,17 @@ export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
                         <span className="bg-obsidian text-white text-[7px] font-black px-1 py-0.5 italic leading-none">L_{idx + 1}</span>
                         <span className="text-[8px] font-black text-obsidian/30 uppercase italic">{leg.game?.league || 'UNKNOWN_LEAGUE'}</span>
                       </div>
-                      <h4 className="text-base font-black italic uppercase tracking-tighter text-obsidian leading-none">
-                        {leg.game?.homeTeam || 'HOME'} VS {leg.game?.awayTeam || 'AWAY'}
-                      </h4>
+                      <div 
+                        className="cursor-pointer group/game"
+                        onClick={() => {
+                          onClose();
+                          navigate(`/match/${leg.game?.id}`);
+                        }}
+                      >
+                        <h4 className="text-base font-black italic uppercase tracking-tighter text-obsidian leading-none group-hover/game:text-accent transition-colors">
+                          {leg.game?.homeTeam || 'HOME'} VS {leg.game?.awayTeam || 'AWAY'}
+                        </h4>
+                      </div>
                     </div>
                     <div className="text-right">
                        <div className="text-sm font-black italic text-obsidian leading-none">@{leg.odds}</div>

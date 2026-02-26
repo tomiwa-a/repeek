@@ -81,13 +81,13 @@ function AppContent() {
               <Route path="/" element={<Home />} />
               <Route path="/live" element={<Live />} />
               <Route path="/predictors" element={<Predictors />} />
-              <Route path="/profile" element={<Profile />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/match/:id" element={<MatchDetail />} />
+              <Route path="/:username" element={<Profile />} />
             </Routes>
           </AuthGuard>
         </main>

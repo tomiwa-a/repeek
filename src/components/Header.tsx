@@ -83,7 +83,7 @@ export default function Header() {
               </div>
             ) : isAuthenticated ? (
               <>
-                <Link to="/profile" className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
+                <Link to={`/${viewer?.username}`} className="hidden sm:flex items-center gap-2 btn-elite px-4 py-1.5 uppercase">
                   <User className="w-3.5 h-3.5" />
                   <span className="text-[10px] leading-none">PROFILE</span>
                 </Link>

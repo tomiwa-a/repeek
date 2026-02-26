@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { X, Trash2, Calculator, Shield, DollarSign, Activity, Target, Zap, CheckCircle2, AlertTriangle, Loader2, FileText } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 import { useMutation } from 'convex/react'
@@ -10,6 +11,7 @@ interface SlipBuilderProps {
 }
 
 export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
+  const navigate = useNavigate()
   const { 
     builderLegs, 
     removeLegFromBuilder, 
@@ -175,11 +177,21 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
                             <span className="bg-red-500 text-white px-1 py-0.5 text-[7px] font-black italic">MOCK_DATA</span>
                           )}
                         </div>
-                      <div className="flex items-center justify-between gap-1.5">
-                        <h4 className="text-sm font-black italic uppercase tracking-tighter text-obsidian leading-none pr-6 truncate flex-1">{leg.game.homeTeam} VS {leg.game.awayTeam}</h4>
+                      <div className="flex items-center justify-between gap-1.5 min-w-0">
+                        <div 
+                          className="cursor-pointer group/game flex-1 truncate"
+                          onClick={() => {
+                            onClose();
+                            navigate(`/match/${leg.game.id}`);
+                          }}
+                        >
+                          <h4 className="text-sm font-black italic uppercase tracking-tighter text-obsidian leading-none pr-2 truncate group-hover/game:text-accent transition-colors">
+                            {leg.game.homeTeam} VS {leg.game.awayTeam}
+                          </h4>
+                        </div>
                         <button
                           onClick={() => setEditingAnalysisId(leg.game.id)}
-                          className={`p-1.5 border transition-all flex items-center gap-1.5 ${
+                          className={`p-1.5 border transition-all flex items-center gap-1.5 shrink-0 ${
                             leg.analysis.trim() 
                               ? 'bg-accent border-accent text-obsidian shadow-[0_0_10px_rgba(163,255,0,0.3)]' 
                               : 'bg-white border-obsidian/10 text-obsidian/20 hover:border-obsidian hover:text-obsidian'

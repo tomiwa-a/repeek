@@ -56,3 +56,14 @@ export const setUsername = mutation({
     return { success: true };
   },
 });
+
+/** Returns a user's document by their username. */
+export const getUserByUsername = query({
+  args: { username: v.string() },
+  handler: async (ctx, { username }) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", username))
+      .first();
+  },
+});
