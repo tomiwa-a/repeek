@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Shield, Lock, User, Target, Share2, ChevronDown, ChevronUp, Zap, Activity } from 'lucide-react'
-import type { Slip } from '../data/mockSlips'
+import type { Slip } from '../types/slips'
 
 interface SlipDetailProps {
   isOpen: boolean
@@ -8,27 +8,14 @@ interface SlipDetailProps {
   slip: Slip | null
 }
 
-export default function SlipDetail({ isOpen, onClose, slip: rawSlip }: SlipDetailProps) {
+export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
   const [expandedLegs, setExpandedLegs] = useState<Record<string, boolean>>({})
 
   const toggleLeg = (id: string) => {
     setExpandedLegs(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  if (!isOpen || !rawSlip) return null
-
-  // Normalization Layer: Handle both Slip and PredictionEquivalent
-  const slip: Slip = (rawSlip as any).legs ? (rawSlip as Slip) : {
-    id: (rawSlip as any).slipId || rawSlip.id,
-    title: (rawSlip as any).pickLabel || 'PREDICTION_PROTOCOL',
-    predictor: (rawSlip as any).predictor,
-    legs: [rawSlip as any], // The prediction itself acts as the single leg
-    totalOdds: (rawSlip as any).odds || 0,
-    status: (rawSlip as any).status || 'pending',
-    isPremium: (rawSlip as any).isPremium || false,
-    timestamp: (rawSlip as any).timestamp || new Date(),
-    price: (rawSlip as any).isPremium ? 2.50 : 0
-  }
+  if (!isOpen || !slip) return null
 
   const isWon = slip.status === 'won'
   const isLost = slip.status === 'lost'
@@ -130,9 +117,11 @@ export default function SlipDetail({ isOpen, onClose, slip: rawSlip }: SlipDetai
                     <div>
                       <div className="flex items-center gap-1.5 mb-1">
                         <span className="bg-obsidian text-white text-[7px] font-black px-1 py-0.5 italic leading-none">L_{idx + 1}</span>
-                        <span className="text-[8px] font-black text-obsidian/30 uppercase italic">{leg.game.league}</span>
+                        <span className="text-[8px] font-black text-obsidian/30 uppercase italic">{leg.game?.league || 'UNKNOWN_LEAGUE'}</span>
                       </div>
-                      <h4 className="text-base font-black italic uppercase tracking-tighter text-obsidian leading-none">{leg.game.homeTeam} VS {leg.game.awayTeam}</h4>
+                      <h4 className="text-base font-black italic uppercase tracking-tighter text-obsidian leading-none">
+                        {leg.game?.homeTeam || 'HOME'} VS {leg.game?.awayTeam || 'AWAY'}
+                      </h4>
                     </div>
                     <div className="text-right">
                        <div className="text-sm font-black italic text-obsidian leading-none">@{leg.odds}</div>
@@ -194,7 +183,7 @@ export default function SlipDetail({ isOpen, onClose, slip: rawSlip }: SlipDetai
                    </div>
                    <div className="text-right">
                      <div className="text-[7px] font-black text-obsidian/40 uppercase italic mb-0.5">ACCESS_FEE</div>
-                     <div className="text-lg font-black italic text-obsidian">$2.50</div>
+                     <div className="text-lg font-black italic text-obsidian">${slip.price?.toFixed(2) || '2.50'}</div>
                    </div>
                  </div>
                  <button className="btn-volt w-full py-3 text-[10px] tracking-widest uppercase font-black italic">

@@ -19,7 +19,14 @@ import { useQuery, useAction, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { useAuthActions } from '@convex-dev/auth/react'
 
-export default function SettingsTab({ email }: { email?: string }) {
+export default function SettingsTab({ 
+  viewer, 
+  isProfileLoading 
+}: { 
+  viewer: any, 
+  isProfileLoading: boolean 
+}) {
+  const email = viewer?.email
   const authStatus = useQuery(api.auth_logic.getAuthStatus)
   const updatePasswordAction = useAction(api.auth_logic.updatePassword)
   const unlinkProviderMutation = useMutation(api.auth_logic.unlinkProvider)
@@ -121,7 +128,7 @@ export default function SettingsTab({ email }: { email?: string }) {
             <span className="text-[9px] font-black text-zinc-500 uppercase italic tracking-widest flex items-center gap-2">
               <Mail className="w-3 h-3" /> REGISTERED_EMAIL
             </span>
-            <div className="text-sm font-black italic text-obsidian">{email || 'INITIALIZING...'}</div>
+            <div className="text-sm font-black italic text-obsidian">{(isProfileLoading || !email) ? 'INITIALIZING...' : email}</div>
           </div>
           <div className="bg-workspace p-6 border-b-4 border-obsidian/10 space-y-2">
             <span className="text-[9px] font-black text-zinc-500 uppercase italic tracking-widest flex items-center gap-2">

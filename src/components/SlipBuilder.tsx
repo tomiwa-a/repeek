@@ -3,6 +3,7 @@ import { X, Trash2, Calculator, Shield, DollarSign, Activity, Target, Zap, Check
 import { useUI } from '../context/UIContext'
 import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
+import type { SlipLeg } from '../types/slips'
 
 interface SlipBuilderProps {
   isOpen: boolean
@@ -36,7 +37,8 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
 
   const totalOdds = useMemo(() => {
     return builderLegs.reduce((acc, leg) => {
-      const odd = (leg.game.odds as any)[leg.pick] || 1
+      const oddsObj = leg.game.odds as any
+      const odd = oddsObj[leg.pick] || 1
       return acc * odd
     }, 1).toFixed(2)
   }, [builderLegs])
@@ -49,10 +51,11 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
       // Filter legs to only include real DB entries (must have _id)
       const validLegs = builderLegs.filter(l => (l.game as any)._id).map(l => {
         const gameId = (l.game as any)._id; // Strictly use the Convex internal ID
+        const oddsObj = l.game.odds as any
         return {
           gameId,
           pickType: l.pick,
-          odds: (l.game.odds as any)[l.pick] || 1,
+          odds: oddsObj[l.pick] || 1,
           analysis: l.analysis
         };
       })
@@ -155,56 +158,59 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
               </div>
             ) : (
               <div className="space-y-2">
-                {builderLegs.map((leg, idx) => (
-                  <div key={leg.game.id} className="border border-obsidian p-3 space-y-2.5 relative group">
-                    <button 
-                      onClick={() => removeLegFromBuilder(leg.game.id)}
-                      className="absolute top-2 right-2 text-obsidian/20 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-
-                    <div className="flex items-center gap-1.5">
-                      <span className="bg-obsidian text-white text-[7px] font-black px-1 py-0.5 italic leading-none">L_{idx + 1}</span>
-                        <span className="text-[8px] font-black text-obsidian uppercase italic">{leg.game.league}</span>
-                        {!(leg.game as any)._id && (
-                          <span className="bg-red-500 text-white px-1 py-0.5 text-[7px] font-black italic">MOCK_DATA</span>
-                        )}
-                      </div>
-                    <div className="flex items-center justify-between gap-1.5">
-                      <h4 className="text-sm font-black italic uppercase tracking-tighter text-obsidian leading-none pr-6 truncate flex-1">{leg.game.homeTeam} VS {leg.game.awayTeam}</h4>
-                      <button
-                        onClick={() => setEditingAnalysisId(leg.game.id)}
-                        className={`p-1.5 border transition-all flex items-center gap-1.5 ${
-                          leg.analysis.trim() 
-                            ? 'bg-accent border-accent text-obsidian shadow-[0_0_10px_rgba(163,255,0,0.3)]' 
-                            : 'bg-white border-obsidian/10 text-obsidian/20 hover:border-obsidian hover:text-obsidian'
-                        }`}
+                {builderLegs.map((leg, idx) => {
+                  const oddsObj = leg.game.odds as any
+                  return (
+                    <div key={leg.game.id} className="border border-obsidian p-3 space-y-2.5 relative group">
+                      <button 
+                        onClick={() => removeLegFromBuilder(leg.game.id)}
+                        className="absolute top-2 right-2 text-obsidian/20 hover:text-red-500 transition-colors"
                       >
-                        <Zap className={`w-3 h-3 ${leg.analysis.trim() ? 'fill-obsidian' : ''}`} />
-                        <span className="text-[7px] font-black uppercase italic tracking-widest">
-                          {leg.analysis.trim() ? 'ANALYSIS_ATTACHED' : 'ADD_ANALYSIS'}
-                        </span>
+                        <Trash2 className="w-3 h-3" />
                       </button>
-                    </div>
 
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {(['home', 'draw', 'away'] as const).map(option => (
+                      <div className="flex items-center gap-1.5">
+                        <span className="bg-obsidian text-white text-[7px] font-black px-1 py-0.5 italic leading-none">L_{idx + 1}</span>
+                          <span className="text-[8px] font-black text-obsidian uppercase italic">{leg.game.league}</span>
+                          {!(leg.game as any)._id && (
+                            <span className="bg-red-500 text-white px-1 py-0.5 text-[7px] font-black italic">MOCK_DATA</span>
+                          )}
+                        </div>
+                      <div className="flex items-center justify-between gap-1.5">
+                        <h4 className="text-sm font-black italic uppercase tracking-tighter text-obsidian leading-none pr-6 truncate flex-1">{leg.game.homeTeam} VS {leg.game.awayTeam}</h4>
                         <button
-                          key={option}
-                          onClick={() => updateLegInBuilder(leg.game.id, { pick: option })}
-                          className={`py-1.5 text-[9px] font-black uppercase italic border transition-all ${
-                            leg.pick === option 
-                              ? 'bg-obsidian border-obsidian text-accent' 
-                              : 'bg-white border-obsidian/10 text-obsidian/40 hover:border-obsidian'
+                          onClick={() => setEditingAnalysisId(leg.game.id)}
+                          className={`p-1.5 border transition-all flex items-center gap-1.5 ${
+                            leg.analysis.trim() 
+                              ? 'bg-accent border-accent text-obsidian shadow-[0_0_10px_rgba(163,255,0,0.3)]' 
+                              : 'bg-white border-obsidian/10 text-obsidian/20 hover:border-obsidian hover:text-obsidian'
                           }`}
                         >
-                          {option} (@{leg.game.odds[option]})
+                          <Zap className={`w-3 h-3 ${leg.analysis.trim() ? 'fill-obsidian' : ''}`} />
+                          <span className="text-[7px] font-black uppercase italic tracking-widest">
+                            {leg.analysis.trim() ? 'ANALYSIS_ATTACHED' : 'ADD_ANALYSIS'}
+                          </span>
                         </button>
-                      ))}
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {(['home', 'draw', 'away'] as const).map(option => (
+                          <button
+                            key={option}
+                            onClick={() => updateLegInBuilder(leg.game.id, { pick: option })}
+                            className={`py-1.5 text-[9px] font-black uppercase italic border transition-all ${
+                              leg.pick === option 
+                                ? 'bg-obsidian border-obsidian text-accent' 
+                                : 'bg-white border-obsidian/10 text-obsidian/40 hover:border-obsidian'
+                            }`}
+                          >
+                            {option} (@{oddsObj[option] || '1.00'})
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </section>
@@ -270,7 +276,7 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
       {/* Deployment Modal Overlay */}
       {deployStep !== 'IDLE' && (
         <div className="absolute inset-0 z-[60] flex items-center justify-center p-6 bg-obsidian/80 backdrop-blur-md transition-all animate-in fade-in duration-300">
-           <div className="w-full max-w-sm bg-white border-4 border-obsidian relative shadow-[0_30px_60px_rgba(0,0,0,0.8)] p-8 text-center animate-in zoom-in-95 duration-200">
+           <div className="w-full max-sm bg-white border-4 border-obsidian relative shadow-[0_30px_60px_rgba(0,0,0,0.8)] p-8 text-center animate-in zoom-in-95 duration-200">
               
               {deployStep === 'CONFIRM' && (
                 <div className="space-y-6">

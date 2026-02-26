@@ -1,16 +1,8 @@
 import { MessageSquare, ChevronRight } from 'lucide-react'
+import type { Game } from '../types/slips'
 
 interface GameCardProps {
-  game: {
-    homeTeam: string
-    awayTeam: string
-    homeScore: number
-    awayScore: number
-    league: string
-    isLive: boolean
-    time: string
-    predictionCount: number
-  }
+  game: Game
   compact?: boolean
 }
 
@@ -21,11 +13,11 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
         <div className="flex flex-col gap-1 flex-1">
           <div className="flex items-center justify-between pr-4 text-obsidian">
             <span className="text-[11px] font-black italic uppercase tracking-tighter truncate">{game.homeTeam}</span>
-            <span className="font-mono text-[11px] font-black">{game.isLive ? game.homeScore : '0'}</span>
+            <span className="font-mono text-[11px] font-black">{game.isLive ? (game.homeScore ?? 0) : '0'}</span>
           </div>
           <div className="flex items-center justify-between pr-4 text-obsidian">
             <span className="text-[11px] font-black italic uppercase tracking-tighter truncate">{game.awayTeam}</span>
-            <span className="font-mono text-[11px] font-black">{game.isLive ? game.awayScore : '0'}</span>
+            <span className="font-mono text-[11px] font-black">{game.isLive ? (game.awayScore ?? 0) : '0'}</span>
           </div>
         </div>
         {game.isLive && (
@@ -47,7 +39,7 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
           </div>
         ) : (
           <div className="bg-workspace border border-obsidian/10 px-1.5 py-0.5 text-obsidian/40">
-            <span className="text-[8px] font-black uppercase tracking-widest">{game.time}</span>
+            <span className="text-[8px] font-black uppercase tracking-widest">{game.time || '--:--'}</span>
           </div>
         )}
       </div>
@@ -57,13 +49,13 @@ export default function GameCard({ game, compact = false }: GameCardProps) {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors truncate pr-2">{game.homeTeam}</h3>
           <div className="bg-obsidian text-white w-8 h-8 flex items-center justify-center font-mono text-sm font-black italic shrink-0">
-            {game.isLive ? game.homeScore : '0'}
+            {game.isLive ? (game.homeScore ?? 0) : '0'}
           </div>
         </div>
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-black italic uppercase tracking-tighter text-obsidian group-hover:text-accent transition-colors truncate pr-2">{game.awayTeam}</h3>
           <div className="bg-obsidian text-white w-8 h-8 flex items-center justify-center font-mono text-sm font-black italic shrink-0">
-            {game.isLive ? game.awayScore : '0'}
+            {game.isLive ? (game.awayScore ?? 0) : '0'}
           </div>
         </div>
       </div>

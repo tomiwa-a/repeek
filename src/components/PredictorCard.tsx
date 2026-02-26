@@ -1,17 +1,9 @@
 import { Shield, User, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import type { Predictor } from '../types/slips'
 
 interface PredictorCardProps {
-  predictor: {
-    id: string
-    username: string
-    displayName: string
-    winRate: number
-    followers: number
-    specialties: string[]
-    isPremium: boolean
-    streak: number
-  }
+  predictor: Predictor
 }
 
 export default function PredictorCard({ predictor }: PredictorCardProps) {
@@ -33,7 +25,7 @@ export default function PredictorCard({ predictor }: PredictorCardProps) {
               <h3 className="text-[10px] font-black italic uppercase tracking-tighter text-obsidian truncate">{predictor.username}</h3>
               <Shield className="w-2.5 h-2.5 text-accent shrink-0" />
             </div>
-            <div className="text-[7px] font-black text-obsidian/30 uppercase tracking-widest truncate">{predictor.specialties[0]} OPERATOR</div>
+            <div className="text-[7px] font-black text-obsidian/30 uppercase tracking-widest truncate">{(predictor.specialties?.[0] || 'GENERAL')} OPERATOR</div>
           </div>
         </div>
         <div className="bg-obsidian text-white px-1.5 py-0.5 text-[7px] font-black italic tracking-widest shrink-0">VERIFIED_ANALYST</div>
@@ -55,7 +47,7 @@ export default function PredictorCard({ predictor }: PredictorCardProps) {
 
       {/* Specialty Tags */}
       <div className="flex flex-wrap gap-1 mb-3 flex-1 overflow-hidden">
-        {predictor.specialties.map((specialty, index) => (
+        {predictor.specialties?.map((specialty, index) => (
           <span key={index} className="text-[7px] font-black text-obsidian/40 uppercase italic border border-obsidian/10 px-1 py-0.5 group-hover:border-obsidian/20 transition-colors whitespace-nowrap">
             {specialty}
           </span>

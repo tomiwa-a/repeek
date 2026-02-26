@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { type Game } from '../data/mockGames'
 import { 
   ChevronLeft, 
   Activity, 
@@ -16,13 +15,9 @@ import {
 } from 'lucide-react'
 import { useUI } from '../context/UIContext'
 import SlipListItem from '../components/SlipListItem'
-import type { Slip } from '../data/mockSlips'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-
-interface MatchDetailProps {
-  slips?: Slip[]
-}
+import type { Slip, Game } from '../types/slips'
 
 // Full Page Skeleton
 const MatchDetailSkeleton = () => (
@@ -42,7 +37,7 @@ const MatchDetailSkeleton = () => (
    </div>
 )
 
-export default function MatchDetail({ slips = [] }: MatchDetailProps) {
+export default function MatchDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
@@ -63,15 +58,15 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
       awayTeam: source.awayTeam,
       league: source.league,
       sport: 'soccer' as const,
-      startTime: new Date('commenceTime' in source ? source.commenceTime : (source as Game).startTime),
+      startTime: new Date('commenceTime' in source ? (source as any).commenceTime : (source as Game).startTime),
       isLive: source.isLive,
-      homeScore: (source as any).score?.home ?? (source as Game).homeScore ?? 0,
-      awayScore: (source as any).score?.away ?? (source as Game).awayScore ?? 0,
+      homeScore: (source as any).score?.home ?? (source as any).homeScore ?? 0,
+      awayScore: (source as any).score?.away ?? (source as any).awayScore ?? 0,
       matchTime: source.isLive ? "LIVE" : undefined,
-      time: (source as any).time || (source as any).commenceTime ? new Date((source as any).commenceTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--',
-      odds: (source as Game).odds || { home: 1.85, draw: 3.40, away: 4.20 },
-      predictionCount: (source as Game).predictionCount || Math.floor(Math.random() * 50) + 10,
-      sportKey: source.sportKey
+      time: (source as any).time || ((source as any).commenceTime ? new Date((source as any).commenceTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'),
+      odds: (source as any).odds || { home: 1.85, draw: 3.40, away: 4.20 },
+      predictionCount: (source as any).predictionCount || Math.floor(Math.random() * 50) + 10,
+      sportKey: (source as any).sportKey
     } as Game
   }, [convexGameResponse, initialGameData])
 
@@ -80,16 +75,41 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
   const itemsPerPage = 5
   const [searchTerm, setSearchTerm] = useState('')
 
+  const liveMatchSlips = useQuery(api.slips.getSlipsByGame, { gameId: (convexGameResponse as any)?._id }) || []
+
   const matchSlips = useMemo(() => {
-    return slips.filter(slip => 
-      slip.legs.some(leg => leg.game.id === id)
-    )
-  }, [slips, id])
+    return liveMatchSlips.map((s: any) => ({
+      ...s,
+      id: s._id,
+      timestamp: new Date(s.timestamp),
+      isPremium: s.predictor.isPremium,
+      status: s.status === 'OPEN' ? 'pending' : (s.status.toLowerCase() as any),
+      legs: s.legs.map((l: any, i: number) => ({
+        ...l,
+        id: `${s._id}-leg-${i}`,
+        pickLabel: l.pickType.toUpperCase(),
+        confidence: 'high' as const,
+        status: s.status === 'OPEN' ? 'pending' : (s.status.toLowerCase() as any),
+        likes: 0,
+        comments: 0,
+        game: l.game ? {
+          ...l.game,
+          id: l.game.id,
+          startTime: new Date(l.game.commenceTime),
+          sport: 'soccer' as const,
+          homeScore: l.game.score?.home ?? 0,
+          awayScore: l.game.score?.away ?? 0,
+          predictionCount: l.game.slipCount ?? 0,
+          odds: { home: l.odds ?? 1, away: 1 }
+        } : null
+      }))
+    })) as Slip[]
+  }, [liveMatchSlips])
 
   const filteredMatchSlips = useMemo(() => {
     if (!searchTerm) return matchSlips
     const term = searchTerm.toLowerCase()
-    return matchSlips.filter(s => 
+    return matchSlips.filter((s: Slip) => 
       s.title.toLowerCase().includes(term) ||
       s.predictor.username.toLowerCase().includes(term)
     )
@@ -190,11 +210,11 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
         </div>
       </section>
 
-      {/* Main Content: Two Columns Swapped */}
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column (Main Stage): COMMUNITY_SLIPS */}
+          {/* COMMUNITY_SLIPS */}
           <div className="lg:col-span-8 space-y-6">
             <div className="flex items-center justify-between text-obsidian">
                <h3 className="text-[12px] font-black italic uppercase tracking-widest">COMMUNITY_SIGNALS_FEED</h3>
@@ -206,7 +226,6 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
                </div>
             </div>
 
-            {/* Inner Search/Filter */}
             <div className="relative group text-obsidian">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-obsidian/20 group-focus-within:text-accent transition-colors" />
                <input 
@@ -220,17 +239,16 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
 
             <div className="flex flex-col gap-3">
                {paginatedSlips.length > 0 ? (
-                 paginatedSlips.map(slip => (
+                 paginatedSlips.map((slip: Slip) => (
                    <SlipListItem key={slip.id} slip={slip} />
                  ))
                ) : (
                  <div className="py-24 text-center bg-workspace border-2 border-dashed border-obsidian/5">
-                   <p className="text-[11px] font-black text-obsidian/20 uppercase italic italic tracking-[0.3em]">ZERO_SIGNALS_LOGGED_FOR_THIS_ENTITY</p>
+                   <p className="text-[11px] font-black text-obsidian/20 uppercase italic tracking-[0.3em]">ZERO_SIGNALS_LOGGED_FOR_THIS_ENTITY</p>
                  </div>
                )}
             </div>
 
-            {/* Pagination Component */}
             {totalPages > 1 && (
               <div className="bg-obsidian text-white p-5 flex items-center justify-between border-t-4 border-accent">
                 <span className="text-[10px] font-black italic text-accent uppercase tracking-widest">
@@ -261,10 +279,8 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
             )}
           </div>
 
-          {/* Right Column (Sidebar): Markets & Stats */}
+          {/* Right Column */}
           <aside className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
-            
-            {/* 1. REALTIME_MARKETS */}
             <div className="bg-white border-2 border-obsidian shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <div className="bg-obsidian text-white px-4 py-2.5 flex items-center justify-between">
                 <span className="text-[10px] font-black italic uppercase tracking-widest text-accent">REALTIME_MARKETS</span>
@@ -289,8 +305,10 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
                 
                 <button 
                   onClick={() => {
-                    addLegToBuilder(game);
-                    openSlipBuilder();
+                    if (game) {
+                      addLegToBuilder(game);
+                      openSlipBuilder();
+                    }
                   }}
                   className="w-full mt-4 bg-accent text-obsidian font-black py-4 border-2 border-obsidian shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-x-[-2px] translate-y-[-2px] hover:translate-x-0 hover:translate-y-0 transition-all flex items-center justify-center gap-2 uppercase italic text-xs tracking-widest"
                 >
@@ -299,7 +317,6 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
               </div>
             </div>
 
-            {/* 2. TECHNICAL_MATRICES */}
             <div className="bg-workspace p-5 border-b-4 border-obsidian relative overflow-hidden">
                <div className="flex items-center gap-3 mb-4">
                  <Activity className="w-4 h-4 text-obsidian" />
@@ -325,7 +342,6 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
                 ))}
               </div>
             </div>
-
           </aside>
         </div>
       </main>

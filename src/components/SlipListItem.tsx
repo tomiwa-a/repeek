@@ -1,6 +1,6 @@
 import { ExternalLink, Layers, ChevronRight } from 'lucide-react'
 import { useUI } from '../context/UIContext'
-import type { Slip } from '../data/mockSlips'
+import type { Slip } from '../types/slips'
 
 export default function SlipListItem({ slip }: { slip: Slip }) {
   const { openSlipDetail } = useUI()
@@ -25,7 +25,7 @@ export default function SlipListItem({ slip }: { slip: Slip }) {
               isLost ? 'bg-red-900 border-obsidian text-white' : 
               'bg-workspace border-obsidian/10 text-obsidian/20'
             }`}>
-              {primaryLeg.game.league.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+              {primaryLeg.game?.league ? primaryLeg.game.league.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '??'}
             </div>
           </div>
 

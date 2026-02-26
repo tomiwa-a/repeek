@@ -1,13 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-
-import type { Slip } from '../data/mockSlips'
-import type { Game } from '../data/mockGames'
-
-export interface SlipLeg {
-  game: Game
-  pick: 'home' | 'draw' | 'away'
-  analysis: string
-}
+import type { Slip, Game, SlipLeg } from '../types/slips'
 
 interface UIContextType {
   isSlipBuilderOpen: boolean

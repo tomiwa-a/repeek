@@ -1,20 +1,22 @@
 import { MoreHorizontal, ChevronRight, Lock, Target } from 'lucide-react'
-import type { PredictionEquivalent } from '../data/mockSlips'
+import type { Slip } from '../types/slips'
 import { useUI } from '../context/UIContext'
 
 interface PredictionCardProps {
-  prediction: PredictionEquivalent
+  prediction: Slip
 }
 
-export default function PredictionCard({ prediction: p }: PredictionCardProps) {
+export default function PredictionCard({ prediction: slip }: PredictionCardProps) {
   const { openSlipDetail } = useUI()
-  const { 
-    game, predictor, pickLabel, odds, confidence, analysis, 
-    isPremium, status = 'pending'
-  } = p
+  
+  if (!slip.legs || slip.legs.length === 0) return null;
+  
+  const primaryLeg = slip.legs[0]
+  const game = primaryLeg.game
+  if (!game) return null;
 
+  const { predictor, status = 'pending', isPremium } = slip
   const { homeTeam, awayTeam, homeScore = 0, awayScore = 0, league, isLive } = game
-  const { displayName: predictorName, winRate } = predictor
 
   return (
     <div className="bg-white border-2 border-obsidian p-3 shadow-sm hover-glitch scanline-card transition-all group relative overflow-hidden flex flex-col h-full font-sans antialiased">
@@ -22,14 +24,14 @@ export default function PredictionCard({ prediction: p }: PredictionCardProps) {
       <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-obsidian/5">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 bg-workspace border border-obsidian/10 flex items-center justify-center font-black text-[10px] italic">
-            {predictorName.charAt(0).toUpperCase()}
+            {predictor.displayName.charAt(0).toUpperCase()}
           </div>
           <div>
             <h3 className="text-[10px] font-black text-obsidian uppercase italic leading-none mb-0.5">
-              {predictorName}
+              {predictor.username}
             </h3>
             <span className="text-[8px] font-black text-text-muted px-1 bg-workspace border border-obsidian/5">
-              {winRate}%_WR
+              {predictor.winRate}%_WR
             </span>
           </div>
         </div>
@@ -78,27 +80,27 @@ export default function PredictionCard({ prediction: p }: PredictionCardProps) {
           <div className="bg-accent border border-obsidian px-1.5 py-0.5 flex items-center gap-1.5">
             <Target className="w-3 h-3 text-obsidian" />
             <span className="text-[9px] font-black uppercase italic tracking-tighter text-obsidian">
-              {pickLabel}
+              {primaryLeg.pickLabel}
             </span>
           </div>
           <div className="bg-white border border-obsidian px-1.5 py-0.5 text-[9px] font-black font-mono text-obsidian">
-            @{odds.toFixed(2)}
+            @{primaryLeg.odds.toFixed(2)}
           </div>
           <div className={`px-1.5 py-0.5 border border-obsidian text-[8px] font-black uppercase italic tracking-tighter ${
-            confidence === 'high' ? 'bg-obsidian text-white' : 'bg-workspace text-obsidian'
+            primaryLeg.confidence === 'high' ? 'bg-obsidian text-white' : 'bg-workspace text-obsidian'
           }`}>
-            {confidence.toUpperCase()}
+            {primaryLeg.confidence.toUpperCase()}
           </div>
         </div>
         <p className="text-[10px] font-bold text-zinc-500 italic leading-snug line-clamp-2">
-          {analysis}
+          {primaryLeg.analysis}
         </p>
       </div>
 
       {/* Action Area */}
       <div className="pt-3 border-t border-obsidian/5 flex justify-end">
         <button 
-          onClick={() => openSlipDetail(p as any)}
+          onClick={() => openSlipDetail(slip)}
           className="text-[9px] font-black italic uppercase hover:text-accent flex items-center gap-1 text-obsidian group/btn transition-colors"
         >
           VIEW_DATA_PROTOCOL <ChevronRight className="w-2.5 h-2.5 group-hover/btn:translate-x-0.5 transition-transform" />

@@ -1,19 +1,8 @@
 import { MessageSquare, ChevronRight, Plus } from 'lucide-react'
+import type { Game } from '../types/slips'
 
 interface EliteGameRowProps {
-  game: {
-    homeTeam: string
-    awayTeam: string
-    homeScore?: number
-    awayScore?: number
-    league: string
-    isLive: boolean
-    time?: string
-    predictionCount: number
-    sportKey?: string
-    id: string
-    odds?: any
-  }
+  game: Game
   onAdd?: (e: React.MouseEvent) => void
 }
 
