@@ -5,7 +5,8 @@ export interface Predictor {
   avatar?: string
   avatarUrl?: string // For backward compatibility with Convex hydration
   winRate: number
-  totalPredictions: number
+  totalSlips: number
+  totalGames: number
   wins: number
   losses: number
   streak: number

@@ -24,11 +24,12 @@ export const createSlip = mutation({
     const user = await ctx.db.get(userId);
     if (!user || !user.username) throw new Error("User profile incomplete (missing username)");
 
-    const stats = user.stats || { roi: 0, winRate: 0, totalPredictions: 0 };
+    const stats = user.stats || { roi: 0, winRate: 0, totalSlips: 0, totalGames: 0 };
     await ctx.db.patch(userId, {
       stats: {
         ...stats,
-        totalPredictions: stats.totalPredictions + 1,
+        totalSlips: stats.totalSlips + 1,
+        totalGames: stats.totalGames + args.legs.length,
       }
     });
 
@@ -90,7 +91,8 @@ export const getSlipsByGame = query({
             avatarUrl: user?.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (user?.username || "anon"),
             isPremium: user?.isPremium || false,
             winRate: user?.stats?.winRate || 0,
-            totalPredictions: user?.stats?.totalPredictions || 0,
+            totalSlips: user?.stats?.totalSlips || 0,
+            totalGames: user?.stats?.totalGames || 0,
             wins: 0,
             losses: 0,
             followers: 0,
@@ -152,7 +154,8 @@ export const getSlipsByUser = query({
             avatarUrl: user?.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + (user?.username || "anon"),
             isPremium: user?.isPremium || false,
             winRate: user?.stats?.winRate || 0,
-            totalPredictions: user?.stats?.totalPredictions || 0,
+            totalSlips: user?.stats?.totalSlips || 0,
+            totalGames: user?.stats?.totalGames || 0,
             wins: 0,
             losses: 0,
             followers: 0,

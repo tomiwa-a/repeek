@@ -23,8 +23,9 @@ export default function Profile() {
     email: viewer?.email || '',
     isPremium: viewer?.isPremium ?? false,
     followers: 0,
-    totalPredictions: viewer?.stats?.totalPredictions || 0,
     winRate: viewer?.stats?.winRate || 0,
+    totalSlips: viewer?.stats?.totalSlips || 0,
+    totalGames: viewer?.stats?.totalGames || 0,
     roi: viewer?.stats?.roi || 0,
     wins: 0,
     losses: 0,
@@ -127,9 +128,9 @@ export default function Profile() {
                   {isProfileLoading ? (
                     <div className="h-8 w-48 bg-white/10 animate-pulse mb-2" />
                   ) : (
-                    <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none mb-2 shadow-sm">
-                      {user.username}
-                    </h1>
+                    <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none mb-2 shadow-sm text-white">
+                    {user.username}
+                  </h1>
                   )}
                   {user.isPremium && <span className="bg-accent text-obsidian px-2 py-0.5 text-[9px] font-black italic">ELITE_OPERATOR</span>}
                 </div>
@@ -151,8 +152,12 @@ export default function Profile() {
 
                 <div className="space-y-4 pt-4 border-t border-white/10">
                   <div className="flex items-center justify-between text-[11px] font-bold uppercase italic">
-                    <span className="text-white/40">TOTAL_PREDICTIONS</span>
-                    <span className="text-white">{user.totalPredictions}</span>
+                    <span className="text-white/40">TOTAL_SLIPS</span>
+                    <span className="text-white">{user.totalSlips}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-bold uppercase italic">
+                    <span className="text-white/40">TOTAL_GAMES</span>
+                    <span className="text-white">{user.totalGames}</span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] font-bold uppercase italic">
                     <span className="text-white/40">FOLLOWERS</span>

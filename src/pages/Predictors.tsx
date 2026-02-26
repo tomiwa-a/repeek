@@ -45,7 +45,7 @@ export default function Predictors() {
             <div>
               <div className="text-[8px] font-black text-obsidian/30 uppercase tracking-[0.2em] mb-1 italic">VERIFIED_SIGNALS</div>
               <div className="text-3xl font-black italic text-obsidian leading-none">
-                {mockPredictors.reduce((sum, p) => sum + p.totalPredictions, 0).toLocaleString()}
+                {mockPredictors.reduce((sum, p) => sum + p.totalSlips, 0).toLocaleString()}
               </div>
             </div>
             <Zap className="w-5 h-5 text-obsidian/10 group-hover:text-obsidian transition-colors" />

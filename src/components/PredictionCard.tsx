@@ -89,7 +89,7 @@ export default function PredictionCard({ prediction: slip }: PredictionCardProps
           <div className={`px-1.5 py-0.5 border border-obsidian text-[8px] font-black uppercase italic tracking-tighter ${
             primaryLeg.confidence === 'high' ? 'bg-obsidian text-white' : 'bg-workspace text-obsidian'
           }`}>
-            {primaryLeg.confidence.toUpperCase()}
+            {(primaryLeg.confidence || 'LOW').toUpperCase()}
           </div>
         </div>
         <p className="text-[10px] font-bold text-zinc-500 italic leading-snug line-clamp-2">

@@ -3,7 +3,6 @@ import { X, Trash2, Calculator, Shield, DollarSign, Activity, Target, Zap, Check
 import { useUI } from '../context/UIContext'
 import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
-import type { SlipLeg } from '../types/slips'
 
 interface SlipBuilderProps {
   isOpen: boolean

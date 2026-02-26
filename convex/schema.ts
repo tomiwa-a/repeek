@@ -21,7 +21,8 @@ export default defineSchema({
       v.object({
         roi: v.number(),
         winRate: v.number(),
-        totalPredictions: v.number(),
+        totalSlips: v.number(),
+        totalGames: v.number(),
       })
     ),
   })
