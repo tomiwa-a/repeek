@@ -56,4 +56,3 @@ export const setUsername = mutation({
     return { success: true };
   },
 });
-
