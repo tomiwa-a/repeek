@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
-import { X, Trash2, Calculator, Shield, DollarSign, Activity, Target, Zap } from 'lucide-react'
+import { X, Trash2, Calculator, Shield, DollarSign, Activity, Target, Zap, CheckCircle2, AlertTriangle, Loader2, FileText } from 'lucide-react'
 import { useUI } from '../context/UIContext'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 interface SlipBuilderProps {
   isOpen: boolean
@@ -11,12 +13,21 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
   const { 
     builderLegs, 
     removeLegFromBuilder, 
-    updateLegInBuilder 
+    updateLegInBuilder,
+    builderTitle,
+    setBuilderTitle,
+    builderAnalysis,
+    setBuilderAnalysis,
+    clearBuilder
   } = useUI()
   
+  const createSlip = useMutation(api.slips.createSlip)
   const [price, setPrice] = useState('0.00')
   const [isLocked, setIsLocked] = useState(false)
   const [editingAnalysisId, setEditingAnalysisId] = useState<string | null>(null)
+  
+  const [deployStep, setDeployStep] = useState<'IDLE' | 'CONFIRM' | 'DEPLOYING' | 'SUCCESS' | 'ERROR'>('IDLE')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const activeLegForAnalysis = useMemo(() => 
     builderLegs.find(l => l.game.id === editingAnalysisId),
@@ -25,10 +36,54 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
 
   const totalOdds = useMemo(() => {
     return builderLegs.reduce((acc, leg) => {
-      const odd = leg.game.odds[leg.pick] || 1
+      const odd = (leg.game.odds as any)[leg.pick] || 1
       return acc * odd
     }, 1).toFixed(2)
   }, [builderLegs])
+
+  const handleDeploy = async () => {
+    try {
+      setDeployStep('DEPLOYING')
+      setErrorMessage(null)
+      
+      // Filter legs to only include real DB entries (must have _id)
+      const validLegs = builderLegs.filter(l => (l.game as any)._id).map(l => {
+        const gameId = (l.game as any)._id; // Strictly use the Convex internal ID
+        return {
+          gameId,
+          pickType: l.pick,
+          odds: (l.game.odds as any)[l.pick] || 1,
+          analysis: l.analysis
+        };
+      })
+
+      if (validLegs.length === 0) {
+        throw new Error("No real games found in slip. Please add games from the live feed.")
+      }
+
+      // Recalculate odds based ONLY on valid legs
+      const deployOdds = validLegs.reduce((acc, l) => acc * l.odds, 1).toFixed(2);
+
+      await createSlip({
+        title: builderTitle,
+        price: parseFloat(price),
+        totalOdds: parseFloat(deployOdds),
+        analysisNote: builderAnalysis,
+        legs: validLegs as any
+      })
+
+      setDeployStep('SUCCESS')
+      setTimeout(() => {
+        onClose()
+        clearBuilder()
+        setDeployStep('IDLE')
+      }, 2000)
+    } catch (err: any) {
+      console.error(err)
+      setDeployStep('ERROR')
+      setErrorMessage(err.message || "Failed to deploy protocol")
+    }
+  }
 
   if (!isOpen) return null
 
@@ -54,7 +109,11 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
                 </span>
                 <span className="text-[8px] font-black text-white/40 uppercase tracking-widest italic">VERSION: 2.1</span>
               </div>
-              <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none">PROPOSE_NEW_SLIP</h2>
+              <input 
+                value={builderTitle}
+                onChange={(e) => setBuilderTitle(e.target.value)}
+                className="bg-transparent text-xl font-black italic uppercase tracking-tighter leading-none border-b border-white/10 focus:border-accent outline-none w-full"
+              />
             </div>
             <button onClick={onClose} className="p-1.5 hover:bg-white/10 transition-colors">
               <X className="w-5 h-5" />
@@ -63,7 +122,25 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar relative">
+          
+          {/* Global Analysis Entry */}
+          <section className="bg-workspace/30 border border-obsidian/5 p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[9px] font-black text-obsidian/40 uppercase tracking-[0.2em] italic flex items-center gap-1.5">
+                <FileText className="w-3 h-3" /> STRATEGIC_OVERVIEW
+              </h3>
+              {builderAnalysis.trim().length > 0 && (
+                 <span className="flex h-1.5 w-1.5 rounded-full bg-accent animate-pulse"></span>
+              )}
+            </div>
+            <textarea 
+              value={builderAnalysis}
+              onChange={(e) => setBuilderAnalysis(e.target.value)}
+              placeholder="ENTER_OVERALL_STRATEGY_INTEL..."
+              className="w-full bg-transparent p-1 text-[10px] font-bold uppercase italic outline-none min-h-[50px] resize-none"
+            />
+          </section>
           
           {/* Active Legs - Compact & Dense */}
           <section className="space-y-3">
@@ -89,8 +166,11 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
 
                     <div className="flex items-center gap-1.5">
                       <span className="bg-obsidian text-white text-[7px] font-black px-1 py-0.5 italic leading-none">L_{idx + 1}</span>
-                      <span className="text-[8px] font-black text-obsidian/30 uppercase italic">{leg.game.league}</span>
-                    </div>
+                        <span className="text-[8px] font-black text-obsidian uppercase italic">{leg.game.league}</span>
+                        {!(leg.game as any)._id && (
+                          <span className="bg-red-500 text-white px-1 py-0.5 text-[7px] font-black italic">MOCK_DATA</span>
+                        )}
+                      </div>
                     <div className="flex items-center justify-between gap-1.5">
                       <h4 className="text-sm font-black italic uppercase tracking-tighter text-obsidian leading-none pr-6 truncate flex-1">{leg.game.homeTeam} VS {leg.game.awayTeam}</h4>
                       <button
@@ -172,9 +252,9 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
               <div className="text-2xl font-black italic text-obsidian mt-1 leading-none">@{totalOdds}</div>
             </div>
             <button 
-              disabled={builderLegs.length === 0}
+              disabled={builderLegs.length === 0 || deployStep !== 'IDLE'}
               className="btn-volt py-3 px-8 text-[10px] tracking-widest flex items-center gap-2 font-black italic disabled:opacity-20 transition-all uppercase"
-              onClick={onClose}
+              onClick={() => setDeployStep('CONFIRM')}
             >
               DEPLOY_PROTOCOL <Target className="w-4 h-4" />
             </button>
@@ -186,6 +266,79 @@ export default function SlipBuilder({ isOpen, onClose }: SlipBuilderProps) {
         </div>
 
       </div>
+
+      {/* Deployment Modal Overlay */}
+      {deployStep !== 'IDLE' && (
+        <div className="absolute inset-0 z-[60] flex items-center justify-center p-6 bg-obsidian/80 backdrop-blur-md transition-all animate-in fade-in duration-300">
+           <div className="w-full max-w-sm bg-white border-4 border-obsidian relative shadow-[0_30px_60px_rgba(0,0,0,0.8)] p-8 text-center animate-in zoom-in-95 duration-200">
+              
+              {deployStep === 'CONFIRM' && (
+                <div className="space-y-6">
+                  <div className="flex justify-center">
+                    <AlertTriangle className="w-12 h-12 text-accent" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black italic uppercase leading-none text-obsidian">CONFIRM_DEPLOYMENT</h2>
+                    <p className="text-[10px] font-bold text-obsidian/40 uppercase italic mt-4 tracking-widest">
+                      YOU ARE ABOUT TO PERSIST THIS STRATEGY TO THE PUBLIC LEDGER. ARE YOU CERTAIN?
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 pt-4">
+                    <button 
+                      onClick={handleDeploy}
+                      className="w-full btn-volt py-3 text-[10px] font-black uppercase italic tracking-widest"
+                    >
+                      EXECUTE_PROTOCOL
+                    </button>
+                    <button 
+                      onClick={() => setDeployStep('IDLE')}
+                      className="w-full bg-white border border-obsidian text-obsidian py-3 text-[10px] font-black uppercase italic tracking-widest hover:bg-workspace"
+                    >
+                      ABORT_MISSION
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {deployStep === 'DEPLOYING' && (
+                <div className="space-y-6 py-12">
+                   <div className="flex justify-center">
+                     <Loader2 className="w-12 h-12 text-obsidian animate-spin" />
+                   </div>
+                   <h2 className="text-xl font-black italic uppercase leading-none text-obsidian animate-pulse">ENCRYPTING_AND_SAVING...</h2>
+                </div>
+              )}
+
+              {deployStep === 'SUCCESS' && (
+                <div className="space-y-6 py-12">
+                   <div className="flex justify-center">
+                     <CheckCircle2 className="w-16 h-16 text-green-500" />
+                   </div>
+                   <h2 className="text-xl font-black italic uppercase leading-none text-obsidian">PROTOCOL_SUCCESS</h2>
+                   <p className="text-[10px] font-bold text-green-500 uppercase italic tracking-widest">TRANSACTION_CONFIRMED_ON_CHAIN</p>
+                </div>
+              )}
+
+              {deployStep === 'ERROR' && (
+                <div className="space-y-6">
+                   <div className="flex justify-center">
+                     <AlertTriangle className="w-16 h-16 text-red-500" />
+                   </div>
+                   <h2 className="text-xl font-black italic uppercase leading-none text-red-500">PROTOCOL_FAILED</h2>
+                   <div className="bg-red-50 p-3 border border-red-100">
+                      <p className="text-[9px] font-bold text-red-900 uppercase italic tracking-tight">{errorMessage}</p>
+                   </div>
+                   <button 
+                      onClick={() => setDeployStep('IDLE')}
+                      className="w-full bg-obsidian text-white py-3 text-[10px] font-black uppercase italic tracking-widest"
+                    >
+                      RETURN_TO_DRAFT
+                    </button>
+                </div>
+              )}
+           </div>
+        </div>
+      )}
 
       {/* Analysis Modal Overlay */}
       {editingAnalysisId && activeLegForAnalysis && (

@@ -89,6 +89,7 @@ export default function Live() {
     
     return dataToProcess.games.map((g: any) => ({
       id: g.id,
+      _id: g._id,
       homeTeam: g.homeTeam,
       awayTeam: g.awayTeam,
       league: g.league,

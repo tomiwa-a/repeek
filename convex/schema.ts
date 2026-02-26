@@ -17,6 +17,13 @@ export default defineSchema({
     username: v.optional(v.string()),
     isPremium: v.optional(v.boolean()),
     onboardingComplete: v.optional(v.boolean()),
+    stats: v.optional(
+      v.object({
+        roi: v.number(),
+        winRate: v.number(),
+        totalPredictions: v.number(),
+      })
+    ),
   })
     .index("email", ["email"])
     .index("by_username", ["username"]),
@@ -68,20 +75,8 @@ export default defineSchema({
     .index("by_gameId", ["gameId"])
     .index("by_lastUpdated", ["lastUpdated"]),
 
-  predictors: defineTable({
-    username: v.string(),
-    displayName: v.string(),
-    avatarUrl: v.string(),
-    isPremium: v.boolean(),
-    stats: v.object({
-      roi: v.number(),
-      winRate: v.number(),
-      totalPredictions: v.number(),
-    }),
-  }).index("by_username", ["username"]),
-
   slips: defineTable({
-    predictorId: v.id("predictors"),
+    userId: v.id("users"),
     title: v.string(),
     price: v.number(),
     totalOdds: v.number(),
@@ -95,9 +90,9 @@ export default defineSchema({
         analysis: v.string(),
       })
     ),
+    analysisNote: v.optional(v.string()),
   })
-    .index("by_predictorId", ["predictorId"])
+    .index("by_userId", ["userId"])
     .index("by_timestamp", ["timestamp"])
     .index("by_status", ["status"]),
 });
-

@@ -58,6 +58,7 @@ export default function MatchDetail({ slips = [] }: MatchDetailProps) {
     
     return {
       id: source.id,
+      _id: (source as any)._id,
       homeTeam: source.homeTeam,
       awayTeam: source.awayTeam,
       league: source.league,

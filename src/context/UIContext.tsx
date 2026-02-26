@@ -18,6 +18,10 @@ interface UIContextType {
   openSlipDetail: (slip: Slip) => void
   closeSlipDetail: () => void
   builderLegs: SlipLeg[]
+  builderTitle: string
+  setBuilderTitle: (title: string) => void
+  builderAnalysis: string
+  setBuilderAnalysis: (analysis: string) => void
   addLegToBuilder: (game: Game) => void
   removeLegFromBuilder: (gameId: string) => void
   updateLegInBuilder: (gameId: string, updates: Partial<SlipLeg>) => void
@@ -33,6 +37,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [isSlipDetailOpen, setIsSlipDetailOpen] = useState(false)
   const [selectedSlip, setSelectedSlip] = useState<Slip | null>(null)
   const [builderLegs, setBuilderLegs] = useState<SlipLeg[]>([])
+  const [builderTitle, setBuilderTitle] = useState('NEW_STRATEGY_DOCKET')
+  const [builderAnalysis, setBuilderAnalysis] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const openSlipBuilder = () => setIsSlipBuilderOpen(true)
@@ -62,13 +68,18 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     setBuilderLegs(prev => prev.map(l => l.game.id === gameId ? { ...l, ...updates } : l))
   }
 
-  const clearBuilder = () => setBuilderLegs([])
+  const clearBuilder = () => {
+    setBuilderLegs([])
+    setBuilderTitle('NEW_STRATEGY_DOCKET')
+    setBuilderAnalysis('')
+  }
 
   return (
     <UIContext.Provider value={{ 
       isSlipBuilderOpen, openSlipBuilder, closeSlipBuilder,
       isSlipDetailOpen, selectedSlip, openSlipDetail, closeSlipDetail,
       builderLegs, addLegToBuilder, removeLegFromBuilder, updateLegInBuilder, clearBuilder,
+      builderTitle, setBuilderTitle, builderAnalysis, setBuilderAnalysis,
       isSidebarOpen, setIsSidebarOpen
     }}>
       {children}

@@ -1,5 +1,6 @@
 export interface Game {
   id: string
+  _id?: string
   homeTeam: string
   awayTeam: string
   league: string
