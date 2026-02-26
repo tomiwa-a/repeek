@@ -7,6 +7,7 @@ export interface Predictor {
   winRate: number
   totalSlips: number
   totalGames: number
+  roi: number
   wins: number
   losses: number
   streak: number
@@ -14,6 +15,7 @@ export interface Predictor {
   followers: number
   isPremium: boolean
   isFeatured: boolean
+  hasActiveSlips: boolean
   specialties: string[]
 }
 

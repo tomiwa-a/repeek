@@ -9,6 +9,7 @@ export const mockPredictors: Predictor[] = [
     winRate: 68.4,
     totalSlips: 1242,
     totalGames: 3105,
+    roi: 12.5,
     wins: 850,
     losses: 392,
     streak: 5,
@@ -16,6 +17,7 @@ export const mockPredictors: Predictor[] = [
     followers: 12400,
     isPremium: true,
     isFeatured: true,
+    hasActiveSlips: true,
     specialties: ['SOCCER_ALPHA', 'VOLATILITY_HEDGE']
   },
   {
@@ -26,6 +28,7 @@ export const mockPredictors: Predictor[] = [
     winRate: 72.1,
     totalSlips: 450,
     totalGames: 900,
+    roi: 18.2,
     wins: 325,
     losses: 125,
     streak: 3,
@@ -33,6 +36,7 @@ export const mockPredictors: Predictor[] = [
     followers: 8500,
     isPremium: true,
     isFeatured: true,
+    hasActiveSlips: false,
     specialties: ['NBA_MATRIX', 'PROPS_ARBITRAGE']
   },
   {
@@ -43,6 +47,7 @@ export const mockPredictors: Predictor[] = [
     winRate: 61.8,
     totalSlips: 3200,
     totalGames: 8000,
+    roi: 8.4,
     wins: 1980,
     losses: 1220,
     streak: 2,
@@ -50,6 +55,7 @@ export const mockPredictors: Predictor[] = [
     followers: 45000,
     isPremium: false,
     isFeatured: false,
+    hasActiveSlips: true,
     specialties: ['GLOBAL_FOOTBALL', 'PARLAY_ENGINE']
   },
   {
@@ -60,6 +66,7 @@ export const mockPredictors: Predictor[] = [
     winRate: 65.5,
     totalSlips: 890,
     totalGames: 2225,
+    roi: 11.2,
     wins: 583,
     losses: 307,
     streak: 8,
@@ -67,6 +74,7 @@ export const mockPredictors: Predictor[] = [
     followers: 15600,
     isPremium: true,
     isFeatured: true,
+    hasActiveSlips: false,
     specialties: ['HIGH_STAKES_ML', 'MARKET_INEFFICIENCY']
   }
 ]

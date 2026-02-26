@@ -49,6 +49,18 @@ export default function Profile() {
       timestamp: new Date(s.timestamp),
       isPremium: s.predictor.isPremium,
       status: s.status === 'OPEN' ? 'pending' : (s.status.toLowerCase() as any),
+      predictor: {
+        ...s.predictor,
+        id: s.predictor.id || s.userId,
+        roi: (s.predictor as any).roi ?? 0,
+        wins: (s.predictor as any).wins ?? 0,
+        losses: (s.predictor as any).losses ?? 0,
+        streak: (s.predictor as any).streak ?? 0,
+        streakType: (s.predictor as any).streakType ?? 'win',
+        followers: (s.predictor as any).followers ?? 0,
+        hasActiveSlips: (s.predictor as any).hasActiveSlips ?? false,
+        specialties: (s.predictor as any).specialties ?? []
+      },
       legs: s.legs.map((l, i) => ({
         ...l,
         id: `${s._id}-leg-${i}`,

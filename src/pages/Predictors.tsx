@@ -1,11 +1,14 @@
-import { useQuery } from 'convex/react'
+import { useQuery, useConvexAuth } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import PredictorCard from '../components/PredictorCard'
 import { Trophy, Users, Search, Filter, ChevronRight, Activity, Zap, Shield, Loader2 } from 'lucide-react'
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { Predictor } from '../types/slips'
 
 export default function Predictors() {
+  const navigate = useNavigate()
+  const { isAuthenticated } = useConvexAuth()
   const [activeSport, setActiveSport] = useState<string>('ALL_SPORTS')
   const [minAccuracy, setMinAccuracy] = useState<number>(0)
   const [searchQuery, setSearchQuery] = useState('')
@@ -21,8 +24,8 @@ export default function Predictors() {
   const predictors = useMemo(() => {
     if (!livePredictors) return []
     return livePredictors.filter(predictor => {
-      const matchesSearch = predictor.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            predictor.displayName.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesSearch = (predictor.username || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            (predictor.displayName || "").toLowerCase().includes(searchQuery.toLowerCase())
       const matchesAccuracy = predictor.winRate >= minAccuracy
       
       return matchesSearch && matchesAccuracy
@@ -165,13 +168,18 @@ export default function Predictors() {
             </div>
           </div>
 
-          <div className="bg-accent text-obsidian p-3 border-2 border-obsidian group cursor-pointer overflow-hidden relative">
-            <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12"></div>
-            <div className="relative z-10 flex items-center gap-2">
-              <Shield className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-black uppercase italic tracking-widest">BECOME_PREDICTOR</span>
+          {!isAuthenticated && (
+            <div 
+              onClick={() => navigate('/register')}
+              className="bg-accent text-obsidian p-3 border-2 border-obsidian group cursor-pointer overflow-hidden relative"
+            >
+              <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12"></div>
+              <div className="relative z-10 flex items-center gap-2">
+                <Shield className="w-3.5 h-3.5" />
+                <span className="text-[9px] font-black uppercase italic tracking-widest">BECOME_PREDICTOR</span>
+              </div>
             </div>
-          </div>
+          )}
         </aside>
 
         {/* Leaderboard Feed */}
@@ -186,10 +194,10 @@ export default function Predictors() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {isLoading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-48 bg-workspace border-2 border-obsidian/5 animate-pulse" />
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-64 bg-workspace border-2 border-obsidian/5 animate-pulse" />
               ))
             ) : (
               predictors.map((predictor: Predictor) => (
