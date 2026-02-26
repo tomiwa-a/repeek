@@ -27,6 +27,9 @@ export default defineSchema({
     ),
   })
     .index("email", ["email"])
+    .index("by_winRate", ["stats.winRate"])
+    .index("by_roi", ["stats.roi"])
+    .index("by_totalSlips", ["stats.totalSlips"])
     .index("by_username", ["username"]),
 
   sports: defineTable({

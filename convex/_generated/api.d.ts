@@ -13,6 +13,7 @@ import type * as auth_logic from "../auth_logic.js";
 import type * as games from "../games.js";
 import type * as http from "../http.js";
 import type * as internal_migrations from "../internal_migrations.js";
+import type * as leaderboard from "../leaderboard.js";
 import type * as lib_oddsApi from "../lib/oddsApi.js";
 import type * as slips from "../slips.js";
 import type * as sports from "../sports.js";
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   games: typeof games;
   http: typeof http;
   internal_migrations: typeof internal_migrations;
+  leaderboard: typeof leaderboard;
   "lib/oddsApi": typeof lib_oddsApi;
   slips: typeof slips;
   sports: typeof sports;

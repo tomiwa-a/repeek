@@ -1,28 +1,33 @@
-import { mockPredictors } from '../data/mockPredictors'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 import PredictorCard from '../components/PredictorCard'
-import { Trophy, Users, Search, Filter, ChevronRight, Activity, Zap, Shield } from 'lucide-react'
+import { Trophy, Users, Search, Filter, ChevronRight, Activity, Zap, Shield, Loader2 } from 'lucide-react'
 import { useState, useMemo } from 'react'
+import type { Predictor } from '../types/slips'
 
 export default function Predictors() {
   const [activeSport, setActiveSport] = useState<string>('ALL_SPORTS')
   const [minAccuracy, setMinAccuracy] = useState<number>(0)
-  const [oddsRange, setOddsRange] = useState<string>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'winRate' | 'roi' | 'totalSlips'>('winRate')
 
-  const filteredPredictors = useMemo(() => {
-    return mockPredictors.filter(predictor => {
+  const livePredictors = useQuery(api.leaderboard.getTopAnalysts, { 
+    sortBy, 
+    sportKey: activeSport !== 'ALL_SPORTS' ? activeSport : undefined 
+  })
+  
+  const isLoading = livePredictors === undefined
+
+  const predictors = useMemo(() => {
+    if (!livePredictors) return []
+    return livePredictors.filter(predictor => {
       const matchesSearch = predictor.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             predictor.displayName.toLowerCase().includes(searchQuery.toLowerCase())
       const matchesAccuracy = predictor.winRate >= minAccuracy
-      const matchesSport = activeSport === 'ALL_SPORTS' || predictor.specialties.some(s => s.toUpperCase().includes(activeSport))
       
-      // Simulating odds range since it's not in the mock data yet
-      // In a real app, this would be a real field on the predictor or their active slips
-      const matchesOdds = oddsRange === 'ALL' || true 
-
-      return matchesSearch && matchesAccuracy && matchesSport && matchesOdds
-    }).sort((a, b) => b.winRate - a.winRate)
-  }, [searchQuery, minAccuracy, activeSport, oddsRange])
+      return matchesSearch && matchesAccuracy
+    })
+  }, [livePredictors, searchQuery, minAccuracy])
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 md:px-6 py-6 space-y-6 flex flex-col h-full bg-white font-sans selection:bg-accent selection:text-obsidian">
@@ -34,7 +39,9 @@ export default function Predictors() {
           <div className="relative z-10 flex justify-between items-center">
             <div>
               <div className="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] mb-1 italic">NETWORK_NODES</div>
-              <div className="text-3xl font-black italic leading-none">{mockPredictors.length}</div>
+              <div className="text-3xl font-black italic leading-none">
+                {isLoading ? <Loader2 className="w-6 h-6 animate-spin opacity-20" /> : predictors.length}
+              </div>
             </div>
             <Users className="w-5 h-5 text-accent/20 group-hover:text-accent transition-colors" />
           </div>
@@ -43,9 +50,10 @@ export default function Predictors() {
         <div className="bg-white border-2 border-obsidian p-4 group relative overflow-hidden">
           <div className="relative z-10 flex justify-between items-center">
             <div>
-              <div className="text-[8px] font-black text-obsidian/30 uppercase tracking-[0.2em] mb-1 italic">VERIFIED_SIGNALS</div>
+              <div className="text-[8px] font-black text-obsidian/30 uppercase tracking-[0.2em] mb-1 italic">TOTAL_NETWORK_SLIPS</div>
               <div className="text-3xl font-black italic text-obsidian leading-none">
-                {mockPredictors.reduce((sum, p) => sum + p.totalSlips, 0).toLocaleString()}
+                {isLoading ? <Loader2 className="w-6 h-6 animate-spin opacity-20" /> : 
+                  predictors.reduce((sum: number, p: Predictor) => sum + p.totalSlips, 0).toLocaleString()}
               </div>
             </div>
             <Zap className="w-5 h-5 text-obsidian/10 group-hover:text-obsidian transition-colors" />
@@ -57,7 +65,8 @@ export default function Predictors() {
             <div>
               <div className="text-[8px] font-black text-obsidian/30 uppercase tracking-[0.2em] mb-1 italic">AVG_PRECISION</div>
               <div className="text-3xl font-black italic text-obsidian leading-none">
-                {(mockPredictors.reduce((sum, p) => sum + p.winRate, 0) / mockPredictors.length).toFixed(1)}%
+                {isLoading ? <Loader2 className="w-6 h-6 animate-spin opacity-20" /> : 
+                  predictors.length > 0 ? (predictors.reduce((sum: number, p: Predictor) => sum + p.winRate, 0) / predictors.length).toFixed(1) + '%' : '0.0%'}
               </div>
             </div>
             <Activity className="w-5 h-5 text-obsidian/10 group-hover:text-obsidian transition-colors" />
@@ -72,6 +81,31 @@ export default function Predictors() {
             <div className="flex items-center gap-2 border-b border-obsidian/10 pb-3">
               <Filter className="w-3.5 h-3.5 text-obsidian" />
               <h3 className="text-[10px] font-black uppercase italic tracking-widest leading-none">FILTER_PROTOCOL</h3>
+            </div>
+
+            {/* Sorting */}
+            <div className="space-y-1.5">
+              <label className="text-[8px] font-black text-obsidian/40 uppercase tracking-widest italic">RANKING_CRITERIA</label>
+              <div className="flex flex-col gap-1">
+                {[
+                  { id: 'winRate', label: 'WIN_RATE' },
+                  { id: 'roi', label: 'ROI_ALPHA' },
+                  { id: 'totalSlips', label: 'TOTAL_SLIPS' }
+                ].map(sort => (
+                  <button
+                    key={sort.id}
+                    onClick={() => setSortBy(sort.id as any)}
+                    className={`text-left px-2.5 py-2 text-[9px] font-black uppercase italic tracking-wider border transition-all flex items-center justify-between group ${
+                      sortBy === sort.id 
+                        ? 'bg-obsidian text-white border-obsidian' 
+                        : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
+                    }`}
+                  >
+                    {sort.label}
+                    <div className={`w-1 h-1 rounded-full bg-accent ${sortBy === sort.id ? 'opacity-100' : 'opacity-0'}`} />
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Search */}
@@ -129,26 +163,6 @@ export default function Predictors() {
                 ))}
               </div>
             </div>
-
-            {/* Odds Range */}
-            <div className="space-y-1.5">
-              <label className="text-[8px] font-black text-obsidian/40 uppercase tracking-widest italic">RISK_PROTOCOL (ODDS)</label>
-              <div className="grid grid-cols-3 gap-1">
-                {['ALL', 'LOW', 'HIGH'].map(range => (
-                  <button
-                    key={range}
-                    onClick={() => setOddsRange(range)}
-                    className={`py-1.5 text-[9px] font-black italic border transition-all ${
-                      oddsRange === range 
-                        ? 'bg-obsidian text-white border-obsidian' 
-                        : 'bg-workspace text-obsidian/60 border-transparent hover:border-obsidian/20'
-                    }`}
-                  >
-                    {range}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           <div className="bg-accent text-obsidian p-3 border-2 border-obsidian group cursor-pointer overflow-hidden relative">
@@ -168,17 +182,23 @@ export default function Predictors() {
               <h2 className="text-sm font-black italic uppercase tracking-tighter">ELITE_ANALYSIS_NODES</h2>
             </div>
             <div className="text-[9px] font-black text-obsidian/40 italic uppercase tracking-widest">
-              RESULTS_RETURNED: {filteredPredictors.length}
+              RESULTS_RETURNED: {isLoading ? '...' : predictors.length}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-            {filteredPredictors.map(predictor => (
-              <PredictorCard key={predictor.id} predictor={predictor} />
-            ))}
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-48 bg-workspace border-2 border-obsidian/5 animate-pulse" />
+              ))
+            ) : (
+              predictors.map((predictor: Predictor) => (
+                <PredictorCard key={predictor.id} predictor={predictor} />
+              ))
+            )}
           </div>
 
-          {filteredPredictors.length === 0 && (
+          {!isLoading && predictors.length === 0 && (
             <div className="py-20 text-center border-2 border-dashed border-obsidian/10">
               <Search className="w-8 h-8 text-obsidian/10 mx-auto mb-3" />
               <div className="text-[10px] font-black text-obsidian/40 uppercase italic tracking-widest">NO_OPERATORS_MATCH_PROTOCOL</div>

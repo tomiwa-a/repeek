@@ -143,23 +143,27 @@ export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => toggleLeg(leg.id)}
-                    className="w-full bg-workspace/40 py-1.5 px-2 flex items-center justify-between group/btn hover:bg-obsidian transition-all"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <Zap className="w-2.5 h-2.5 text-obsidian/20 group-hover/btn:text-accent" />
-                      <span className="text-[8px] font-black uppercase italic text-obsidian/40 group-hover/btn:text-white/40 tracking-widest">TECHNICAL_REPORT</span>
-                    </div>
-                    {isExpanded ? <ChevronUp className="w-3 h-3 text-obsidian/20 group-hover/btn:text-white" /> : <ChevronDown className="w-3 h-3 text-obsidian/20 group-hover/btn:text-white" />}
-                  </button>
+                  {leg.analysis && (
+                    <>
+                      <button 
+                        onClick={() => toggleLeg(leg.id)}
+                        className="w-full bg-workspace/40 py-1.5 px-2 flex items-center justify-between group/btn hover:bg-obsidian transition-all"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Zap className="w-2.5 h-2.5 text-obsidian/20 group-hover/btn:text-accent" />
+                          <span className="text-[8px] font-black uppercase italic text-obsidian/40 group-hover/btn:text-white/40 tracking-widest">TECHNICAL_REPORT</span>
+                        </div>
+                        {isExpanded ? <ChevronUp className="w-3 h-3 text-obsidian/20 group-hover/btn:text-white" /> : <ChevronDown className="w-3 h-3 text-obsidian/20 group-hover/btn:text-white" />}
+                      </button>
 
-                  {isExpanded && (
-                    <div className="px-2 pt-1 border-l-2 border-obsidian/10">
-                      <p className="text-[9px] font-bold text-zinc-500 leading-relaxed uppercase italic">
-                        {leg.analysis}
-                      </p>
-                    </div>
+                      {isExpanded && (
+                        <div className="px-2 pt-1 border-l-2 border-obsidian/10">
+                          <p className="text-[9px] font-bold text-zinc-500 leading-relaxed uppercase italic">
+                            {leg.analysis}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )})}
