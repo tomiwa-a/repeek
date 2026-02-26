@@ -58,7 +58,7 @@ export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
               <button 
                 onClick={() => openShareModal({
                   title: `BET_SLIP: ${slip.title}`,
-                  url: `${window.location.origin}/${slip.predictor.username}`, // Best we can do for deep linking currently is link to user profile where slip is listed
+                  url: `${window.location.origin}/${slip.predictor.username}/${slip.id}`, 
                   text: `Check out this bet slip "${slip.title}" by ${slip.predictor.username} on Repeek!`
                 })}
                 className="p-1.5 hover:bg-white/10 transition-colors text-white/40 hover:text-white"
@@ -227,7 +227,7 @@ export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
                 <button 
                   onClick={() => openShareModal({
                     title: `BET_SLIP: ${slip.title}`,
-                    url: `${window.location.origin}/${slip.predictor.username}`,
+                    url: `${window.location.origin}/${slip.predictor.username}/${slip.id}`,
                     text: `Check out this bet slip "${slip.title}" by ${slip.predictor.username} on Repeek!`
                   })}
                   className="p-3 bg-obsidian text-white hover:bg-accent hover:text-obsidian transition-all"

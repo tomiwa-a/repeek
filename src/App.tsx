@@ -89,6 +89,7 @@ function AppContent() {
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/match/:id" element={<MatchDetail />} />
               <Route path="/:username" element={<Profile />} />
+              <Route path="/:username/:slipId" element={<Profile />} />
             </Routes>
           </AuthGuard>
         </main>

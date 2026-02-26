@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import {
   UserPlus, BarChart3,
@@ -14,7 +14,7 @@ import SettingsTab from '../components/profile/SettingsTab'
 import { useUI } from '../context/UIContext'
 
 export default function Profile() {
-  const { username } = useParams<{ username: string }>()
+  const { username, slipId } = useParams<{ username: string, slipId?: string }>()
   const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
   const viewer = useQuery(api.users.getViewer, isAuthenticated ? {} : 'skip')
   
@@ -40,8 +40,62 @@ export default function Profile() {
   }), [profileUser])
 
   const liveSlips = useQuery(api.slips.getSlipsByUser, profileUser ? { userId: profileUser._id } : 'skip') || []
-  const { openShareModal } = useUI()
+  const { openShareModal, openSlipDetail } = useUI()
   const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis' | 'settings'>('ongoing')
+  const [hasAutoOpened, setHasAutoOpened] = useState(false)
+  
+  // Reset auto-open flag if slipId changes
+  useEffect(() => {
+    setHasAutoOpened(false)
+  }, [slipId])
+
+  // Auto-open deep-linked slip
+  useEffect(() => {
+    if (slipId && liveSlips.length > 0 && !hasAutoOpened) {
+      const slip = liveSlips.find(s => s._id === slipId)
+      if (slip) {
+        setHasAutoOpened(true)
+        // Map to Slip type before opening
+        const mappedSlip = {
+          ...slip,
+          id: slip._id,
+          timestamp: new Date(slip.timestamp),
+          isPremium: slip.predictor.isPremium,
+          status: slip.status === 'OPEN' ? 'pending' : (slip.status.toLowerCase() as any),
+          predictor: {
+            ...slip.predictor,
+            id: slip.predictor.id || slip.userId,
+            roi: (slip.predictor as any).roi ?? 0,
+            wins: (slip.predictor as any).wins ?? 0,
+            losses: (slip.predictor as any).losses ?? 0,
+            streak: (slip.predictor as any).streak ?? 0,
+            streakType: (slip.predictor as any).streakType ?? 'win',
+            followers: (slip.predictor as any).followers ?? 0,
+            hasActiveSlips: (slip.predictor as any).hasActiveSlips ?? false,
+            specialties: (slip.predictor as any).specialties ?? []
+          },
+          legs: slip.legs.map((l, i) => ({
+            ...l,
+            id: `${slip._id}-leg-${i}`,
+            pickLabel: l.pickType.toUpperCase(),
+            confidence: 'high' as const,
+            status: slip.status === 'OPEN' ? 'pending' : (slip.status.toLowerCase() as any),
+            game: l.game ? {
+              ...l.game,
+              id: l.game.id,
+              startTime: new Date(l.game.commenceTime),
+              sport: 'soccer' as const,
+              homeScore: l.game.score?.home ?? 0,
+              awayScore: l.game.score?.away ?? 0,
+              predictionCount: l.game.slipCount ?? 0,
+              odds: { home: 1, away: 1 }
+            } : null
+          }))
+        } as Slip
+        openSlipDetail(mappedSlip)
+      }
+    }
+  }, [slipId, liveSlips, openSlipDetail, hasAutoOpened])
   const [page, setPage] = useState(1)
   const itemsPerPage = 10
   
