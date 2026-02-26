@@ -41,7 +41,7 @@ export default function MatchDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const { addLegToBuilder, openSlipBuilder } = useUI()
+  const { addLegToBuilder, openSlipBuilder, openShareModal } = useUI()
   
   const initialGameData = location.state?.game as Game | undefined
   const convexGameResponse = useQuery(api.games.getGameById, { id: id as string })
@@ -156,7 +156,14 @@ export default function MatchDetail() {
              <div className="text-[8px] font-black text-obsidian/30 uppercase italic">MATCH_ID</div>
              <div className="text-[10px] font-black italic text-obsidian uppercase whitespace-nowrap">{game.id}</div>
           </div>
-          <button className="p-2 border border-obsidian/10 hover:bg-workspace transition-colors">
+          <button 
+            onClick={() => openShareModal({
+              title: `${game.homeTeam} VS ${game.awayTeam}`,
+              url: window.location.href,
+              text: `Check out this match on Repeek: ${game.homeTeam} VS ${game.awayTeam} (${game.league})`
+            })}
+            className="p-2 border border-obsidian/10 hover:bg-workspace transition-colors"
+          >
             <Share2 className="w-4 h-4" />
           </button>
         </div>

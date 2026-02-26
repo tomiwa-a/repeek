@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState } from 'react'
 import type { Slip, Game, SlipLeg } from '../types/slips'
 
+export interface ShareData {
+  title: string
+  url: string
+  text?: string
+}
+
 interface UIContextType {
   isSlipBuilderOpen: boolean
   openSlipBuilder: () => void
@@ -20,6 +26,10 @@ interface UIContextType {
   clearBuilder: () => void
   isSidebarOpen: boolean
   setIsSidebarOpen: (open: boolean) => void
+  isShareModalOpen: boolean
+  shareData: ShareData | null
+  openShareModal: (data: ShareData) => void
+  closeShareModal: () => void
 }
 
 const UIContext = createContext<UIContextType | undefined>(undefined)
@@ -32,6 +42,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [builderTitle, setBuilderTitle] = useState('NEW_STRATEGY_DOCKET')
   const [builderAnalysis, setBuilderAnalysis] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [shareData, setShareData] = useState<ShareData | null>(null)
 
   const openSlipBuilder = () => setIsSlipBuilderOpen(true)
   const closeSlipBuilder = () => setIsSlipBuilderOpen(false)
@@ -44,6 +56,16 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const closeSlipDetail = () => {
     setIsSlipDetailOpen(false)
     setTimeout(() => setSelectedSlip(null), 300) // Delay to match transition
+  }
+
+  const openShareModal = (data: ShareData) => {
+    setShareData(data)
+    setIsShareModalOpen(true)
+  }
+
+  const closeShareModal = () => {
+    setIsShareModalOpen(false)
+    setTimeout(() => setShareData(null), 300)
   }
 
   const addLegToBuilder = (game: Game) => {
@@ -72,7 +94,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       isSlipDetailOpen, selectedSlip, openSlipDetail, closeSlipDetail,
       builderLegs, addLegToBuilder, removeLegFromBuilder, updateLegInBuilder, clearBuilder,
       builderTitle, setBuilderTitle, builderAnalysis, setBuilderAnalysis,
-      isSidebarOpen, setIsSidebarOpen
+      isSidebarOpen, setIsSidebarOpen,
+      isShareModalOpen, shareData, openShareModal, closeShareModal
     }}>
       {children}
     </UIContext.Provider>

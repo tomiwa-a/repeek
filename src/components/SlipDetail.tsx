@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, Shield, Lock, User, Target, Share2, ChevronDown, ChevronUp, Zap, Activity } from 'lucide-react'
 import type { Slip } from '../types/slips'
+import { useUI } from '../context/UIContext'
 
 interface SlipDetailProps {
   isOpen: boolean
@@ -11,6 +12,7 @@ interface SlipDetailProps {
 
 export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
   const navigate = useNavigate()
+  const { openShareModal } = useUI()
   const [expandedLegs, setExpandedLegs] = useState<Record<string, boolean>>({})
 
   const toggleLeg = (id: string) => {
@@ -52,9 +54,21 @@ export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
               </div>
               <h2 className="text-xl font-black italic uppercase tracking-tighter leading-none">{slip.title}</h2>
             </div>
-            <button onClick={onClose} className="p-1.5 hover:bg-white/10 transition-colors">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={() => openShareModal({
+                  title: `BET_SLIP: ${slip.title}`,
+                  url: `${window.location.origin}/${slip.predictor.username}`, // Best we can do for deep linking currently is link to user profile where slip is listed
+                  text: `Check out this bet slip "${slip.title}" by ${slip.predictor.username} on Repeek!`
+                })}
+                className="p-1.5 hover:bg-white/10 transition-colors text-white/40 hover:text-white"
+              >
+                <Share2 className="w-4.5 h-4.5" />
+              </button>
+              <button onClick={onClose} className="p-1.5 hover:bg-white/10 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           <div className="relative z-10 flex items-center gap-8 border-t border-white/5 pt-3">
@@ -210,9 +224,16 @@ export default function SlipDetail({ isOpen, onClose, slip }: SlipDetailProps) {
                <button className="flex-1 btn-volt py-3 text-[10px] tracking-widest flex items-center justify-center gap-2 italic font-black uppercase">
                  <Target className="w-3.5 h-3.5" /> DEPLOY_BET
                </button>
-               <button className="p-3 bg-obsidian text-white hover:bg-accent hover:text-obsidian transition-all">
-                 <Share2 className="w-4 h-4" />
-               </button>
+                <button 
+                  onClick={() => openShareModal({
+                    title: `BET_SLIP: ${slip.title}`,
+                    url: `${window.location.origin}/${slip.predictor.username}`,
+                    text: `Check out this bet slip "${slip.title}" by ${slip.predictor.username} on Repeek!`
+                  })}
+                  className="p-3 bg-obsidian text-white hover:bg-accent hover:text-obsidian transition-all"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
              </div>
            )}
            <div className="text-center">

@@ -17,6 +17,7 @@ import Onboarding from './pages/Onboarding'
 import { UIProvider, useUI } from './context/UIContext'
 import SlipBuilder from './components/SlipBuilder'
 import SlipDetail from './components/SlipDetail'
+import ShareModal from './components/ShareModal'
 import ScrollToTop from './components/ScrollToTop'
 import FloatingSlipButton from './components/FloatingSlipButton'
 
@@ -97,6 +98,7 @@ function AppContent() {
       
       <SlipBuilder isOpen={isSlipBuilderOpen} onClose={closeSlipBuilder} />
       <SlipDetail isOpen={isSlipDetailOpen} onClose={closeSlipDetail} slip={selectedSlip} />
+      <ShareModal />
       <FloatingSlipButton />
     </div>
   )

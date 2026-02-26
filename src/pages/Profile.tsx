@@ -3,7 +3,7 @@ import { useParams, Navigate } from 'react-router-dom'
 import {
   UserPlus, BarChart3,
   ChevronLeft, ChevronRight,
-  Loader2, Search
+  Loader2, Search, Share2
 } from 'lucide-react'
 import { useQuery, useConvexAuth } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -40,7 +40,7 @@ export default function Profile() {
   }), [profileUser])
 
   const liveSlips = useQuery(api.slips.getSlipsByUser, profileUser ? { userId: profileUser._id } : 'skip') || []
-  const { openSlipBuilder: _unused_openSlipBuilder } = useUI()
+  const { openShareModal } = useUI()
   const [activeTab, setActiveTab] = useState<'ongoing' | 'previous' | 'analysis' | 'settings'>('ongoing')
   const [page, setPage] = useState(1)
   const itemsPerPage = 10
@@ -148,15 +148,27 @@ export default function Profile() {
                     )}
                   </span>
                 </div>
-                <div>
-                  {isProfileLoading ? (
-                    <div className="h-8 w-48 bg-white/10 animate-pulse mb-2" />
-                  ) : (
-                    <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none mb-2 shadow-sm text-white">
-                    {user.username}
-                  </h1>
-                  )}
-                  {user.isPremium && <span className="bg-accent text-obsidian px-2 py-0.5 text-[9px] font-black italic">ELITE_OPERATOR</span>}
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    {isProfileLoading ? (
+                      <div className="h-8 w-48 bg-white/10 animate-pulse mb-2" />
+                    ) : (
+                      <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none mb-2 shadow-sm text-white">
+                      {user.username}
+                    </h1>
+                    )}
+                    {user.isPremium && <span className="bg-accent text-obsidian px-2 py-0.5 text-[9px] font-black italic">ELITE_OPERATOR</span>}
+                  </div>
+                  <button 
+                    onClick={() => openShareModal({
+                      title: `ANALYST: ${user.username}`,
+                      url: window.location.href,
+                      text: `Check out ${user.username}'s prediction profile on Repeek!`
+                    })}
+                    className="p-2 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-white/40 hover:text-white"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
